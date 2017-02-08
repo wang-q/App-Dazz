@@ -1,6 +1,7 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - `anchr dep`
 
 0.0.2 2017-02-08T21:11:05Z
     - Setup Travis
