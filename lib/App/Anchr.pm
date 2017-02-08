@@ -18,7 +18,15 @@ App::Anchr - Assembler of N-free CHRomosomes
 
 =head1 SYNOPSIS
 
-    use App::Anchr;
+    anchr <command> [-?h] [long options...]
+    	-? -h --help    show help
+
+    Available commands:
+
+      commands: list the application's commands
+          help: display a command's help screen
+
+See C<anchr commands> for usage information.
 
 =head1 DESCRIPTION
 

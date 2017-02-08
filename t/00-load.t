@@ -3,10 +3,10 @@ use warnings;
 use Test::More;
 
 BEGIN {
-    use_ok('App::Anchr');
-    use_ok('App::Anchr::Common');
+    use_ok('App::GAWM');
+    use_ok('App::GAWM::Common');
 }
 
-diag("Testing App::Anchr App::Anchr::VERSION");
+diag("Testing App::GAWM App::GAWM::VERSION");
 
 done_testing;
