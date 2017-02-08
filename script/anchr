@@ -17,4 +17,5 @@ perl -I lib/ script/anchr
 
 perl -I lib/ script/anchr dep
 
-perl -I lib/ t/02-init.t
+perl -I lib/ script/anchr dazzname t/1_4.anchor.fasta -o stdout
+perl -I lib/ t/03-dazzname.t
