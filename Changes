@@ -1,6 +1,9 @@
-Revision history for Perl extension App-Anchr
+Revision history for App-Anchr
 
 {{$NEXT}}
 
-    - original version
+0.0.1 2017-02-08T20:17:24Z
 
+    - Initial version
+    - `anchr help` works
+    - No real commands
