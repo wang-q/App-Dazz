@@ -2,8 +2,10 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
-0.0.1 2017-02-08T20:17:24Z
+0.0.2 2017-02-08T21:11:05Z
+    - Setup Travis
 
+0.0.1 2017-02-08T20:17:24Z
     - Initial version
     - `anchr help` works
     - No real commands
