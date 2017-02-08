@@ -1,5 +1,5 @@
 name = "App-Anchr"
-# badges = ["travis"]
+badges = ['travis', 'codecov', 'metacpan']
 authority="cpan:WANGQ"
 
 module_maker="ModuleBuildTiny"
