@@ -28,6 +28,9 @@ before_install:
 
 install:
   - brew install wang-q/tap/faops
+  - brew install homebrew/science/bbtools
+  - brew install homebrew/science/bedtools
+  - brew install wang-q/tap/jrunlist
   - cpanm -nq --installdeps --with-develop .
 before_script:
   - cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecov
