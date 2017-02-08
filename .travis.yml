@@ -27,9 +27,10 @@ before_install:
   - ulimit -n 1024
 
 install:
-  - brew install parallel pigz
+  - brew install java parallel pigz
   - brew install homebrew/science/bbtools
   - brew install homebrew/science/bedtools
+  - brew install homebrew/science/picard-tools
   - brew install homebrew/science/samtools
   - brew install homebrew/science/sickle
   - brew install wang-q/tap/faops
