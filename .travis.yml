@@ -1,7 +1,31 @@
-language: perl
-perl:
-  - "5.18"
-sudo: false
+language:
+  - perl
+  - ruby
+perl: "5.18"
+os: linux
+rvm: 2.0.0
+sudo: required
+dist: trusty
+
+before_install:
+  - export TRAVIS_COMMIT="$(git rev-parse --verify -q HEAD)"
+  - if [ -f ".git/shallow" ]; then
+      travis_retry git fetch --unshallow;
+    fi
+  - sudo mkdir -p /home/linuxbrew
+  - sudo chown "$USER" /home/linuxbrew
+  - LINUXBREW=/home/linuxbrew/.linuxbrew
+  - git clone --depth=1 https://github.com/Linuxbrew/brew.git "$LINUXBREW"
+  - export PATH="$LINUXBREW/bin:$PATH"
+  - HOMEBREW_TAP_DIR="$(brew --repo "$TRAVIS_REPO_SLUG")"
+  - rm -rf "$HOMEBREW_TAP_DIR"
+  - mkdir -p "$(dirname "$HOMEBREW_TAP_DIR")"
+  - ln -s "$PWD" "$HOMEBREW_TAP_DIR"
+  - export HOMEBREW_DEVELOPER="1"
+  - env | grep TRAVIS | tee /tmp/travis.env
+  - export HOMEBREW_DEVELOPER="1"
+  - ulimit -n 1024
+
 install:
   - cpanm -nq --installdeps --with-develop .
 before_script:
