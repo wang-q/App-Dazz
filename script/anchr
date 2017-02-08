@@ -15,4 +15,6 @@ __END__
 
 perl -I lib/ script/anchr
 
+perl -I lib/ script/anchr dep
+
 perl -I lib/ t/02-init.t

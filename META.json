@@ -43,12 +43,14 @@
       "runtime" : {
          "requires" : {
             "AlignDB::IntSpan" : "v1.1.0",
+            "AlignDB::Stopwatch" : "0",
             "App::Cmd" : "0.330",
             "App::Fasops::Common" : "0",
             "App::RL::Common" : "0",
             "App::Rangeops::Common" : "0",
+            "File::ShareDir" : "1.102",
             "Graph" : "0.9704",
-            "Number::Format" : "0",
+            "Number::Format" : "1.75",
             "Path::Tiny" : "0.076",
             "YAML::Syck" : "1.29",
             "perl" : "5.010001"

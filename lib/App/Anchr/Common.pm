@@ -12,6 +12,7 @@ use Path::Tiny qw();
 use YAML::Syck qw();
 
 use AlignDB::IntSpan;
+use AlignDB::Stopwatch;
 use App::RL::Common;
 use App::Fasops::Common;
 
