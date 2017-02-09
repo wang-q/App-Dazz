@@ -22,5 +22,5 @@ perl -I lib/ script/anchr dazzname t/1_4.anchor.fasta -o stdout
 perl -I lib/ t/03-dazzname.t
 
 perl -I lib/ script/anchr show2ovlp t/1_4.renamed.fasta t/1_4.show.txt -o stdout
-perl -I lib/ script/anchr show2ovlp t/1_4.renamed.fasta t/1_4.show.txt -r t/replace.tsv -o stdout
+perl -I lib/ script/anchr show2ovlp t/1_4.renamed.fasta t/1_4.show.txt -r t/1_4.replace.tsv -o stdout
 perl -I lib/ t/04-show2ovlp.t

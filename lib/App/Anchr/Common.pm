@@ -47,12 +47,12 @@ sub get_replaces {
 
     my $replace_of = {};
     my @lines = Path::Tiny::path($fn)->lines( { chomp => 1 } );
+
     for my $line (@lines) {
         my @fields = split /\t/, $line;
         if ( @fields == 2 ) {
-            warn "$_\n";
             if ( $fields[0] =~ /\/(\d+)\/\d+_\d+/ ) {
-                $replace_of->{$1} = $fields[0];
+                $replace_of->{$1} = $fields[1];
             }
         }
     }

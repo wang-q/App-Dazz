@@ -19,7 +19,10 @@ $result = test_app( 'App::Anchr' => [qw(show2ovlp t/1_4.renamed.fasta t/1_4.show
 is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 50, 'line count' );
 like( $result->stdout, qr{overlap}s, 'overlaps' );
 
-$result = test_app( 'App::Anchr' => [qw(show2ovlp t/1_4.renamed.fasta t/1_4.show.txt -r t/replace.tsv -o stdout)] );
+$result = test_app( 'App::Anchr' => [qw(show2ovlp t/1_4.renamed.fasta t/1_4.show.txt -r t/not_exists -o stdout)] );
+like( $result->error, qr{doesn't exist}, 'infile not exists' );
+
+$result = test_app( 'App::Anchr' => [qw(show2ovlp t/1_4.renamed.fasta t/1_4.show.txt -r t/1_4.replace.tsv -o stdout)] );
 is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 50, 'line count' );
 like( $result->stdout, qr{pac7556_20928}s, 'original name' );
 

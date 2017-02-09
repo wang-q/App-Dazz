@@ -42,9 +42,9 @@ sub validate_args {
         }
     }
 
-    if ( $opt->{replace} ) {
+    if ( exists $opt->{replace} ) {
         if ( !Path::Tiny::path( $opt->{replace} )->is_file ) {
-            $self->usage_error( { pre_text => "The replace file [$opt->{replace}] doesn't exist.\n" } );
+            $self->usage_error("The replace file [$opt->{replace}] doesn't exist.\n");
         }
     }
 
@@ -60,10 +60,9 @@ sub execute {
     print STDERR "Get @{[scalar keys %{$len_of}]} records of sequence length\n";
 
     my $replace_of = {};
-    if ( $opt->{replace} ) {
+    if ( exists $opt->{replace} ) {
         $replace_of = App::Anchr::Common::get_replaces( $opt->{replace} );
     }
-    warn YAML::Syck::Dump $replace_of;
 
     my $in_fh;
     if ( lc $args->[1] eq 'stdin' ) {
@@ -103,8 +102,8 @@ sub execute {
 
         my $ovlp_len = $f_E - $f_B;
 
-        printf "%s",   exists $replace_of->{$f_id} ? $replace_of->{$f_id}[0] : $f_id;
-        printf "\t%s", exists $replace_of->{$g_id} ? $replace_of->{$g_id}[0] : $g_id;
+        printf "%s",   exists $replace_of->{$f_id} ? $replace_of->{$f_id} : $f_id;
+        printf "\t%s", exists $replace_of->{$g_id} ? $replace_of->{$g_id} : $g_id;
         printf "\t%d\t%.3f", $ovlp_len, $identity;
         printf "\t%d\t%d\t%d\t%d", 0, $f_B, $f_E, $len_of->{$f_id};
         printf "\t%d\t%d\t%d\t%d", $g_ori, $g_B, $g_E, $len_of->{$g_id};
