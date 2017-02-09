@@ -23,13 +23,14 @@ App::Anchr - Assembler of N-free CHRomosomes
 
     Available commands:
 
-      commands: list the application's commands
-          help: display a command's help screen
+       commands: list the application's commands
+           help: display a command's help screen
 
-      dazzname: rename FASTA reads for dazz_db
-           dep: check or install dependances
+       dazzname: rename FASTA reads for dazz_db
+            dep: check or install dependances
+      show2ovlp: LAshow outputs to ovelaps
 
-Run C<anchr commands> for usage information.
+Run C<anchr help command-name> for usage information.
 
 =head1 DESCRIPTION
 
