@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wang-q/App-Anchr.svg?branch=master)](https://travis-ci.org/wang-q/App-Anchr) [![Coverage Status](http://codecov.io/github/wang-q/App-Anchr/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Anchr?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/App-Anchr.svg)](https://metacpan.org/release/App-Anchr)
+[![Build Status](https://travis-ci.org/wang-q/App-Anchr.svg?branch=master)](https://travis-ci.org/wang-q/App-Anchr) [![Coverage Status](http://codecov.io/github/wang-q/App-Anchr/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Anchr?branch=master)
 # NAME
 
 App::Anchr - Assembler of N-free CHRomosomes
@@ -10,13 +10,14 @@ App::Anchr - Assembler of N-free CHRomosomes
 
     Available commands:
 
-      commands: list the application's commands
-          help: display a command's help screen
+       commands: list the application's commands
+           help: display a command's help screen
 
-      dazzname: rename FASTA reads for dazz_db
-           dep: check or install dependances
+       dazzname: rename FASTA reads for dazz_db
+            dep: check or install dependances
+      show2ovlp: LAshow outputs to ovelaps
 
-Run `anchr commands` for usage information.
+Run `anchr help command-name` for usage information.
 
 # DESCRIPTION
 
