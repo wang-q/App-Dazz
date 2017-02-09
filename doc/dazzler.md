@@ -1,11 +1,11 @@
-# dazzler: dazz_db and daligner
+# dazzler: basic usage of dazz_db and daligner
 
 ## dazz_db
 
 `DBsplit`
 
-* If the `-x` option is set then all reads less than the given length are ignored
-* each block is of size `-s` * 1Mbp except for the last which necessarily contains a smaller residual
+* If the `-x` option is set then all reads less than the given length are ignored.
+* Each block is of size `-s` * 1 Mbp except for the last.
 
 ### Rename sequences for dazzler
 
@@ -102,3 +102,4 @@ LAshow myDB.db myDB.las
 LAshow -o myDB.db myDB.las
 LAshow -co myDB.db myDB.las
 ```
+
