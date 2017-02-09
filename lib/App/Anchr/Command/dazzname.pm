@@ -93,16 +93,10 @@ sub execute {
             $data_of->{$ori_name}{'seen'} = 1;
         }
         elsif ( $line =~ / \A \s* [A-Za-z] /xms ) {
-            $line =~ s/\s//g;
-            if ( $line =~ / [^ACGTNacgtn] /xms ) {
-                Carp::croak "Can't parse: $line\n";
-            }
             $data_of->{$ori_name}{'sequence'} .= $line;
         }
         else {
-            if ( $line !~ /\A \s* \z/xms ) {
-                Carp::croak "Can't parse: $line\n";
-            }
+            # just ok
         }
     }
     close $in_fh;
@@ -125,8 +119,8 @@ sub execute {
         print {$replace_fh} "$new_name\t$name\n";
     }
 
-    close $out_fh;
     close $replace_fh;
+    close $out_fh;
 }
 
 1;
