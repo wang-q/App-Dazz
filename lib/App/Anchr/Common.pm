@@ -45,16 +45,19 @@ sub get_len_from_header {
 sub get_replaces {
     my $fn = shift;
 
-    my $full_replace_of = App::Fasops::Common::read_replaces($fn);
-
-    my $short_replace_of = {};
-    for my $key ( sort %{$full_replace_of} ) {
-        if ( $key =~ /\/(\d+)\/\d+_\d+/ ) {
-            $short_replace_of->{$1} = $full_replace_of->{$key};
+    my $replace_of = {};
+    my @lines = Path::Tiny::path($fn)->lines( { chomp => 1 } );
+    for my $line (@lines) {
+        my @fields = split /\t/, $line;
+        if ( @fields == 2 ) {
+            warn "$_\n";
+            if ( $fields[0] =~ /\/(\d+)\/\d+_\d+/ ) {
+                $replace_of->{$1} = $fields[0];
+            }
         }
     }
 
-    return $short_replace_of;
+    return $replace_of;
 }
 
 1;
