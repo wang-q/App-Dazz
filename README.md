@@ -6,14 +6,17 @@ App::Anchr - Assembler of N-free CHRomosomes
 # SYNOPSIS
 
     anchr <command> [-?h] [long options...]
-        -? -h --help    show help
+            -? -h --help    show help
 
     Available commands:
 
       commands: list the application's commands
           help: display a command's help screen
 
-See `anchr commands` for usage information.
+      dazzname: rename FASTA reads for dazz_db
+           dep: check or install dependances
+
+Run `anchr commands` for usage information.
 
 # DESCRIPTION
 

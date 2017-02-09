@@ -1,6 +1,7 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - `anchr dazzname`
 
 0.0.3 2017-02-08T22:59:37Z
     - `anchr dep`
