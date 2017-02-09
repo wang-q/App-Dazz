@@ -16,6 +16,7 @@ __END__
 perl -I lib/ script/anchr
 
 perl -I lib/ script/anchr dep
+perl -I lib/ t/02-dep.t
 
 perl -I lib/ script/anchr dazzname t/1_4.anchor.fasta -o stdout
 perl -I lib/ t/03-dazzname.t
