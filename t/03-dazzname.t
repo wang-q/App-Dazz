@@ -15,6 +15,12 @@ like( $result->error, qr{need .+input file}, 'need infile' );
 $result = test_app( 'App::Anchr' => [qw(dazzname t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
+$result = test_app( 'App::Anchr' => [qw(dazzname t/1_4.anchor.fasta --prefix B-A:D -o stdout)] );
+like( $result->error, qr{Can't accept}, 'bad names' );
+
+$result = test_app( 'App::Anchr' => [qw(dazzname t/1_4.anchor.fasta -o B-A:D)] );
+like( $result->error, qr{Can't accept}, 'bad names' );
+
 $result = test_app( 'App::Anchr' => [qw(dazzname t/1_4.anchor.fasta -o stdout)] );
 is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 8, 'line count' );
 like( $result->stdout, qr{anchr_read\/1}s, 'default prefix' );
