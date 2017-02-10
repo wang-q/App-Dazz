@@ -9,6 +9,7 @@ use Carp qw();
 use File::ShareDir qw();
 use IPC::Cmd qw();
 use Path::Tiny qw();
+use Template;
 use YAML::Syck qw();
 
 use AlignDB::IntSpan;

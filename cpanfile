@@ -3,6 +3,7 @@ requires 'File::ShareDir',   '1.102';
 requires 'Graph',            '0.9704';
 requires 'Number::Format',   '1.75';
 requires 'Path::Tiny',       '0.076';
+requires 'Template',         '2.26';
 requires 'YAML::Syck',       '1.29';
 requires 'AlignDB::IntSpan', '1.1.0';
 requires 'AlignDB::Stopwatch';

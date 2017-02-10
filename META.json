@@ -52,6 +52,7 @@
             "Graph" : "0.9704",
             "Number::Format" : "1.75",
             "Path::Tiny" : "0.076",
+            "Template" : "2.26",
             "YAML::Syck" : "1.29",
             "perl" : "5.010001"
          }
