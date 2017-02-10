@@ -29,6 +29,11 @@ cover_db/
 MYMETA.*
 
 /App-Anchr-*
+
 # IDE
 .idea
 .komodotools
+
+*.gz
+*.fq
+*.fa
