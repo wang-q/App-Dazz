@@ -17,12 +17,13 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr dazzname [options] <infile or stdin>";
+    return "anchr dazzname [options] <infile>";
 }
 
 sub description {
     my $desc;
     $desc .= ucfirst(abstract) . ".\n";
+    $desc .= "\tinfile == stdin means reading from STDIN\n";
     return $desc;
 }
 
@@ -59,7 +60,7 @@ sub execute {
 
     my $replace_fn = "$opt->{outfile}.replace.tsv";
 
-    # Accept either a stream from 'stdin' or a standard file.
+    # A stream from 'stdin' or a standard file.
     my $in_fh;
     if ( lc $args->[0] eq "stdin" ) {
         $in_fh = *STDIN{IO};
@@ -70,7 +71,7 @@ sub execute {
 
     # A stream to 'stdout' or a standard file.
     my $out_fh;
-    if ( lc( $opt->{outfile} ) eq "stdout" ) {
+    if ( lc $opt->{outfile} eq "stdout" ) {
         $out_fh = *STDOUT{IO};
     }
     else {
