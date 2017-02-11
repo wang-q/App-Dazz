@@ -30,8 +30,10 @@ install:
   - brew install jdk parallel pigz
   - brew install homebrew/science/bbtools
   - brew install homebrew/science/bedtools
+  - brew install homebrew/science/fastqc
   - brew install homebrew/science/picard-tools
   - brew install homebrew/science/samtools
+  - brew install homebrew/science/seqtk
   - brew install homebrew/science/sickle
   - brew install wang-q/tap/faops
   - brew install wang-q/tap/jrunlist
