@@ -27,3 +27,6 @@ perl -I lib/ t/04-show2ovlp.t
 
 perl -I lib/ script/anchr trim t/R1.fq.gz t/R2.fq.gz -b NAMES | bash
 perl -I lib/ t/05-trim.t
+
+perl -I lib/ script/anchr superreads t/R1.fq.gz t/R2.fq.gz
+perl -I lib/ t/06-superreads.t
