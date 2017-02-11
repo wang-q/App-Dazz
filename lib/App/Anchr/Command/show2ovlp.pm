@@ -64,12 +64,22 @@ sub execute {
         $replace_of = App::Anchr::Common::get_replaces( $opt->{replace} );
     }
 
+    # A stream from 'stdin' or a standard file.
     my $in_fh;
     if ( lc $args->[1] eq 'stdin' ) {
         $in_fh = *STDIN{IO};
     }
     else {
         open $in_fh, "<", $args->[1];
+    }
+
+    # A stream to 'stdout' or a standard file.
+    my $out_fh;
+    if ( lc $opt->{outfile} eq "stdout" ) {
+        $out_fh = *STDOUT{IO};
+    }
+    else {
+        open $out_fh, ">", $opt->{outfile};
     }
 
     while ( my $line = <$in_fh> ) {
@@ -102,30 +112,31 @@ sub execute {
 
         my $ovlp_len = $f_E - $f_B;
 
-        printf "%s",   exists $replace_of->{$f_id} ? $replace_of->{$f_id} : $f_id;
-        printf "\t%s", exists $replace_of->{$g_id} ? $replace_of->{$g_id} : $g_id;
-        printf "\t%d\t%.3f", $ovlp_len, $identity;
-        printf "\t%d\t%d\t%d\t%d", 0, $f_B, $f_E, $len_of->{$f_id};
-        printf "\t%d\t%d\t%d\t%d", $g_ori, $g_B, $g_E, $len_of->{$g_id};
+        printf $out_fh "%s",   exists $replace_of->{$f_id} ? $replace_of->{$f_id} : $f_id;
+        printf $out_fh "\t%s", exists $replace_of->{$g_id} ? $replace_of->{$g_id} : $g_id;
+        printf $out_fh "\t%d\t%.3f", $ovlp_len, $identity;
+        printf $out_fh "\t%d\t%d\t%d\t%d", 0, $f_B, $f_E, $len_of->{$f_id};
+        printf $out_fh "\t%d\t%d\t%d\t%d", $g_ori, $g_B, $g_E, $len_of->{$g_id};
 
         # relations
         if (    ( $len_of->{$g_id} < $len_of->{$f_id} )
             and ( $g_B < 1 )
             and ( $len_of->{$g_id} - $g_E < 1 ) )
         {
-            printf "\tcontains\n";
+            printf $out_fh "\tcontains\n";
         }
         elsif ( ( $len_of->{$f_id} < $len_of->{$g_id} )
             and ( $f_B < 1 )
             and ( $len_of->{$f_id} - $f_E < 1 ) )
         {
-            printf "\tcontained\n";
+            printf $out_fh "\tcontained\n";
         }
         else {
-            printf "\toverlap\n";
+            printf $out_fh "\toverlap\n";
         }
     }
     close $in_fh;
+    close $out_fh;
 }
 
 1;
