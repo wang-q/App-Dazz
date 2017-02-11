@@ -44,6 +44,7 @@ install:
   - brew install wang-q/tap/dazz_db@20161112
   - brew install wang-q/tap/daligner@20170203
   - cpanm -nq --installdeps --with-develop .
+  - cpanm -nq . # install App::Anchr as some commands need `anchr` in $PATH
 
 before_script:
   - cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecov
