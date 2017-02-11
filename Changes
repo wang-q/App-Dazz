@@ -2,6 +2,12 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.0.8 2017-02-11T21:48:05Z
+    - `anchr overlap`
+    - Merge stat 3 and 4 in `sr_stat.sh`
+    - exec_cmd() in App::Anchr::Common
+    - Remove dependencies on ~/Scripts/sra
+
 0.0.7 2017-02-11T05:33:40Z
     - Keep original orders in `anchr dazzname`
     - Merge stat 1 and 2 in `sr_stat.sh`
