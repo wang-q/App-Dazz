@@ -61,4 +61,12 @@ sub get_replaces {
     return $replace_of;
 }
 
+sub exec_cmd {
+    my $cmd = shift;
+
+    print STDERR "CMD: ", $cmd, "\n";
+
+    system $cmd;
+}
+
 1;
