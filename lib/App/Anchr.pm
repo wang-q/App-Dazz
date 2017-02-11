@@ -21,12 +21,14 @@ App::Anchr - Assembler of N-free CHRomosomes
 
     Available commands:
 
-       commands: list the application's commands
-           help: display a command's help screen
+        commands: list the application's commands
+            help: display a command's help screen
 
-       dazzname: rename FASTA reads for dazz_db
-            dep: check or install dependances
-      show2ovlp: LAshow outputs to ovelaps
+        dazzname: rename FASTA reads for dazz_db
+             dep: check or install dependances
+       show2ovlp: LAshow outputs to ovelaps
+      superreads: Run MaSuRCA to create super-reads
+            trim: trim PE Illumina fastq files
 
 Run C<anchr help command-name> for usage information.
 
