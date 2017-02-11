@@ -34,7 +34,7 @@ Run C<anchr help command-name> for usage information.
 
 =head1 DESCRIPTION
 
-App::Anchr is tend to be the (nearly) perfect assembler.
+App::Anchr is tend to be an Assembler of N-free CHRomosomes.
 
 =head1 INSTALLATION
 
