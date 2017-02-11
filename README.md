@@ -21,7 +21,14 @@ Run `anchr help command-name` for usage information.
 
 # DESCRIPTION
 
-App::Anchr is ...
+App::Anchr is tend to be the (nearly) perfect assembler.
+
+# INSTALLATION
+
+    cpanm --installdeps https://github.com/wang-q/App-Anchr/archive/0.0.5.tar.gz
+    curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/install_dep.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/check_dep.sh | bash
+    cpanm --verbose https://github.com/wang-q/App-Anchr/archive/0.0.5.tar.gz
 
 # AUTHOR
 
