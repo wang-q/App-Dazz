@@ -7,6 +7,6 @@ BEGIN {
     use_ok('App::Anchr::Common');
 }
 
-diag("Testing App::Anchr App::Anchr::VERSION");
+diag("Testing App::Anchr $App::Anchr::VERSION");
 
 done_testing;
