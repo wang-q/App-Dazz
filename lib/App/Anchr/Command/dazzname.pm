@@ -83,6 +83,7 @@ sub execute {
     my $i        = 0;
     my $ori_name = q{};
     my $data_of  = {};
+    my @names;    # original orders
 
     while ( my $line = <$in_fh> ) {
         chomp $line;
@@ -91,6 +92,7 @@ sub execute {
             if ( exists $data_of->{$ori_name} ) {
                 Carp::croak "Redundant sequence name: $ori_name\n";
             }
+            push @names, $ori_name;
             $data_of->{$ori_name}{'seen'} = 1;
         }
         elsif ( $line =~ / \A \s* [A-Za-z] /xms ) {
@@ -106,7 +108,7 @@ sub execute {
         $data_of->{$name}{'length'} = length( $data_of->{$name}{'sequence'} );
     }
 
-    for my $name ( keys %{$data_of} ) {
+    for my $name (@names) {
         $i++;
         my $serial_no = $i;
         $serial_no = sprintf( '%u', $serial_no );

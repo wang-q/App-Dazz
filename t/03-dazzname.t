@@ -24,5 +24,6 @@ like( $result->error, qr{Can't accept}, 'bad names' );
 $result = test_app( 'App::Anchr' => [qw(dazzname t/1_4.anchor.fasta -o stdout)] );
 is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 8, 'line count' );
 like( $result->stdout, qr{anchr_read\/1}s, 'default prefix' );
+like( $result->stdout, qr{1624.+1626.+6430.+9124}s, 'original orders' );
 
 done_testing();
