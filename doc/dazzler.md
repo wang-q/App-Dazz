@@ -9,7 +9,7 @@
 
 ### Rename sequences for dazzler
 
-Create two files, `renamed.fasta`, `stdin.replace.tsv`.
+Create two files, `renamed.fasta`, `stdout.replace.tsv`.
 
 ```bash
 mkdir -p ~/data/test/dazzler
@@ -35,6 +35,7 @@ DBdust myDB
 DBsplit -s50 myDB
 
 BLOCK_NUMBER=$(cat myDB.db | perl -nl -e '/^blocks\s+=\s+(\d+)/ and print $1')
+echo ${BLOCK_NUMBER}
 ```
 
 ## daligner
