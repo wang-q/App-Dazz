@@ -6,9 +6,7 @@ use App::Cmd::Setup -app;
 
 our $VERSION = "0.0.6";
 
-1;
-
-__END__
+=pod
 
 =encoding utf-8
 
@@ -55,3 +53,7 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =cut
+
+1;
+
+__END__
