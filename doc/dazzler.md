@@ -16,10 +16,8 @@ mkdir -p ~/data/test/dazzler
 cd ~/data/test/dazzler
 
 cat ~/data/dna-seq/dmel_iso_1/superreads/trimmed_5000000/work1/superReadSequences.fasta \
-    | perl ~/Scripts/sra/falcon_name_fasta.pl -i stdin
-cat stdin.outfile \
+    | anchr dazzname stdin -o stdout \
     | faops filter -l 0 stdin renamed.fasta
-rm stdin.outfile
 ```
 
 ### Create and split DB
