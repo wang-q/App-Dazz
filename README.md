@@ -10,25 +10,28 @@ App::Anchr - Assembler of N-free CHRomosomes
 
     Available commands:
 
-       commands: list the application's commands
-           help: display a command's help screen
+        commands: list the application's commands
+            help: display a command's help screen
 
-       dazzname: rename FASTA reads for dazz_db
-            dep: check or install dependances
-      show2ovlp: LAshow outputs to ovelaps
+        dazzname: rename FASTA reads for dazz_db
+             dep: check or install dependances
+       show2ovlp: LAshow outputs to ovelaps
+      superreads: Run MaSuRCA to create super-reads
+            trim: trim PE Illumina fastq files
 
 Run `anchr help command-name` for usage information.
 
 # DESCRIPTION
 
-App::Anchr is tend to be the (nearly) perfect assembler.
+App::Anchr is tend to be an Assembler of N-free CHRomosomes.
 
 # INSTALLATION
 
-    cpanm --installdeps https://github.com/wang-q/App-Anchr/archive/0.0.5.tar.gz
+    cpanm --installdeps https://github.com/wang-q/App-Anchr/archive/0.0.6.tar.gz
     curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/install_dep.sh | bash
     curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/check_dep.sh | bash
-    cpanm --verbose https://github.com/wang-q/App-Anchr/archive/0.0.5.tar.gz
+    cpanm --verbose https://github.com/wang-q/App-Anchr/archive/0.0.6.tar.gz
+    # cpanm --verbose https://github.com/wang-q/App-Anchr.git
 
 # AUTHOR
 
