@@ -2,6 +2,10 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.0.7 2017-02-11T05:33:40Z
+    - Keep original orders in `anchr dazzname`
+    - Merge stat 1 and 2 in `sr_stat.sh`
+
 0.0.6 2017-02-11T00:57:42Z
     - `anchr superreads`
 
