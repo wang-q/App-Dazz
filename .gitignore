@@ -30,6 +30,10 @@ MYMETA.*
 
 /App-Anchr-*
 
+!share/illumina_adapters.fa
+!t/R1.fq.gz
+!t/R2.fq.gz
+
 # IDE
 .idea
 .komodotools
