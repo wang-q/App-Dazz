@@ -2,6 +2,14 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.0.9 2017-02-14T20:59:08Z
+    - Install quorum and picard via Linuxbrew
+    - Move docs from sra
+    - Add quast in QA section
+    - `--noscythe` for trim
+    - Change quorum parameters
+    - Turn raw data stat to tables
+
 0.0.8 2017-02-11T21:48:05Z
     - `anchr overlap`
     - Merge stat 3 and 4 in `sr_stat.sh`
