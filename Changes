@@ -2,6 +2,10 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.0.10 2017-02-17T08:38:42Z
+    - Discard any reads with subs
+    - Use superReadSequences.fasta or k_unitigs.fasta
+
 0.0.9 2017-02-14T20:59:08Z
     - Install quorum and picard via Linuxbrew
     - Move docs from sra
