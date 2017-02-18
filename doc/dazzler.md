@@ -15,7 +15,7 @@ Create two files, `renamed.fasta`, `stdout.replace.tsv`.
 mkdir -p ~/data/test/dazzler
 cd ~/data/test/dazzler
 
-cat ~/data/dna-seq/dmel_iso_1/superreads/trimmed_5000000/work1/superReadSequences.fasta \
+cat ~/data/anchr/n2/Q20L80_25000000/k_unitigs.fasta \
     | anchr dazzname stdin -o stdout \
     | faops filter -l 0 stdin renamed.fasta
 ```
@@ -27,7 +27,7 @@ cat ~/data/dna-seq/dmel_iso_1/superreads/trimmed_5000000/work1/superReadSequence
 ```bash
 cd ~/data/test/dazzler
 
-log_info "Make the dazzler DB"
+echo "Make the dazzler DB"
 DBrm myDB
 fasta2DB myDB renamed.fasta
 DBdust myDB
@@ -58,10 +58,10 @@ Three .las (`myDB.[1-3].las`) files are generated then concatenated to `myDB.las
 ```bash
 cd ~/data/test/dazzler
 
-if [ -e myDB.*.las ]; then
-    rm myDB.*.las
+if [[ -e myDB.las || -e myDB.1.las ]]; then
+    rm myDB*.las
 fi
-HPC.daligner myDB -v -M16 -e.96 -l500 -s500 -mdust > job.sh
+HPC.daligner -v -M16 -e.96 -l500 -s500 -mdust myDB > job.sh
 bash job.sh
 
 LAcat -v myDB.#.las > myDB.las
@@ -102,3 +102,60 @@ LAshow -o myDB.db myDB.las
 LAshow -co myDB.db myDB.las
 ```
 
+## Between two files
+
+`daligner` *不能* 对两个数据库之间做 overlap 比较. 现在的策略是将两个 fasta 文件放到一个数据库里, 再将数据库 split
+成多个子库, 将包含有第一个序列的子库对其它子库做比较. 还是可以减少很多计算量的.
+
+Only between other than all-vs-all to reduce computational tasks.
+
+```bash
+mkdir -p ~/data/test/dazzler2
+cd ~/data/test/dazzler2
+
+cat ~/data/anchr/e_coli/Q20L150_1600000/anchor/pe.anchor.fa \
+    | anchr dazzname --prefix first stdin -o stdout \
+    | faops filter -l 0 stdin first.fasta
+mv stdout.replace.tsv first.replace.tsv
+
+head -n 20000 ~/data/anchr/e_coli/3_pacbio/pacbio.fasta \
+    | anchr dazzname --prefix second stdin -o stdout \
+    | faops filter -l 0 -a 1000 stdin second.fasta
+mv stdout.replace.tsv second.replace.tsv
+
+echo "Make the dazzler DB"
+DBrm myDB
+fasta2DB myDB first.fasta
+fasta2DB myDB second.fasta
+DBdust myDB
+DBsplit -s20 myDB
+
+BLOCK_NUMBER=$(cat myDB.db | perl -nl -e '/^blocks\s+=\s+(\d+)/ and print $1')
+echo ${BLOCK_NUMBER}
+
+if [[ -e myDB.las || -e myDB.1.las ]]; then
+    rm myDB*.las
+fi
+
+seq 1 1 ${BLOCK_NUMBER} \
+    | parallel --no-run-if-empty --keep-order -j 4 '
+        daligner -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.{};
+        LAcheck -vS myDB myDB.1.myDB.{};
+        LAcheck -vS myDB myDB.{}.myDB.1;
+    '
+
+LAmerge -v myDB.1 myDB.1.myDB.1 myDB.1.myDB.2 myDB.1.myDB.3 myDB.1.myDB.4 myDB.1.myDB.5
+LAcheck -vS myDB myDB.1
+
+LAmerge -v myDB.2 myDB.2.myDB.1 myDB.3.myDB.1 myDB.4.myDB.1 myDB.5.myDB.1
+LAcheck -vS myDB myDB.2
+
+rm myDB.*.myDB.*.las
+
+LAcat -v myDB.#.las > myDB.las
+LAcheck -vS myDB myDB
+rm myDB.*.las
+
+LAshow -o myDB.db myDB.las
+
+```
