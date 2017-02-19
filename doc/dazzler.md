@@ -38,6 +38,20 @@ BLOCK_NUMBER=$(cat myDB.db | perl -nl -e '/^blocks\s+=\s+(\d+)/ and print $1')
 echo ${BLOCK_NUMBER}
 ```
 
+### Retrieve some records from DB
+
+* If the `-n` option is set then the DNA sequence is **not** displayed
+
+```bash
+cd ~/data/test/dazzler
+
+# headers
+DBshow -n myDB 1-10 102 100-101
+
+# sequences from the original file
+faops some -l 0 renamed.fasta <(DBshow -n myDB 1-10 102 100-101 | sed 's/^>//') stdout
+```
+
 ## daligner
 
 `HPC.daligner`
