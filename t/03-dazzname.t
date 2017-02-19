@@ -26,4 +26,8 @@ is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 8, 'line count' );
 like( $result->stdout, qr{anchr_read\/1}s, 'default prefix' );
 like( $result->stdout, qr{1624.+1626.+6430.+9124}s, 'original orders' );
 
+$result = test_app( 'App::Anchr' => [qw(dazzname --start 10 t/1_4.anchor.fasta -o stdout)] );
+unlike( $result->stdout, qr{anchr_read\/1\/}s, 'not start from 1' );
+like( $result->stdout, qr{anchr_read\/10\/}s, 'start from 10' );
+
 done_testing();

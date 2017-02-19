@@ -12,6 +12,7 @@ sub opt_spec {
     return (
         [ "outfile|o=s", "output filename, [stdout] for screen" ],
         [ "prefix=s", "prefix of names", { default => "anchr_read" }, ],
+        [ "start=i",  "start index",     { default => 1 }, ],
         { show_defaults => 1, }
     );
 }
@@ -80,7 +81,6 @@ sub execute {
 
     open my $replace_fh, '>', $replace_fn;
 
-    my $i        = 0;
     my $ori_name = q{};
     my $data_of  = {};
     my @names;    # original orders
@@ -108,8 +108,8 @@ sub execute {
         $data_of->{$name}{'length'} = length( $data_of->{$name}{'sequence'} );
     }
 
+    my $i = $opt->{start};
     for my $name (@names) {
-        $i++;
         my $serial_no = $i;
         $serial_no = sprintf( '%u', $serial_no );
 
@@ -120,6 +120,7 @@ sub execute {
         print {$out_fh} "$data_of->{$name}{'sequence'}\n";
 
         print {$replace_fh} "$new_name\t$name\n";
+        $i++;
     }
 
     close $replace_fh;
