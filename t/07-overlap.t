@@ -17,7 +17,7 @@ like( $result->error, qr{need .+input file}, 'need infile' );
 $result = test_app( 'App::Anchr' => [qw(overlap t/1_4.pac.fasta t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
-$result = test_app( 'App::Anchr' => [qw(overlap t/1_4.pac.fasta -o stdout)] );
+$result = test_app( 'App::Anchr' => [qw(overlap t/1_4.pac.fasta -v -o stdout)] );
 is( ( scalar grep {/^CMD/} grep {/\S/} split( /\n/, $result->stderr ) ), 5, 'stderr line count' );
 is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 14, 'line count' );
 like( $result->stdout, qr{overlap}s, 'overlaps' );

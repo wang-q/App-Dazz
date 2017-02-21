@@ -16,6 +16,7 @@ sub opt_spec {
         [ "serial", "serials instead of original names in the output file", ],
         [ "all",    "all overlaps instead of proper overlaps", ],
         [ "parallel|p=i", "number of threads", { default => 8 }, ],
+        [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
     );
 }
@@ -74,7 +75,7 @@ sub execute {
         $cmd .= sprintf " %s", $_ for @infiles;
         $cmd .= " | anchr dazzname stdin -o stdout";
         $cmd .= " | faops filter -l 0 stdin renamed.fasta";
-        App::Anchr::Common::exec_cmd($cmd);
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("renamed.fasta")->is_file ) {
             Carp::croak "Failed: create renamed.fasta\n";
@@ -90,7 +91,7 @@ sub execute {
         $cmd .= "fasta2DB myDB renamed.fasta";
         $cmd .= " && DBdust myDB";
         $cmd .= " && DBsplit -s50 myDB";
-        App::Anchr::Common::exec_cmd($cmd);
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("myDB.db")->is_file ) {
             Carp::croak "Failed: fasta2DB\n";
@@ -108,11 +109,11 @@ sub execute {
 
         my $cmd
             = "HPC.daligner myDB -M16 -T$opt->{parallel} -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust | bash";
-        App::Anchr::Common::exec_cmd($cmd);
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( $block_number > 1 ) {
             $cmd = "LAcat myDB.#.las > myDB.las";
-            App::Anchr::Common::exec_cmd($cmd);
+            App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
         }
 
         if ( !$tempdir->child("myDB.las")->is_file ) {
@@ -125,7 +126,7 @@ sub execute {
         if ( $opt->{all} ) {
             $cmd = "LAshow myDB.db myDB.las > show.txt";
         }
-        App::Anchr::Common::exec_cmd($cmd);
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("show.txt")->is_file ) {
             Carp::croak "Failed: LAshow\n";
@@ -136,7 +137,7 @@ sub execute {
             $cmd .= " -r stdout.replace.tsv";
         }
         $cmd .= " -o $opt->{outfile}";
-        App::Anchr::Common::exec_cmd($cmd);
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
     chdir $cwd;
