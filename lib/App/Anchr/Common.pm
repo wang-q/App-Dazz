@@ -63,8 +63,11 @@ sub get_replaces {
 
 sub exec_cmd {
     my $cmd = shift;
+    my $opt = shift;
 
-    print STDERR "CMD: ", $cmd, "\n";
+    if ( defined $opt and ref $opt eq "HASH" and $opt->{verbose} ) {
+        print STDERR "CMD: ", $cmd, "\n";
+    }
 
     system $cmd;
 }
