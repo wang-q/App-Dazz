@@ -2,6 +2,13 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.0.11 2017-02-21T08:54:07Z
+    - `anchr overlap2`: calling `daligner` to detect overlaps between two files
+    - Document paralogs
+    - Switch to k-unitigs
+    - Add --start for dazzname
+    - Use `faops replace` to rename headers in FA files
+
 0.0.10 2017-02-17T08:38:42Z
     - Discard any reads with subs
     - Use superReadSequences.fasta or k_unitigs.fasta
