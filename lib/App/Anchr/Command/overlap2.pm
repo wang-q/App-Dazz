@@ -13,10 +13,10 @@ sub opt_spec {
         [ "dir|d=s",      "working directory",            { default => "." }, ],
         [ "p1=s",         "prefix of first file",         { default => "anchor" }, ],
         [ "p2=s",         "prefix of second file",        { default => "long" }, ],
-        [ "pd=s",         "prefix of dazz DB", ],
+        [ "pd=s",         "prefix of result files", ],
         [ "block|b=i",    "block size in Mbp",            { default => 20 }, ],
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
-        [ "idt|i=f",      "minimal identity of overlaps", { default => 0.85 }, ],
+        [ "idt|i=f",      "minimal identity of overlaps", { default => 0.8 }, ],
         [ "parallel|p=i", "number of threads",            { default => 8 }, ],
         { show_defaults => 1, }
     );
@@ -56,7 +56,7 @@ sub validate_args {
     }
 
     if ( !exists $opt->{pd} ) {
-        $opt->{pd} = $opt->{p1} . ucfirst( $opt->{p2} ) . "DB";
+        $opt->{pd} = $opt->{p1} . ucfirst( $opt->{p2} );
     }
 }
 
@@ -65,6 +65,7 @@ sub execute {
 
     #@type Path::Tiny
     my $out_dir = Path::Tiny::path( $opt->{dir} );
+    $out_dir->mkpath();
 
     # absolute paths before we chdir to $out_dir
     my $file1 = Path::Tiny::path( $args->[0] )->absolute->stringify;
@@ -76,7 +77,7 @@ sub execute {
     {    # Preprocess first file for dazzler
         my $cmd;
         $cmd .= "anchr dazzname --prefix $opt->{p1} $file1 -o stdout";
-        $cmd .= " | faops filter -l 0 stdin $opt->{p1}.fasta";
+        $cmd .= " | faops filter -l 0 -a $opt->{len} stdin $opt->{p1}.fasta";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
 
         if ( !$out_dir->child("$opt->{p1}.fasta")->is_file ) {
@@ -91,10 +92,14 @@ sub execute {
         }
     }
 
+    chomp( my $first_sum   = `faops n50 -H -N 0 -S $opt->{p1}.fasta` );
+    chomp( my $first_count = `faops n50 -H -N 0 -C $opt->{p1}.fasta` );
+
     {    # Preprocess second file for dazzler
+        my $second_start = $first_count + 1;
         my $cmd;
-        $cmd .= "anchr dazzname --prefix $opt->{p2} $file2 -o stdout";
-        $cmd .= " | faops filter -l 0 stdin $opt->{p2}.fasta";
+        $cmd .= "anchr dazzname --prefix $opt->{p2} --start $second_start $file2 -o stdout";
+        $cmd .= " | faops filter -l 0 -a $opt->{len} stdin $opt->{p2}.fasta";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
 
         if ( !$out_dir->child("$opt->{p2}.fasta")->is_file ) {
@@ -113,7 +118,7 @@ sub execute {
         if (   $out_dir->child( $opt->{pd} . ".db" )->is_file
             or $out_dir->child( "." . $opt->{pd} . ".bps" )->is_file )
         {
-            App::Anchr::Common::exec_cmd("DBrm $opt->{pd}");
+            App::Anchr::Common::exec_cmd( "DBrm $opt->{pd}", { verbose => 1, } );
         }
 
         my $cmd;
@@ -137,10 +142,7 @@ sub execute {
             }
         }
 
-        chomp( my $first_sum   = `faops n50 -H -N 0 -S $opt->{p1}.fasta` );
-        chomp( my $first_count = `faops n50 -H -N 0 -C $opt->{p1}.fasta` );
-
-        my $first_idx = $first_sum / 1_000_000 / $opt->{block} + 1;
+        my $first_idx = int( $first_sum / 1_000_000 / $opt->{block} + 1 );
 
         print STDERR YAML::Syck::Dump {
             first_sum    => $first_sum,
@@ -150,38 +152,67 @@ sub execute {
             block_size   => $opt->{block},
         };
 
-#        my $cmd
-#            = "HPC.daligner myDB -M16 -T$opt->{parallel} -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust | bash";
-#        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
-#
-#        if ( $block_number > 1 ) {
-#            $cmd = "LAcat myDB.#.las > myDB.las";
-#            App::Anchr::Common::exec_cmd($cmd);
-#        }
-#
-#        if ( !$out_dir->child("myDB.las")->is_file ) {
-#            Carp::croak "Failed: daligner\n";
-#        }
+        if (   $out_dir->child( $opt->{pd} . ".las" )->is_file
+            or $out_dir->child( $opt->{pd} . ".1.las" )->is_file )
+        {
+            App::Anchr::Common::exec_cmd( "rm $opt->{pd}*.las", { verbose => 1, } );
+        }
+
+        # Don't use HPC.daligner as we want to avoid all-vs-all comparisions.
+        for my $i ( 1 .. $first_idx ) {
+            for my $j ( 1 .. $block_number ) {
+                my $cmd;
+                $cmd .= "daligner  -M16 -T$opt->{parallel}";
+                $cmd .= " -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust";
+                $cmd .= " $opt->{pd}.$i $opt->{pd}.$j";
+                $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$i.$opt->{pd}.$j";
+                $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$j.$opt->{pd}.$i";
+
+                App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+            }
+        }
+
+        for my $i ( 1 .. $first_idx ) {
+            my $cmd;
+            $cmd .= "LAmerge -v $opt->{pd}.$i";
+
+            for my $j ( 1 .. $block_number ) {
+                $cmd .= " $opt->{pd}.$i.$opt->{pd}.$j";
+            }
+
+            $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$i";
+
+            App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+        }
+
+        App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.$opt->{pd}.*.las", { verbose => 1, } );
+
+        {
+            my $cmd;
+            $cmd .= "LAcat -v $opt->{pd}.#.las > $opt->{pd}.las";
+            App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+
+            App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.las", { verbose => 1, } );
+        }
+
+        if ( !$out_dir->child("$opt->{pd}.las")->is_file ) {
+            Carp::croak "Failed: daligner\n";
+        }
     }
 
-    #    {    # outputs
-    #        my $cmd = "LAshow -o myDB.db myDB.las > show.txt";
-    #        if ( $opt->{all} ) {
-    #            $cmd = "LAshow myDB.db myDB.las > show.txt";
-    #        }
-    #        App::Anchr::Common::exec_cmd($cmd);
-    #
-    #        if ( !$out_dir->child("show.txt")->is_file ) {
-    #            Carp::croak "Failed: LAshow\n";
-    #        }
-    #
-    #        $cmd = "anchr show2ovlp renamed.fasta show.txt";
-    #        if ( !$opt->{serial} ) {
-    #            $cmd .= " -r stdout.replace.tsv";
-    #        }
-    #        $cmd .= " -o $opt->{outfile}";
-    #        App::Anchr::Common::exec_cmd($cmd);
-    #    }
+    {    # outputs
+        my $cmd = "LAshow -o $opt->{pd}.db $opt->{pd}.las > $opt->{pd}.show.txt";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+
+        if ( !$out_dir->child("$opt->{pd}.show.txt")->is_file ) {
+            Carp::croak "Failed: LAshow\n";
+        }
+
+        $cmd = "cat $opt->{p1}.fasta $opt->{p2}.fasta ";
+        $cmd .= " | anchr show2ovlp stdin $opt->{pd}.show.txt";
+        $cmd .= " -o $opt->{pd}.ovlp.tsv";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+    }
 
 }
 
