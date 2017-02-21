@@ -1,0 +1,188 @@
+package App::Anchr::Command::overlap2;
+use strict;
+use warnings;
+use autodie;
+
+use App::Anchr -command;
+use App::Anchr::Common;
+
+use constant abstract => "detect overlaps between two (large) files by daligner";
+
+sub opt_spec {
+    return (
+        [ "dir|d=s",      "working directory",            { default => "." }, ],
+        [ "p1=s",         "prefix of first file",         { default => "anchor" }, ],
+        [ "p2=s",         "prefix of second file",        { default => "long" }, ],
+        [ "pd=s",         "prefix of dazz DB", ],
+        [ "block|b=i",    "block size in Mbp",            { default => 20 }, ],
+        [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
+        [ "idt|i=f",      "minimal identity of overlaps", { default => 0.85 }, ],
+        [ "parallel|p=i", "number of threads",            { default => 8 }, ],
+        { show_defaults => 1, }
+    );
+}
+
+sub usage_desc {
+    return "anchr overlap2 [options] <infile1> <infile2>";
+}
+
+sub description {
+    my $desc;
+    $desc .= ucfirst(abstract) . ".\n";
+    $desc .= "\tAll intermediate files (.fasta, .replace.tsv, .db, .las, .show.txt, .ovlp.tsv)";
+    $desc .= " are keept in the working directory.\n";
+    return $desc;
+}
+
+sub validate_args {
+    my ( $self, $opt, $args ) = @_;
+
+    if ( @{$args} != 2 ) {
+        my $message = "This command need two input files.\n\tIt found";
+        $message .= sprintf " [%s]", $_ for @{$args};
+        $message .= ".\n";
+        $self->usage_error($message);
+    }
+    for ( @{$args} ) {
+        if ( !Path::Tiny::path($_)->is_file ) {
+            $self->usage_error("The input file [$_] doesn't exist.");
+        }
+    }
+
+    $opt->{dir} = Path::Tiny::path( $opt->{dir} )->absolute()->stringify;
+
+    if ( $opt->{p1} eq $opt->{p2} ) {
+        $self->usage_error("Two prefixes shouldn't be same.");
+    }
+
+    if ( !exists $opt->{pd} ) {
+        $opt->{pd} = $opt->{p1} . ucfirst( $opt->{p2} ) . "DB";
+    }
+}
+
+sub execute {
+    my ( $self, $opt, $args ) = @_;
+
+    #@type Path::Tiny
+    my $out_dir = Path::Tiny::path( $opt->{dir} );
+
+    # absolute paths before we chdir to $out_dir
+    my $file1 = Path::Tiny::path( $args->[0] )->absolute->stringify;
+    my $file2 = Path::Tiny::path( $args->[1] )->absolute->stringify;
+
+    # enter out dir
+    chdir $out_dir;
+
+    {    # Preprocess first file for dazzler
+        my $cmd;
+        $cmd .= "anchr dazzname --prefix $opt->{p1} $file1 -o stdout";
+        $cmd .= " | faops filter -l 0 stdin $opt->{p1}.fasta";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+
+        if ( !$out_dir->child("$opt->{p1}.fasta")->is_file ) {
+            Carp::croak "Failed: create $opt->{p1}.fasta\n";
+        }
+
+        if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
+            Carp::croak "Failed: create $opt->{p1}.replace.tsv\n";
+        }
+        else {
+            $out_dir->child("stdout.replace.tsv")->move("$opt->{p1}.replace.tsv");
+        }
+    }
+
+    {    # Preprocess second file for dazzler
+        my $cmd;
+        $cmd .= "anchr dazzname --prefix $opt->{p2} $file2 -o stdout";
+        $cmd .= " | faops filter -l 0 stdin $opt->{p2}.fasta";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+
+        if ( !$out_dir->child("$opt->{p2}.fasta")->is_file ) {
+            Carp::croak "Failed: create $opt->{p2}.fasta\n";
+        }
+
+        if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
+            Carp::croak "Failed: create $opt->{p2}.replace.tsv\n";
+        }
+        else {
+            $out_dir->child("stdout.replace.tsv")->move("$opt->{p2}.replace.tsv");
+        }
+    }
+
+    {    # Make the dazzler DB
+        if (   $out_dir->child( $opt->{pd} . ".db" )->is_file
+            or $out_dir->child( "." . $opt->{pd} . ".bps" )->is_file )
+        {
+            App::Anchr::Common::exec_cmd("DBrm $opt->{pd}");
+        }
+
+        my $cmd;
+        $cmd .= "fasta2DB $opt->{pd} $opt->{p1}.fasta";
+        $cmd .= " && fasta2DB $opt->{pd} $opt->{p2}.fasta";
+        $cmd .= " && DBdust $opt->{pd}";
+        $cmd .= " && DBsplit -s$opt->{block} $opt->{pd}";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+
+        if ( !$out_dir->child("$opt->{pd}.db")->is_file ) {
+            Carp::croak "Failed: fasta2DB\n";
+        }
+    }
+
+    {    # Run daligner
+        my $block_number;
+        for my $line ( $out_dir->child("$opt->{pd}.db")->lines ) {
+            if ( $line =~ /^blocks\s+=\s+(\d+)/ ) {
+                $block_number = $1;
+                last;
+            }
+        }
+
+        chomp( my $first_sum   = `faops n50 -H -N 0 -S $opt->{p1}.fasta` );
+        chomp( my $first_count = `faops n50 -H -N 0 -C $opt->{p1}.fasta` );
+
+        my $first_idx = $first_sum / 1_000_000 / $opt->{block} + 1;
+
+        print STDERR YAML::Syck::Dump {
+            first_sum    => $first_sum,
+            first_count  => $first_count,
+            first_idx    => $first_idx,
+            block_number => $block_number,
+            block_size   => $opt->{block},
+        };
+
+#        my $cmd
+#            = "HPC.daligner myDB -M16 -T$opt->{parallel} -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust | bash";
+#        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+#
+#        if ( $block_number > 1 ) {
+#            $cmd = "LAcat myDB.#.las > myDB.las";
+#            App::Anchr::Common::exec_cmd($cmd);
+#        }
+#
+#        if ( !$out_dir->child("myDB.las")->is_file ) {
+#            Carp::croak "Failed: daligner\n";
+#        }
+    }
+
+    #    {    # outputs
+    #        my $cmd = "LAshow -o myDB.db myDB.las > show.txt";
+    #        if ( $opt->{all} ) {
+    #            $cmd = "LAshow myDB.db myDB.las > show.txt";
+    #        }
+    #        App::Anchr::Common::exec_cmd($cmd);
+    #
+    #        if ( !$out_dir->child("show.txt")->is_file ) {
+    #            Carp::croak "Failed: LAshow\n";
+    #        }
+    #
+    #        $cmd = "anchr show2ovlp renamed.fasta show.txt";
+    #        if ( !$opt->{serial} ) {
+    #            $cmd .= " -r stdout.replace.tsv";
+    #        }
+    #        $cmd .= " -o $opt->{outfile}";
+    #        App::Anchr::Common::exec_cmd($cmd);
+    #    }
+
+}
+
+1;
