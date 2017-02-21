@@ -27,6 +27,7 @@ sub usage_desc {
 sub description {
     my $desc;
     $desc .= ucfirst(abstract) . ".\n";
+    $desc .= "\tNo intermediate files are kept.\n";
     return $desc;
 }
 
