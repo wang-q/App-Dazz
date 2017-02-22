@@ -28,7 +28,8 @@ sub usage_desc {
 sub description {
     my $desc;
     $desc .= ucfirst(abstract) . ".\n";
-    $desc .= "\tNo intermediate files are kept.\n";
+    $desc .= "\tThis command is for small files.\n ";
+    $desc .= "\tAll operations are running in a tempdir and no intermediate files are kept.\n";
     return $desc;
 }
 
@@ -67,8 +68,11 @@ sub execute {
 
     # record cwd, we'll return there
     my $cwd     = Path::Tiny->cwd;
-    my $tempdir = Path::Tiny->tempdir("ovlp.XXXXXXXX");
+    my $tempdir = Path::Tiny->tempdir("ovlpXXXXXXXX");
     chdir $tempdir;
+
+    my $basename = $tempdir->basename();
+    $basename =~ s/\W+/_/g;
 
     {    # Preprocess reads to format them for dazzler
         my $cmd = "cat";
@@ -88,19 +92,19 @@ sub execute {
 
     {    # Make the dazzler DB, each block is of size 50 MB
         my $cmd;
-        $cmd .= "fasta2DB myDB renamed.fasta";
-        $cmd .= " && DBdust myDB";
+        $cmd .= "fasta2DB $basename renamed.fasta";
+        $cmd .= " && DBdust $basename";
         $cmd .= " && DBsplit -s50 myDB";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
-        if ( !$tempdir->child("myDB.db")->is_file ) {
+        if ( !$tempdir->child("$basename.db")->is_file ) {
             Carp::croak "Failed: fasta2DB\n";
         }
     }
 
     {    # Run daligner
         my $block_number;
-        for my $line ( $tempdir->child("myDB.db")->lines ) {
+        for my $line ( $tempdir->child("$basename.db")->lines ) {
             if ( $line =~ /^blocks\s+=\s+(\d+)/ ) {
                 $block_number = $1;
                 last;
@@ -108,23 +112,23 @@ sub execute {
         }
 
         my $cmd
-            = "HPC.daligner myDB -M16 -T$opt->{parallel} -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust | bash";
+            = "HPC.daligner $basename -M16 -T$opt->{parallel} -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust | bash";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
-        if ( $block_number > 1 ) {
-            $cmd = "LAcat myDB.#.las > myDB.las";
+        if ( defined $block_number and $block_number > 1 ) {
+            $cmd = "LAcat $basename.#.las > $basename.las";
             App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
         }
 
-        if ( !$tempdir->child("myDB.las")->is_file ) {
+        if ( !$tempdir->child("$basename.las")->is_file ) {
             Carp::croak "Failed: daligner\n";
         }
     }
 
     {    # outputs
-        my $cmd = "LAshow -o myDB.db myDB.las > show.txt";
+        my $cmd = "LAshow -o $basename.db $basename.las > show.txt";
         if ( $opt->{all} ) {
-            $cmd = "LAshow myDB.db myDB.las > show.txt";
+            $cmd = "LAshow $basename.db $basename.las > show.txt";
         }
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
