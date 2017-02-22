@@ -81,10 +81,6 @@ sub execute {
         $cmd .= " | faops filter -l 0 stdin renamed.fasta";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
-        if ( !$tempdir->child("renamed.fasta")->is_file ) {
-            Carp::croak "Failed: create renamed.fasta\n";
-        }
-
         if ( !$tempdir->child("stdout.replace.tsv")->is_file ) {
             Carp::croak "Failed: create stdout.replace.tsv\n";
         }

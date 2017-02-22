@@ -80,10 +80,6 @@ sub execute {
         $cmd .= " | faops filter -l 0 -a $opt->{len} stdin $opt->{p1}.fasta";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
 
-        if ( !$out_dir->child("$opt->{p1}.fasta")->is_file ) {
-            Carp::croak "Failed: create $opt->{p1}.fasta\n";
-        }
-
         if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
             Carp::croak "Failed: create $opt->{p1}.replace.tsv\n";
         }
@@ -101,10 +97,6 @@ sub execute {
         $cmd .= "anchr dazzname --prefix $opt->{p2} --start $second_start $file2 -o stdout";
         $cmd .= " | faops filter -l 0 -a $opt->{len} stdin $opt->{p2}.fasta";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
-
-        if ( !$out_dir->child("$opt->{p2}.fasta")->is_file ) {
-            Carp::croak "Failed: create $opt->{p2}.fasta\n";
-        }
 
         if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
             Carp::croak "Failed: create $opt->{p2}.replace.tsv\n";
