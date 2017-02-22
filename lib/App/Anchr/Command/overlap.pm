@@ -94,7 +94,7 @@ sub execute {
         my $cmd;
         $cmd .= "fasta2DB $basename renamed.fasta";
         $cmd .= " && DBdust $basename";
-        $cmd .= " && DBsplit -s50 myDB";
+        $cmd .= " && DBsplit -s50 $basename";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("$basename.db")->is_file ) {
