@@ -2,6 +2,10 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.0.13 2017-02-23T11:58:39Z
+    - `anchr cover`
+    - Find tempdir easier
+
 0.0.12 2017-02-22T17:56:27Z
     - `anchr orient`
     - Use tempdir as basename of dazz db
