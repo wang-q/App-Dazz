@@ -18,6 +18,7 @@ sub opt_spec {
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.8 }, ],
         [ "parallel|p=i", "number of threads",            { default => 8 }, ],
+        [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
     );
 }
@@ -78,7 +79,7 @@ sub execute {
         my $cmd;
         $cmd .= "anchr dazzname --prefix $opt->{p1} $file1 -o stdout";
         $cmd .= " | faops filter -l 0 -a $opt->{len} stdin $opt->{p1}.fasta";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
             Carp::croak "Failed: create $opt->{p1}.replace.tsv\n";
@@ -96,7 +97,7 @@ sub execute {
         my $cmd;
         $cmd .= "anchr dazzname --prefix $opt->{p2} --start $second_start $file2 -o stdout";
         $cmd .= " | faops filter -l 0 -a $opt->{len} stdin $opt->{p2}.fasta";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
             Carp::croak "Failed: create $opt->{p2}.replace.tsv\n";
@@ -110,7 +111,7 @@ sub execute {
         if (   $out_dir->child( $opt->{pd} . ".db" )->is_file
             or $out_dir->child( "." . $opt->{pd} . ".bps" )->is_file )
         {
-            App::Anchr::Common::exec_cmd( "DBrm $opt->{pd}", { verbose => 1, } );
+            App::Anchr::Common::exec_cmd( "DBrm $opt->{pd}", { verbose => $opt->{verbose}, } );
         }
 
         my $cmd;
@@ -118,7 +119,7 @@ sub execute {
         $cmd .= " && fasta2DB $opt->{pd} $opt->{p2}.fasta";
         $cmd .= " && DBdust $opt->{pd}";
         $cmd .= " && DBsplit -s$opt->{block} $opt->{pd}";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("$opt->{pd}.db")->is_file ) {
             Carp::croak "Failed: fasta2DB\n";
@@ -160,7 +161,7 @@ sub execute {
                 $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$i.$opt->{pd}.$j";
                 $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$j.$opt->{pd}.$i";
 
-                App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+                App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
             }
         }
 
@@ -174,17 +175,18 @@ sub execute {
 
             $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$i";
 
-            App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+            App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
         }
 
-        App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.$opt->{pd}.*.las", { verbose => 1, } );
+        App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.$opt->{pd}.*.las",
+            { verbose => $opt->{verbose}, } );
 
         {
             my $cmd;
             $cmd .= "LAcat -v $opt->{pd}.#.las > $opt->{pd}.las";
             App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
 
-            App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.las", { verbose => 1, } );
+            App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.las", { verbose => $opt->{verbose}, } );
         }
 
         if ( !$out_dir->child("$opt->{pd}.las")->is_file ) {
@@ -194,7 +196,7 @@ sub execute {
 
     {    # outputs
         my $cmd = "LAshow -o $opt->{pd}.db $opt->{pd}.las > $opt->{pd}.show.txt";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("$opt->{pd}.show.txt")->is_file ) {
             Carp::croak "Failed: LAshow\n";
@@ -203,7 +205,7 @@ sub execute {
         $cmd = "cat $opt->{p1}.fasta $opt->{p2}.fasta ";
         $cmd .= " | anchr show2ovlp stdin $opt->{pd}.show.txt";
         $cmd .= " -o $opt->{pd}.ovlp.tsv";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
 }
