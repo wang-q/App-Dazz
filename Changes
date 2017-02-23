@@ -1,6 +1,8 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+
+0.0.13 2017-02-23T15:49:51Z
     - `anchr cover`
     - Find tempdir easier
 
