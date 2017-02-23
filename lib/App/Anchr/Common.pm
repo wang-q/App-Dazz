@@ -73,4 +73,40 @@ sub exec_cmd {
     system $cmd;
 }
 
+sub beg_end {
+    my $beg = shift;
+    my $end = shift;
+
+    if ( $beg > $end ) {
+        ( $beg, $end ) = ( $end, $beg );
+    }
+
+    if ( $beg == 0 ) {
+        $beg = 1;
+    }
+
+    return ( $beg, $end );
+}
+
+sub bump_coverage {
+    my $tier_of  = shift;
+    my $beg      = shift;
+    my $end      = shift;
+    my $coverage = shift || 2;
+
+    return if $tier_of->{$coverage}->equals( $tier_of->{all} );
+
+    ( $beg, $end ) = beg_end( $beg, $end );
+
+    my $new_set = AlignDB::IntSpan->new->add_pair( $beg, $end );
+    for my $i ( 1 .. $coverage ) {
+        my $i_set = $tier_of->{$i}->intersect($new_set);
+        $tier_of->{$i}->add($new_set);
+
+        my $j = $i + 1;
+        last if $j > $coverage;
+        $new_set = $i_set->copy;
+    }
+}
+
 1;
