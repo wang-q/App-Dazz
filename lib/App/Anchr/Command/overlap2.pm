@@ -149,7 +149,7 @@ sub execute {
         if (   $out_dir->child( $opt->{pd} . ".las" )->is_file
             or $out_dir->child( $opt->{pd} . ".1.las" )->is_file )
         {
-            App::Anchr::Common::exec_cmd( "rm $opt->{pd}*.las", { verbose => 1, } );
+            App::Anchr::Common::exec_cmd( "rm $opt->{pd}*.las", { verbose => $opt->{verbose}, } );
         }
 
         # Don't use HPC.daligner as we want to avoid all-vs-all comparisions.
@@ -168,7 +168,7 @@ sub execute {
 
         for my $i ( 1 .. $first_idx ) {
             my $cmd;
-            $cmd .= "LAmerge -v $opt->{pd}.$i";
+            $cmd .= "LAmerge $opt->{pd}.$i";
 
             for my $j ( 1 .. $block_number ) {
                 $cmd .= " $opt->{pd}.$i.$opt->{pd}.$j";
@@ -184,7 +184,7 @@ sub execute {
 
         {
             my $cmd;
-            $cmd .= "LAcat -v $opt->{pd}.#.las > $opt->{pd}.las";
+            $cmd .= "LAcat $opt->{pd}.#.las > $opt->{pd}.las";
             App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
             App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.las", { verbose => $opt->{verbose}, } );
