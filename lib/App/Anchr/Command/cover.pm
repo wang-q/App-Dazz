@@ -16,6 +16,7 @@ sub opt_spec {
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.8 }, ],
         [ "parallel|p=i", "number of threads",            { default => 8 }, ],
+        [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
     );
 }
@@ -58,9 +59,13 @@ sub execute {
     my $file1 = Path::Tiny::path( $args->[0] )->absolute->stringify;
     my $file2 = Path::Tiny::path( $args->[1] )->absolute->stringify;
 
+    if ( lc $opt->{outfile} ne "stdout" ) {
+        $opt->{outfile} = Path::Tiny::path( $opt->{outfile} )->absolute->stringify;
+    }
+
     # record cwd, we'll return there
     my $cwd     = Path::Tiny->cwd;
-    my $tempdir = Path::Tiny->tempdir("anchr_coverXXXXXXXX");
+    my $tempdir = Path::Tiny->tempdir("anchr_cover_XXXXXXXX");
     chdir $tempdir;
 
     my $basename = $tempdir->basename();
@@ -125,10 +130,8 @@ sub execute {
                 }
 
                 my ( $beg, $end, ) = App::Anchr::Common::beg_end( $f_B, $f_E, );
-
                 App::Anchr::Common::bump_coverage( $covered->{$f_id}, $beg, $end,
                     $opt->{coverage} );
-
             }
             elsif ( $first_range->contains($g_id) and !$first_range->contains($f_id) ) {
                 if ( !exists $covered->{$g_id} ) {
@@ -137,6 +140,7 @@ sub execute {
                         $covered->{$g_id}{$i} = AlignDB::IntSpan->new;
                     }
                 }
+
                 my ( $beg, $end, ) = App::Anchr::Common::beg_end( $g_B, $g_E, );
                 App::Anchr::Common::bump_coverage( $covered->{$g_id}, $beg, $end,
                     $opt->{coverage} );
@@ -144,33 +148,63 @@ sub execute {
         }
     }
 
-    #    print STDERR YAML::Syck::Dump $covered;
+    {    # Create covered.fasta
+        my $region_of      = {};
+        my $trusted        = AlignDB::IntSpan->new;
+        my $non_overlapped = $first_range->copy;
+        for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
+            $non_overlapped->remove($serial);
+            $region_of->{$serial} = $covered->{$serial}{ $opt->{coverage} }->runlist;
 
-    my $trusted        = AlignDB::IntSpan->new;
-    my $non_overlapped = $first_range->copy;
-    for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
-        $non_overlapped->remove($serial);
-        if ( $covered->{$serial}{ $opt->{coverage} }->equals( $covered->{$serial}{all} ) ) {
-            $trusted->add($serial);
+            if ( $covered->{$serial}{ $opt->{coverage} }->equals( $covered->{$serial}{all} ) ) {
+                $trusted->add($serial);
+            }
+        }
+        my $non_trusted = $first_range->diff($trusted)->diff($non_overlapped);
+
+        YAML::Syck::DumpFile(
+            "covered.yml",
+            {   "Total"          => $first_count,
+                "Trusted"        => $trusted->runlist,
+                "Non-trusted"    => $non_trusted->runlist,
+                "Non-overlapped" => $non_overlapped->runlist,
+                "region_of"      => $region_of,
+            }
+        );
+
+        $tempdir->child("covered.fasta")->remove;
+        for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
+
+            #@type AlignDB::IntSpan
+            my $region = $covered->{$serial}{ $opt->{coverage} };
+
+            for my $set ( $region->sets ) {
+                next if $set->size < $opt->{len};
+
+                my $cmd;
+                $cmd .= "DBshow -U $basename $serial";
+                $cmd .= " | faops replace -l 0 stdin first.replace.tsv stdout";
+                $cmd .= " | faops frag -l 0 stdin @{[$set->min]} @{[$set->max]} stdout";
+                $cmd .= " >> covered.fasta";
+                App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+            }
+        }
+
+        if ( !$tempdir->child("covered.fasta")->is_file ) {
+            Carp::croak "Failed: create covered.fasta\n";
         }
     }
 
-    my $non_trusted = $first_range->diff($trusted)->diff($non_overlapped);
-    my $region_of   = {};
+    {    # Outputs. stdout is handeld by faops
+        my $cmd;
+        $cmd .= "faops filter -l 0 covered.fasta";
+        $cmd .= " $opt->{outfile}";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
-    for my $serial ( $non_trusted->elements ) {
-        $region_of->{$serial} = $covered->{$serial}{ $opt->{coverage} }->runlist;
+        $tempdir->child("covered.yml")->move("$opt->{outfile}.covered.yml");
     }
 
-    print YAML::Syck::Dump {
-        "Total"          => $first_count,
-        "Trusted"        => $trusted->runlist,
-        "Non-trusted"    => $non_trusted->runlist,
-        "Non-overlapped" => $non_overlapped->runlist,
-        "region_of"      => $region_of,
-    };
-
-    #    chdir $cwd;
+    chdir $cwd;
 }
 
 1;
