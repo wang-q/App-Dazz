@@ -109,4 +109,20 @@ sub bump_coverage {
     }
 }
 
+sub serial2name {
+    my $dazz_db = shift;
+
+    my $serials = shift;
+
+    my $cmd = sprintf "DBshow -n %s %s ", $dazz_db, join( " ", @{$serials} );
+    my @lines = map { $_ =~ s/^>//; $_; } grep {defined} split /\n/, `$cmd`;
+
+    my %name_of;
+    for my $i ( 0 .. $#lines ) {
+        $name_of{ $serials->[$i] } = $lines[$i];
+    }
+
+    return \%name_of;
+}
+
 1;
