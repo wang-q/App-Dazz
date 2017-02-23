@@ -143,7 +143,8 @@ sub execute {
             first_idx    => $first_idx,
             block_number => $block_number,
             block_size   => $opt->{block},
-        };
+            }
+            if $opt->{verbose};
 
         if (   $out_dir->child( $opt->{pd} . ".las" )->is_file
             or $out_dir->child( $opt->{pd} . ".1.las" )->is_file )
@@ -184,7 +185,7 @@ sub execute {
         {
             my $cmd;
             $cmd .= "LAcat -v $opt->{pd}.#.las > $opt->{pd}.las";
-            App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
+            App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
             App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.las", { verbose => $opt->{verbose}, } );
         }
