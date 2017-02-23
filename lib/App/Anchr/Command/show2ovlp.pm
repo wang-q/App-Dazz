@@ -57,7 +57,8 @@ sub execute {
     my ( $self, $opt, $args ) = @_;
 
     my $len_of = App::Anchr::Common::get_len_from_header( $args->[0] );
-    print STDERR "Get @{[scalar keys %{$len_of}]} records of sequence length\n";
+
+    #    print STDERR "Get @{[scalar keys %{$len_of}]} records of sequence length\n";
 
     my $replace_of = {};
     if ( exists $opt->{replace} ) {
