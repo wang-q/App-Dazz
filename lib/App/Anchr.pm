@@ -24,11 +24,14 @@ App::Anchr - Assembler of N-free CHRomosomes
         commands: list the application's commands
             help: display a command's help screen
 
+           cover: trusted regions in the first file covered by the second
         dazzname: rename FASTA reads for dazz_db
              dep: check or install dependances
+          orient: orient overlapped sequences to the same strand
          overlap: detect overlaps by daligner
+        overlap2: detect overlaps between two (large) files by daligner
        show2ovlp: LAshow outputs to ovelaps
-      superreads: Run MaSuRCA to create super-reads
+      superreads: Run MaSuRCA to create k-unitigs and super-reads
             trim: trim PE Illumina fastq files
 
 Run C<anchr help command-name> for usage information.
