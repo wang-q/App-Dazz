@@ -40,3 +40,6 @@ perl -I lib/ t/07-overlap.t
 perl -I lib/ script/anchr orient t/1_4.anchor.fasta t/1_4.pac.fasta -o stdout
 perl -I lib/ t/09-orient.t
 
+perl -I lib/ script/anchr cover t/1_4.anchor.fasta t/1_4.pac.fasta -o stdout
+perl -I lib/ t/10-cover.t
+
