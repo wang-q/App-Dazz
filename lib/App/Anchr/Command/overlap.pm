@@ -68,7 +68,7 @@ sub execute {
 
     # record cwd, we'll return there
     my $cwd     = Path::Tiny->cwd;
-    my $tempdir = Path::Tiny->tempdir("anchr_ovlpXXXXXXXX");
+    my $tempdir = Path::Tiny->tempdir("anchr_ovlp_XXXXXXXX");
     chdir $tempdir;
 
     my $basename = $tempdir->basename();
