@@ -154,45 +154,58 @@ sub execute {
         my $non_overlapped = $first_range->copy;
         for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
             $non_overlapped->remove($serial);
-            $region_of->{$serial} = $covered->{$serial}{ $opt->{coverage} }->runlist;
 
             if ( $covered->{$serial}{ $opt->{coverage} }->equals( $covered->{$serial}{all} ) ) {
                 $trusted->add($serial);
             }
+            else {
+                $region_of->{$serial} = $covered->{$serial}{ $opt->{coverage} }->runlist;
+            }
         }
         my $non_trusted = $first_range->diff($trusted)->diff($non_overlapped);
-
-        YAML::Syck::DumpFile(
-            "covered.yml",
-            {   "Total"          => $first_count,
-                "Trusted"        => $trusted->runlist,
-                "Non-trusted"    => $non_trusted->runlist,
-                "Non-overlapped" => $non_overlapped->runlist,
-                "region_of"      => $region_of,
-            }
-        );
 
         $tempdir->child("covered.fasta")->remove;
         for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
 
-            #@type AlignDB::IntSpan
-            my $region = $covered->{$serial}{ $opt->{coverage} };
-
-            for my $set ( $region->sets ) {
-                next if $set->size < $opt->{len};
-
+            if ( $trusted->contains($serial) ) {
                 my $cmd;
                 $cmd .= "DBshow -U $basename $serial";
                 $cmd .= " | faops replace -l 0 stdin first.replace.tsv stdout";
-                $cmd .= " | faops frag -l 0 stdin @{[$set->min]} @{[$set->max]} stdout";
                 $cmd .= " >> covered.fasta";
                 App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+            }
+            else {
+
+                #@type AlignDB::IntSpan
+                my $region = $covered->{$serial}{ $opt->{coverage} };
+
+                for my $set ( $region->sets ) {
+                    next if $set->size < $opt->{len};
+
+                    my $cmd;
+                    $cmd .= "DBshow -U $basename $serial";
+                    $cmd .= " | faops replace -l 0 stdin first.replace.tsv stdout";
+                    $cmd .= " | faops frag -l 0 stdin @{[$set->min]} @{[$set->max]} stdout";
+                    $cmd .= " >> covered.fasta";
+                    App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+                }
             }
         }
 
         if ( !$tempdir->child("covered.fasta")->is_file ) {
             Carp::croak "Failed: create covered.fasta\n";
         }
+
+        YAML::Syck::DumpFile(
+            "covered.yml",
+            {   "Total"          => $first_count,
+                "Trusted"        => $trusted->runlist,
+                "Trusted count"  => $trusted->size,
+                "Non-trusted"    => $non_trusted->runlist,
+                "Non-overlapped" => $non_overlapped->runlist,
+                "region_of"      => $region_of,
+            }
+        );
     }
 
     {    # Outputs. stdout is handeld by faops
