@@ -17,19 +17,6 @@ like( $result->error, qr{need .+input file}, 'need infile' );
 $result = test_app( 'App::Anchr' => [qw(overlap2 t/1_4.anchor.fasta t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
-#$result = test_app( 'App::Anchr' => [qw(overlap2 t/1_4.pac.fasta -v -o stdout)] );
-#is( ( scalar grep {/^CMD/} grep {/\S/} split( /\n/, $result->stderr ) ), 5, 'stderr line count' );
-#is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 14, 'line count' );
-#like( $result->stdout, qr{overlap2}s, 'overlap2s' );
-#like( $result->stdout, qr{pac4745_7148}s, 'original names' );
-#
-#$result = test_app( 'App::Anchr' => [qw(overlap2 t/1_4.pac.fasta --idt 0.8 --len 2500 --serial -o stdout)] );
-#is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 4, 'line count' );
-#unlike( $result->stdout, qr{pac4745_7148}s, 'serials' );
-#
-#$result = test_app( 'App::Anchr' => [qw(overlap2 t/1_4.pac.fasta --idt 0.8 --len 2500 --all -o stdout)] );
-#is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 36, 'line count' );
-
 {    # real run
     my $tempdir = Path::Tiny->tempdir;
     $result = test_app( 'App::Anchr' =>
