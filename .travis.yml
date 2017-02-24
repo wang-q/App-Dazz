@@ -27,7 +27,7 @@ before_install:
   - ulimit -n 1024
 
 install:
-  - brew install jdk parallel pigz
+  - brew install graphviz jdk parallel pigz
   - brew install homebrew/science/bbtools
   - brew install homebrew/science/bedtools
   - brew install homebrew/science/fastqc
