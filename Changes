@@ -2,6 +2,11 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.0.14 2017-02-24T09:45:25Z
+    - `anchr group`
+    - Add serial2name() to Common.pm
+    - Add GraphViz to dependancies
+
 0.0.13 2017-02-23T15:49:51Z
     - `anchr cover`
     - Find tempdir easier
