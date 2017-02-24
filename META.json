@@ -50,6 +50,7 @@
             "App::Rangeops::Common" : "0",
             "File::ShareDir" : "1.102",
             "Graph" : "0.9704",
+            "GraphViz" : "2.20",
             "Number::Format" : "1.75",
             "Path::Tiny" : "0.076",
             "Template" : "2.26",

@@ -8,6 +8,7 @@ use 5.010001;
 use Carp qw();
 use File::ShareDir qw();
 use Graph;
+use GraphViz;
 use IPC::Cmd qw();
 use Path::Tiny qw();
 use Template;
