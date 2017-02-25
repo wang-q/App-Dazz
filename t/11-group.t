@@ -28,7 +28,7 @@ like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
     $result = test_app(
         'App::Anchr' => [
-            qw(group --range 1-4),
+            qw(group --png --range 1-4),
             $tempdir->child("anchorLong.db")->stringify,
             $tempdir->child("anchorLong.ovlp.tsv")->stringify,
         ]
