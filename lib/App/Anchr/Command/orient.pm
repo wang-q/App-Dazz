@@ -11,8 +11,9 @@ use constant abstract => "orient overlapped sequences to the same strand";
 sub opt_spec {
     return (
         [ "outfile|o=s", "output filename, [stdout] for screen", ],
-        [ "len|l=i",      "minimal length of overlaps",   { default => 500 }, ],
-        [ "idt|i=f",      "minimal identity of overlaps", { default => 0.7 }, ],
+        [ "restrict=s",  "limit to this known pairs", ],
+        [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
+        [ "idt|i=f",      "minimal identity of overlaps", { default => 0.85 }, ],
         [ "parallel|p=i", "number of threads",            { default => 4 }, ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
