@@ -238,6 +238,7 @@ sub execute {
 
             # anchor_i => anchor_j => [[distances], [long_ids]]
             my $relation_of = {};
+            my @anchor_long_pairs;
 
             for my $i ( 0 .. $count - 1 ) {
                 for my $j ( $i + 1 .. $count - 1 ) {
@@ -252,6 +253,11 @@ sub execute {
 
                         $relation_of->{ $members[$i] }{ $members[$j] }
                             = [ $distances_ref, $long_ids_ref ];
+
+                        for my $long_id ( @{$long_ids_ref} ) {
+                            push @anchor_long_pairs, [ $members[$i], $long_id ];
+                            push @anchor_long_pairs, [ $members[$j], $long_id ];
+                        }
                     }
                 }
             }
@@ -272,6 +278,12 @@ sub execute {
                     $fn_relation->append($line);
                 }
             }
+
+            @anchor_long_pairs = sort
+                map { sprintf( "%s\t%s\n", $name_of->{ $_->[0] }, $name_of->{ $_->[1] } ) }
+                @anchor_long_pairs;
+            @anchor_long_pairs = App::Fasops::Common::uniq(@anchor_long_pairs);
+            $out_dir->child("$basename.restrict.tsv")->spew(@anchor_long_pairs);
         }
 
         #----------------------------#
