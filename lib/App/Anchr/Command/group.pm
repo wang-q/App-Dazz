@@ -13,6 +13,7 @@ sub opt_spec {
         [ "dir|d=s", "output directory", ],
         [ 'range|r=s',    'ranges of anchors',            { required => 1 }, ],
         [ 'coverage|c=i', 'minimal coverage',             { default  => 2 }, ],
+        [ 'max=i',        'max distance',                 { default  => 5000 }, ],
         [ "len|l=i",      "minimal length of overlaps",   { default  => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default  => 0.85 }, ],
         [ "parallel|p=i", "number of threads",            { default  => 4 }, ],
@@ -181,7 +182,10 @@ sub execute {
             }
 
             my $distances_ref = $graph->get_edge_attribute( @{$edge}, "distances" );
-            if ( !App::Anchr::Common::judge_distance($distances_ref) ) {
+            if (!App::Anchr::Common::judge_distance( $distances_ref, $opt->{coverage}, $opt->{max},
+                )
+                )
+            {
                 $graph->delete_edge( @{$edge} );
                 next;
             }
@@ -196,7 +200,8 @@ sub execute {
     for my $cc ( grep { scalar @{$_} == 1 } @ccs ) {
         $non_grouped->add( $cc->[0] );
     }
-    printf "Non-grouped: %s\n", $non_grouped;
+    printf STDERR "Non-grouped: %s\n", $non_grouped;
+    printf STDERR "Count: %d/%d\n", $non_grouped->size, $anchor_range->size;
 
     $out_dir->child("groups.txt")->remove;
     @ccs = map { $_->[0] }
@@ -289,7 +294,6 @@ sub execute {
     if ( $opt->{png} ) {
         App::Anchr::Common::g2gv0( $graph, $fn_dazz . ".png" );
     }
-
 }
 
 1;

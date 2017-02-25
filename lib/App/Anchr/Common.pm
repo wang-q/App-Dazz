@@ -127,8 +127,9 @@ sub serial2name {
 }
 
 sub judge_distance {
-    my $d_ref = shift;
+    my $d_ref    = shift;
     my $coverage = shift || 2;
+    my $max_dis  = shift || 5000;
 
     return 0 unless defined $d_ref;
     return 0 if ( scalar @{$d_ref} < $coverage );
@@ -142,7 +143,9 @@ sub judge_distance {
         if ( $d > $max ) { $max = $d; }
     }
     my $avg = $sum / scalar( @{$d_ref} );
-    my $v   = $max - $min;
+    return 0 if abs($avg) > $max_dis;
+
+    my $v = $max - $min;
     if ( $v < 200 or abs( $v / $avg ) < 0.2 ) {
         return 1;
     }
