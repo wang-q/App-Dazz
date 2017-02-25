@@ -13,8 +13,8 @@ sub opt_spec {
         [ "dir|d=s", "output directory", ],
         [ 'range|r=s',    'ranges of anchors',            { required => 1 }, ],
         [ 'coverage|c=i', 'minimal coverage',             { default  => 2 }, ],
-        [ "len|l=i",      "minimal length of overlaps",   { default  => 500 }, ],
-        [ "idt|i=f",      "minimal identity of overlaps", { default  => 0.7 }, ],
+        [ "len|l=i",      "minimal length of overlaps",   { default  => 1000 }, ],
+        [ "idt|i=f",      "minimal identity of overlaps", { default  => 0.85 }, ],
         [ "parallel|p=i", "number of threads",            { default  => 4 }, ],
         [ "verbose|v",    "verbose mode", ],
         [ "png",          "write a png file via graphviz", ],
@@ -181,7 +181,7 @@ sub execute {
             }
 
             my $distances_ref = $graph->get_edge_attribute( @{$edge}, "distances" );
-            if ( !judge_distance($distances_ref) ) {
+            if ( !App::Anchr::Common::judge_distance($distances_ref) ) {
                 $graph->delete_edge( @{$edge} );
                 next;
             }
@@ -225,13 +225,17 @@ sub execute {
         }
 
         {    # distances
+                # serials to names
+            my $name_of = App::Anchr::Common::serial2name( $fn_dazz, [@members] );
+
             my $fn_distance = $out_dir->child("$basename.dis.tsv");
             for my $i ( 0 .. $count - 1 ) {
                 for my $j ( $i + 1 .. $count - 1 ) {
                     if ( $graph->has_edge( $members[$i], $members[$j], ) ) {
                         my $distances_ref
                             = $graph->get_edge_attribute( $members[$i], $members[$j], "distances" );
-                        my $line = sprintf "%s\t%s\t%s\n", $members[$i], $members[$j],
+                        my $line = sprintf "%s\t%s\t%s\n", $name_of->{ $members[$i] },
+                            $name_of->{ $members[$j] },
                             join( ",", @{$distances_ref} );
                         $fn_distance->append($line);
 
@@ -277,8 +281,7 @@ sub execute {
                     = App::Anchr::Common::serial2name( $fn_dazz,
                     [ @members, $long_id_set->as_array ] );
 
-                @anchor_long_pairs
-                    = sort
+                @anchor_long_pairs = sort
                     map { sprintf( "%s\t%s\n", $name_of->{ $_->[0] }, $name_of->{ $_->[1] } ) }
                     @anchor_long_pairs;
                 @anchor_long_pairs = App::Fasops::Common::uniq(@anchor_long_pairs);
@@ -291,56 +294,9 @@ sub execute {
     printf "CC count %d\n", scalar(@ccs);
 
     if ( $opt->{png} ) {
-        g2gv0( $graph, $fn_dazz . ".png" );
+        App::Anchr::Common::g2gv0( $graph, $fn_dazz . ".png" );
     }
 
-}
-
-#----------------------------------------------------------#
-# Subroutines
-#----------------------------------------------------------#
-sub judge_distance {
-    my $d_ref = shift;
-    my $coverage = shift || 2;
-
-    return 0 unless defined $d_ref;
-    return 0 if ( scalar @{$d_ref} < $coverage );
-
-    my $sum = 0;
-    my $min = $d_ref->[0];
-    my $max = $min;
-    for my $d ( @{$d_ref} ) {
-        $sum += $d;
-        if ( $d < $min ) { $min = $d; }
-        if ( $d > $max ) { $max = $d; }
-    }
-    my $avg = $sum / scalar( @{$d_ref} );
-    my $v   = $max - $min;
-    if ( $v < 200 or abs( $v / $avg ) < 0.2 ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
-}
-
-sub g2gv0 {
-
-    #@type Graph
-    my $g  = shift;
-    my $fn = shift;
-
-    my $gv = GraphViz->new( directed => 0 );
-
-    for my $v ( $g->vertices ) {
-        $gv->add_node($v);
-    }
-
-    for my $e ( $g->edges ) {
-        $gv->add_edge( @{$e} );
-    }
-
-    Path::Tiny::path($fn)->spew_raw( $gv->as_png );
 }
 
 1;

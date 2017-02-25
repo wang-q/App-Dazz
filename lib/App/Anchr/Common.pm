@@ -126,4 +126,48 @@ sub serial2name {
     return \%name_of;
 }
 
+sub judge_distance {
+    my $d_ref = shift;
+    my $coverage = shift || 2;
+
+    return 0 unless defined $d_ref;
+    return 0 if ( scalar @{$d_ref} < $coverage );
+
+    my $sum = 0;
+    my $min = $d_ref->[0];
+    my $max = $min;
+    for my $d ( @{$d_ref} ) {
+        $sum += $d;
+        if ( $d < $min ) { $min = $d; }
+        if ( $d > $max ) { $max = $d; }
+    }
+    my $avg = $sum / scalar( @{$d_ref} );
+    my $v   = $max - $min;
+    if ( $v < 200 or abs( $v / $avg ) < 0.2 ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+sub g2gv0 {
+
+    #@type Graph
+    my $g  = shift;
+    my $fn = shift;
+
+    my $gv = GraphViz->new( directed => 0 );
+
+    for my $v ( $g->vertices ) {
+        $gv->add_node($v);
+    }
+
+    for my $e ( $g->edges ) {
+        $gv->add_edge( @{$e} );
+    }
+
+    Path::Tiny::path($fn)->spew_raw( $gv->as_png );
+}
+
 1;
