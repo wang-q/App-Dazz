@@ -30,7 +30,7 @@ Run `anchr help command-name` for usage information.
 
 # DESCRIPTION
 
-App::Anchr is tend to be an Assembler of N-free CHRomosomes.
+App::Anchr is tend to be an **A**ssembler of **N**-free **CHR**omosomes.
 
 # INSTALLATION
 
