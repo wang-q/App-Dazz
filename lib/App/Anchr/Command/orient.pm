@@ -71,6 +71,10 @@ sub execute {
         $opt->{outfile} = Path::Tiny::path( $opt->{outfile} )->absolute->stringify;
     }
 
+    if ( $opt->{restrict} ) {
+        $opt->{restrict} = Path::Tiny::path( $opt->{restrict} )->absolute->stringify;
+    }
+
     # record cwd, we'll return there
     my $cwd     = Path::Tiny->cwd;
     my $tempdir = Path::Tiny->tempdir("anchr_orient_XXXXXXXX");
@@ -120,14 +124,36 @@ sub execute {
         }
     }
 
+    # filter overlaps
+    if ( $opt->{restrict} ) {
+        my $cmd;
+        $cmd .= "anchr replace renamed.ovlp.tsv stdout.replace.tsv -o stdout";
+        $cmd .= " | anchr restrict stdin $opt->{restrict} -o stdout";
+        $cmd .= " | anchr replace stdin stdout.replace.tsv -r -o stdout";
+        $cmd .= " > restrict.ovlp.tsv";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+
+        if ( !$tempdir->child("restrict.ovlp.tsv")->is_file ) {
+            Carp::croak "Failed: create restrict.ovlp.tsv\n";
+        }
+    }
+
     {    # To positive strands
         my $graph = Graph->new( directed => 0 );
 
         my @names = split /\n/, `faops size renamed.fasta | cut -f 1`;
         my $copy = scalar @names;
 
+        my @lines;
+        if ( $tempdir->child("restrict.ovlp.tsv")->is_file ) {
+            @lines = $tempdir->child("restrict.ovlp.tsv")->lines( { chomp => 1, } );
+        }
+        else {
+            @lines = $tempdir->child("renamed.ovlp.tsv")->lines( { chomp => 1, } );
+        }
+
         # load strands
-        for my $line ( $tempdir->child("renamed.ovlp.tsv")->lines( { chomp => 1, } ) ) {
+        for my $line (@lines) {
             chomp $line;
             my @fields = split "\t", $line;
             next unless @fields == 13;
@@ -212,7 +238,7 @@ sub execute {
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
-    chdir $cwd;
+    #    chdir $cwd;
 }
 
 1;
