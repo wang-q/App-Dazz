@@ -11,7 +11,7 @@ use constant abstract => 'rename FASTA reads for dazz_db';
 sub opt_spec {
     return (
         [ "outfile|o=s", "output filename, [stdout] for screen" ],
-        [ "prefix=s", "prefix of names", { default => "anchr_read" }, ],
+        [ "prefix=s", "prefix of names", { default => "read" }, ],
         [ "start=i",  "start index",     { default => 1 }, ],
         { show_defaults => 1, }
     );
