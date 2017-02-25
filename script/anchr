@@ -48,3 +48,6 @@ perl -I lib/ t/11-group.t
 perl -I lib/ script/anchr replace t/1_4.ovlp.tsv t/1_4.replace.tsv -r -o stdout
 perl -I lib/ script/anchr replace t/1_4.ovlp.tsv t/1_4.replace.tsv -o stdout
 perl -I lib/ t/12-replace.t
+
+perl -I lib/ script/anchr restrict t/1_4.ovlp.tsv t/1_4.restrict.tsv -o stdout
+perl -I lib/ t/13-restrict.t
