@@ -210,11 +210,12 @@ sub execute {
         my $count    = scalar @members;
         my $basename = sprintf "%s_%s", $cc_serial, $count;
 
-        #    my $tempdir = Path::Tiny->tempdir("group.XXXXXXXX");
-
         $out_dir->child("groups.txt")->append("$basename\n");
 
-        {    # anchors
+        #----------------------------#
+        # anchors
+        #----------------------------#
+        if ( $count > 0 ) {
             my $cmd;
             $cmd .= "DBshow -U $fn_dazz ";
             $cmd .= join " ", @members;
@@ -224,74 +225,66 @@ sub execute {
             system $cmd;
         }
 
-        {    # distances
-                # serials to names
-            my $name_of = App::Anchr::Common::serial2name( $fn_dazz, [@members] );
+        #----------------------------#
+        # distances and long reads
+        #----------------------------#
+        my $long_id_set = AlignDB::IntSpan->new;
+        {
 
-            my $fn_distance = $out_dir->child("$basename.dis.tsv");
+            # anchor_i => anchor_j => [[distances], [long_ids]]
+            my $relation_of = {};
+
             for my $i ( 0 .. $count - 1 ) {
                 for my $j ( $i + 1 .. $count - 1 ) {
                     if ( $graph->has_edge( $members[$i], $members[$j], ) ) {
                         my $distances_ref
                             = $graph->get_edge_attribute( $members[$i], $members[$j], "distances" );
-                        my $line = sprintf "%s\t%s\t%s\n", $name_of->{ $members[$i] },
-                            $name_of->{ $members[$j] },
-                            join( ",", @{$distances_ref} );
-                        $fn_distance->append($line);
 
-                    }
-                }
-            }
-        }
-
-        {    # long reads
-            my $long_id_set = AlignDB::IntSpan->new;
-            my @anchor_long_pairs;
-
-            for my $i ( 0 .. $count - 1 ) {
-                for my $j ( $i + 1 .. $count - 1 ) {
-                    if ( $graph->has_edge( $members[$i], $members[$j], ) ) {
                         my $long_ids_ref
                             = $graph->get_edge_attribute( $members[$i], $members[$j], "long_ids" );
 
                         $long_id_set->add( @{$long_ids_ref} );
 
-                        for my $long_id ( @{$long_ids_ref} ) {
-                            push @anchor_long_pairs, [ $members[$i], $long_id ];
-                            push @anchor_long_pairs, [ $members[$j], $long_id ];
-                        }
+                        $relation_of->{ $members[$i] }{ $members[$j] }
+                            = [ $distances_ref, $long_ids_ref ];
                     }
                 }
             }
 
-            if ( $long_id_set->is_empty ) {
-                print STDERR "WARNING: no valid long reads in [$basename]\n";
+            # serials to names
+            my $name_of
+                = App::Anchr::Common::serial2name( $fn_dazz, [ @members, $long_id_set->as_array ] );
+
+            my $fn_relation = $out_dir->child("$basename.relation.tsv");
+            $fn_relation->remove;
+            for my $key_i ( sort keys %{$relation_of} ) {
+                for my $key_j ( sort keys %{ $relation_of->{$key_i} } ) {
+                    my $str_dis = join( ",", @{ $relation_of->{$key_i}{$key_j}[0] } );
+                    my $str_long = join( ",",
+                        map { $name_of->{$_} } @{ $relation_of->{$key_i}{$key_j}[1] } );
+                    my $line = sprintf "%s\t%s\t%s\t%s\n", $name_of->{$key_i},
+                        $name_of->{$key_j}, $str_dis, $str_long;
+                    $fn_relation->append($line);
+                }
             }
-            else {
-                my $cmd;
-                $cmd .= "DBshow -U $fn_dazz ";
-                $cmd .= join " ", $long_id_set->as_array;
-                $cmd .= " | faops filter -l 0 stdin stdout";
-                $cmd .= " > " . $out_dir->child("$basename.long.fasta")->stringify;
+        }
 
-                system $cmd;
+        #----------------------------#
+        # long reads
+        #----------------------------#
+        if ( !$long_id_set->is_empty ) {
+            my $cmd;
+            $cmd .= "DBshow -U $fn_dazz ";
+            $cmd .= join " ", $long_id_set->as_array;
+            $cmd .= " | faops filter -l 0 stdin stdout";
+            $cmd .= " > " . $out_dir->child("$basename.long.fasta")->stringify;
 
-                # serials to names
-                my $name_of
-                    = App::Anchr::Common::serial2name( $fn_dazz,
-                    [ @members, $long_id_set->as_array ] );
-
-                @anchor_long_pairs = sort
-                    map { sprintf( "%s\t%s\n", $name_of->{ $_->[0] }, $name_of->{ $_->[1] } ) }
-                    @anchor_long_pairs;
-                @anchor_long_pairs = App::Fasops::Common::uniq(@anchor_long_pairs);
-                $out_dir->child("$basename.valid.tsv")->spew(@anchor_long_pairs);
-            }
+            system $cmd;
         }
 
         $cc_serial++;
     }
-    printf "CC count %d\n", scalar(@ccs);
+    printf STDERR "CC count %d\n", scalar(@ccs);
 
     if ( $opt->{png} ) {
         App::Anchr::Common::g2gv0( $graph, $fn_dazz . ".png" );
