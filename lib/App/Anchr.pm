@@ -12,7 +12,7 @@ our $VERSION = "0.0.16";
 
 =head1 NAME
 
-App::Anchr - Assembler of N-free CHRomosomes
+App::Anchr - B<A>ssembler of B<N>-free B<CHR>omosomes
 
 =head1 SYNOPSIS
 
@@ -41,7 +41,7 @@ Run C<anchr help command-name> for usage information.
 
 =head1 DESCRIPTION
 
-App::Anchr is tend to be an B<A>ssembler of B<N>-free B<CHR>omosomes.
+App::Anchr is tend to be an Assembler of N-free CHRomosomes.
 
 =head1 INSTALLATION
 
