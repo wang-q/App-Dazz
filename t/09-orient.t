@@ -17,6 +17,9 @@ like( $result->error, qr{need .+input file}, 'need infile' );
 $result = test_app( 'App::Anchr' => [qw(orient t/1_4.pac.fasta t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
+$result = test_app( 'App::Anchr' => [qw(orient t/1_4.anchor.fasta t/1_4.pac.fasta -r t/not_exists -o stdout)] );
+like( $result->error, qr{doesn't exist}, 'restrict file not exists' );
+
 $result = test_app( 'App::Anchr' => [qw(orient t/1_4.anchor.fasta t/1_4.pac.fasta -v -o stdout)] );
 is( ( scalar grep {/^CMD/} grep {/\S/} split( /\n/, $result->stderr ) ), 8, 'stderr line count' );
 is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 24, 'line count' );

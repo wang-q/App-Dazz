@@ -10,8 +10,8 @@ use constant abstract => "orient overlapped sequences to the same strand";
 
 sub opt_spec {
     return (
-        [ "outfile|o=s", "output filename, [stdout] for screen", ],
-        [ "restrict=s",  "limit to this known pairs", ],
+        [ "outfile|o=s",  "output filename, [stdout] for screen", ],
+        [ "restrict|r=s", "limit to known pairs", ],
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.85 }, ],
         [ "parallel|p=i", "number of threads",            { default => 4 }, ],
@@ -44,6 +44,12 @@ sub validate_args {
     for ( @{$args} ) {
         if ( !Path::Tiny::path($_)->is_file ) {
             $self->usage_error("The input file [$_] doesn't exist.");
+        }
+    }
+
+    if ( exists $opt->{restrict} ) {
+        if ( !Path::Tiny::path( $opt->{restrict} )->is_file ) {
+            $self->usage_error("The restrict file [$opt->{restrict}] doesn't exist.\n");
         }
     }
 
