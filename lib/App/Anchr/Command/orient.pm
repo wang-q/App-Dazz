@@ -238,7 +238,7 @@ sub execute {
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
-    #    chdir $cwd;
+    chdir $cwd;
 }
 
 1;
