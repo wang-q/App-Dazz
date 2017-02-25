@@ -27,6 +27,7 @@ App::Anchr - Assembler of N-free CHRomosomes
            cover: trusted regions in the first file covered by the second
         dazzname: rename FASTA reads for dazz_db
              dep: check or install dependances
+           group: group anthors by long reads
           orient: orient overlapped sequences to the same strand
          overlap: detect overlaps by daligner
         overlap2: detect overlaps between two (large) files by daligner
