@@ -45,3 +45,6 @@ perl -I lib/ t/10-cover.t
 
 perl -I lib/ t/11-group.t
 
+perl -I lib/ script/anchr ovlpreplace t/1_4.ovlp.tsv t/1_4.replace.tsv -r -o stdout
+perl -I lib/ script/anchr ovlpreplace t/1_4.ovlp.tsv t/1_4.replace.tsv -o stdout
+perl -I lib/ t/12-ovlpreplace.t

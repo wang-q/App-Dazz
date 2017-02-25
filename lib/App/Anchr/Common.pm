@@ -63,6 +63,28 @@ sub get_replaces {
     return $replace_of;
 }
 
+sub get_replaces2 {
+    my $fn  = shift;
+    my $opt = shift;
+
+    my $replace_of = {};
+    my @lines = Path::Tiny::path($fn)->lines( { chomp => 1 } );
+
+    for my $line (@lines) {
+        my @fields = split /\t/, $line;
+        if ( @fields == 2 ) {
+            if ( defined $opt and ref $opt eq "HASH" and $opt->{reverse} ) {
+                $replace_of->{ $fields[1] } = $fields[0];
+            }
+            else {
+                $replace_of->{ $fields[0] } = $fields[1];
+            }
+        }
+    }
+
+    return $replace_of;
+}
+
 sub exec_cmd {
     my $cmd = shift;
     my $opt = shift;
