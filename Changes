@@ -2,6 +2,12 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.0.17 2017-02-26T14:33:14Z
+    - Add --restrict for `anchr orient`
+    - Skip anchors match to multiple parts of a long read
+    - Delete edges with different strands
+    - Default prefix 'read' for `anchr dazzname`
+
 0.0.16 2017-02-25T08:44:29Z
     - `anchr restrict`
     - Rename ovlpreplace to replace
