@@ -87,10 +87,16 @@ sub execute {
 
     chomp( my $first_count = `faops n50 -H -N 0 -C first.fasta` );
     my $first_range = AlignDB::IntSpan->new->add_pair( 1, $first_count, );
+
+    # anchors match to multiple parts of a long read
+    my $multi_matched = AlignDB::IntSpan->new;
+
+    # anchor_id => tier_of => { 1 => intspan, 2 => intspan}
     my $covered = {};
 
     {    # load overlaps and build coverages
         my %seen_pair;
+        my %multi_match_of;
 
         for my $line ( $tempdir->child("$basename.ovlp.tsv")->lines( { chomp => 1 } ) ) {
             my @fields = split "\t", $line;
@@ -116,10 +122,32 @@ sub execute {
                 next;
             }
 
-            # skip duplicated overlaps
-            my $pair = join( "-", sort ( $f_id, $g_id ) );
-            next if $seen_pair{$pair};
-            $seen_pair{$pair}++;
+            # record multi-matched
+            if ( $first_range->contains($f_id) and !$first_range->contains($g_id) ) {
+                my $pair = join( "-", ( $f_id, $g_id ) );
+                my $matched
+                    = AlignDB::IntSpan->new->add_pair( App::Anchr::Common::beg_end( $g_B, $g_E, ) );
+                if ( !exists $multi_match_of{$pair} ) {
+                    $multi_match_of{$pair} = $matched;
+                }
+                else {
+                    my $i_set = $matched->intersect( $multi_match_of{$pair} );
+                    if ( $i_set->is_empty ) {
+                        $multi_matched->add($f_id);
+                    }
+                    elsif ( $i_set->size
+                        / List::Util::max( $matched->size, $multi_match_of{$pair}->size ) < 0.9 )
+                    {
+                        $multi_matched->add($f_id);
+                    }
+                }
+            }
+
+            {    # skip duplicated overlaps
+                my $pair = join( "-", sort ( $f_id, $g_id ) );
+                next if $seen_pair{$pair};
+                $seen_pair{$pair}++;
+            }
 
             if ( $first_range->contains($f_id) and !$first_range->contains($g_id) ) {
                 if ( !exists $covered->{$f_id} ) {
@@ -154,6 +182,10 @@ sub execute {
         my $non_overlapped = $first_range->copy;
         for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
             $non_overlapped->remove($serial);
+
+            if ( $multi_matched->contains($serial) ) {
+                next;
+            }
 
             if ( $covered->{$serial}{ $opt->{coverage} }->equals( $covered->{$serial}{all} ) ) {
                 $trusted->add($serial);
@@ -201,6 +233,7 @@ sub execute {
             {   "Total"          => $first_count,
                 "Trusted"        => $trusted->runlist,
                 "Trusted count"  => $trusted->size,
+                "Multi-matched"  => $multi_matched->runlist,
                 "Non-trusted"    => $non_trusted->runlist,
                 "Non-overlapped" => $non_overlapped->runlist,
                 "region_of"      => $region_of,

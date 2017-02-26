@@ -10,6 +10,7 @@ use File::ShareDir qw();
 use Graph;
 use GraphViz;
 use IPC::Cmd qw();
+use List::Util;
 use Path::Tiny qw();
 use Template;
 use YAML::Syck qw();
