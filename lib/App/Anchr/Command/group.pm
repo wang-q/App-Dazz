@@ -73,9 +73,12 @@ sub execute {
     #@type AlignDB::IntSpan
     my $anchor_range = AlignDB::IntSpan->new->add_runlist( $opt->{range} );
 
-    # long_id => { anchor_id => overlap_on_long, }
-    my $links_of = {};
-    {    # Load overlaps and build links
+    #----------------------------#
+    # Load overlaps and build links
+    #----------------------------#
+    my $links_of   = {};    # long_id => { anchor_id => overlap_on_long, }
+    my $strands_of = {};    # long_id => { anchor_id => strand_to_long }
+    {
         open my $in_fh, "<", $fn_ovlp;
 
         my %seen_pair;
@@ -112,10 +115,15 @@ sub execute {
             if ( $anchor_range->contains($f_id) and !$anchor_range->contains($g_id) ) {
                 my ( $beg, $end ) = App::Anchr::Common::beg_end( $g_B, $g_E, );
                 $links_of->{$g_id}{$f_id} = AlignDB::IntSpan->new->add_pair( $beg, $end );
+
+                # $f_strand is always 0
+                $strands_of->{$g_id}{$f_id} = $g_strand;
             }
             elsif ( $anchor_range->contains($g_id) and !$anchor_range->contains($f_id) ) {
                 my ( $beg, $end ) = App::Anchr::Common::beg_end( $f_B, $f_E, );
                 $links_of->{$f_id}{$g_id} = AlignDB::IntSpan->new->add_pair( $beg, $end );
+
+                $strands_of->{$f_id}{$g_id} = $g_strand;
             }
         }
         close $in_fh;
@@ -148,8 +156,14 @@ sub execute {
                     my $distance = $set_i->distance($set_j);
                     next unless defined $distance;
 
+                    my $strand_i = $strands_of->{$long_id}{ $anchors[$i] };
+                    my $strand_j = $strands_of->{$long_id}{ $anchors[$j] };
+
+                    my $strand = $strand_i == $strand_j ? 0 : 1;
+
                     $graph->add_edge( $anchors[$i], $anchors[$j] );
 
+                    # long_ids
                     if ( $graph->has_edge_attribute( $anchors[$i], $anchors[$j], "long_ids" ) ) {
                         my $long_ids_ref
                             = $graph->get_edge_attribute( $anchors[$i], $anchors[$j], "long_ids" );
@@ -160,6 +174,7 @@ sub execute {
                             [$long_id], );
                     }
 
+                    # distances between anchors
                     if ( $graph->has_edge_attribute( $anchors[$i], $anchors[$j], "distances" ) ) {
                         my $distances_ref
                             = $graph->get_edge_attribute( $anchors[$i], $anchors[$j], "distances" );
@@ -168,6 +183,17 @@ sub execute {
                     else {
                         $graph->set_edge_attribute( $anchors[$i], $anchors[$j], "distances",
                             [$distance], );
+                    }
+
+                    # strands
+                    if ( $graph->has_edge_attribute( $anchors[$i], $anchors[$j], "strands" ) ) {
+                        my $strands_ref
+                            = $graph->get_edge_attribute( $anchors[$i], $anchors[$j], "strands" );
+                        push @{$strands_ref}, $strand;
+                    }
+                    else {
+                        $graph->set_edge_attribute( $anchors[$i], $anchors[$j], "strands",
+                            [$strand], );
                     }
                 }
             }
@@ -186,6 +212,13 @@ sub execute {
                 )
                 )
             {
+                $graph->delete_edge( @{$edge} );
+                next;
+            }
+
+            my $strands_ref = $graph->get_edge_attribute( @{$edge}, "strands" );
+            my @strands = App::Fasops::Common::uniq( @{$strands_ref} );
+            if ( @strands != 1 ) {
                 $graph->delete_edge( @{$edge} );
                 next;
             }
