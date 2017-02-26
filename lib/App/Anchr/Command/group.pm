@@ -76,12 +76,18 @@ sub execute {
     #----------------------------#
     # Load overlaps and build links
     #----------------------------#
+
+    # anchors match to multiple parts of a long read
+    my $multi_matched = AlignDB::IntSpan->new;
+
     my $links_of   = {};    # long_id => { anchor_id => overlap_on_long, }
     my $strands_of = {};    # long_id => { anchor_id => strand_to_long }
     {
         open my $in_fh, "<", $fn_ovlp;
 
+        my %multi_match_of;
         my %seen_pair;
+
         while ( my $line = <$in_fh> ) {
             chomp $line;
             my @fields = split "\t", $line;
@@ -107,10 +113,32 @@ sub execute {
                 next;
             }
 
-            # skip duplicated overlaps
-            my $pair = join( "-", sort ( $f_id, $g_id ) );
-            next if $seen_pair{$pair};
-            $seen_pair{$pair}++;
+            # record multi-matched
+            if ( $anchor_range->contains($f_id) and !$anchor_range->contains($g_id) ) {
+                my $pair = join( "-", ( $f_id, $g_id ) );
+                my $matched
+                    = AlignDB::IntSpan->new->add_pair( App::Anchr::Common::beg_end( $g_B, $g_E, ) );
+                if ( !exists $multi_match_of{$pair} ) {
+                    $multi_match_of{$pair} = $matched;
+                }
+                else {
+                    my $i_set = $matched->intersect( $multi_match_of{$pair} );
+                    if ( $i_set->is_empty ) {
+                        $multi_matched->add($f_id);
+                    }
+                    elsif ( $i_set->size
+                        / List::Util::max( $matched->size, $multi_match_of{$pair}->size ) < 0.9 )
+                    {
+                        $multi_matched->add($f_id);
+                    }
+                }
+            }
+
+            {    # skip duplicated overlaps
+                my $pair = join( "-", sort ( $f_id, $g_id ) );
+                next if $seen_pair{$pair};
+                $seen_pair{$pair}++;
+            }
 
             if ( $anchor_range->contains($f_id) and !$anchor_range->contains($g_id) ) {
                 my ( $beg, $end ) = App::Anchr::Common::beg_end( $g_B, $g_E, );
@@ -199,6 +227,14 @@ sub execute {
             }
         }
 
+        # Delete multi-matched nodes
+        for my $node ( $graph->vertices ) {
+            if ( $multi_matched->contains($node) ) {
+                $graph->delete_vertex($node);
+            }
+        }
+
+        # Delete unreliable edges
         for my $edge ( $graph->edges ) {
             my $long_ids_ref = $graph->get_edge_attribute( @{$edge}, "long_ids" );
 
@@ -233,8 +269,10 @@ sub execute {
     for my $cc ( grep { scalar @{$_} == 1 } @ccs ) {
         $non_grouped->add( $cc->[0] );
     }
-    printf STDERR "Non-grouped: %s\n", $non_grouped;
-    printf STDERR "Count: %d/%d\n", $non_grouped->size, $anchor_range->size;
+    printf STDERR "Multi-matched: %s\n", $multi_matched;
+    printf STDERR "Count: %d/%d\n",      $multi_matched->size, $anchor_range->size;
+    printf STDERR "Non-grouped: %s\n",   $non_grouped;
+    printf STDERR "Count: %d/%d\n",      $non_grouped->size, $anchor_range->size;
 
     $out_dir->child("groups.txt")->remove;
     @ccs = map { $_->[0] }
