@@ -53,3 +53,5 @@ perl -I lib/ t/12-replace.t
 perl -I lib/ script/anchr restrict t/1_4.ovlp.tsv t/1_4.restrict.tsv -o stdout
 perl -I lib/ script/anchr restrict t/1_4.ovlp.tsv t/1_4.2.restrict.tsv -o stdout
 perl -I lib/ t/13-restrict.t
+
+perl -I lib/ t/90-common.t
