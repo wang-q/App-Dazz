@@ -37,7 +37,7 @@ use App::Anchr::Common;
         my ( $seq_refs, $expect ) = @{ $data[$i] };
 
         my $result = App::Anchr::Common::poa_consensus($seq_refs);
-        ok( $expect eq $result, "poa $i" );
+        is( $result, $expect, "poa $i" );
     }
 }
 
