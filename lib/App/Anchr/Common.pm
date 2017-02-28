@@ -97,6 +97,31 @@ sub exec_cmd {
     system $cmd;
 }
 
+sub parse_ovlp_line {
+    my $line = shift;
+
+    chomp $line;
+    my @fields = split "\t", $line;
+
+    my $info = {
+        f_id      => $fields[0],
+        g_id      => $fields[1],
+        ovlp_len  => $fields[2],
+        ovlp_idt  => $fields[3],
+        f_strand  => $fields[4],
+        f_B       => $fields[5],
+        f_E       => $fields[6],
+        f_len     => $fields[7],
+        g_strand  => $fields[8],
+        g_B       => $fields[9],
+        g_E       => $fields[10],
+        g_len     => $fields[11],
+        contained => $fields[12],
+    };
+
+    return $info;
+}
+
 sub beg_end {
     my $beg = shift;
     my $end = shift;
