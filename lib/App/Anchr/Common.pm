@@ -202,6 +202,25 @@ sub judge_distance {
     }
 }
 
+sub g2gv {
+
+    #@type Graph
+    my $g  = shift;
+    my $fn = shift;
+
+    my $gv = GraphViz->new( directed => 1 );
+
+    for my $v ( $g->vertices ) {
+        $gv->add_node($v);
+    }
+
+    for my $e ( $g->edges ) {
+        $gv->add_edge( @{$e} );
+    }
+
+    Path::Tiny::path($fn)->spew_raw( $gv->as_png );
+}
+
 sub g2gv0 {
 
     #@type Graph
@@ -219,6 +238,37 @@ sub g2gv0 {
     }
 
     Path::Tiny::path($fn)->spew_raw( $gv->as_png );
+}
+
+sub transitive_reduction {
+
+    #@type Graph
+    my $g = shift;
+
+    my $count = 0;
+    my $prev_count;
+    while (1) {
+        last if defined $prev_count and $prev_count == $count;
+        $prev_count = $count;
+
+        for my $v ( $g->vertices ) {
+            next if $g->out_degree($v) < 2;
+
+            my @s = sort { $a cmp $b } $g->successors($v);
+            for my $i ( 0 .. $#s ) {
+                for my $j ( 0 .. $#s ) {
+                    next if $i == $j;
+                    if ( $g->is_reachable( $s[$i], $s[$j] ) ) {
+                        $g->delete_edge( $v, $s[$j] );
+
+                        $count++;
+                    }
+                }
+            }
+        }
+    }
+
+    return $count;
 }
 
 sub poa_consensus {
