@@ -239,4 +239,41 @@ sub poa_consensus {
     return $consensus;
 }
 
+# https://metacpan.org/source/GSULLIVAN/String-LCSS-1.00/lib/String/LCSS.pm
+# `undef` is returned if the susbstring length is one char or less.
+# In scalar context, returns the substring.
+# In array context, returns the index of the match root in the two args.
+sub lcss {
+    my $solns0 = ( _lcss( $_[0], $_[1] ) )[0];
+    return unless $solns0;
+    my @match = @{$solns0};
+    return if length $match[0] == 1;
+    return wantarray ? @match : $match[0];
+}
+
+sub _lcss {
+
+    # Return array-of-arrays of longest substrings and indices
+    my ( $r1, $r2 ) = @_;
+    my ( $l1, $l2, ) = ( length $r1, length $r2, );
+    ( $r1, $r2, $l1, $l2, ) = ( $r2, $r1, $l2, $l1, ) if $l1 > $l2;
+
+    my ( $best, @solns ) = 0;
+    for my $start ( 0 .. $l2 - 1 ) {
+        for my $l ( reverse 1 .. $l1 - $start ) {
+            my $substr = substr( $r1, $start, $l );
+            my $o = index( $r2, $substr );
+            next if $o < 0;
+            if ( $l > $best ) {
+                $best = length $substr;
+                @solns = [ $substr, $start, $o ];
+            }
+            elsif ( $l == $best ) {
+                push @solns, [ $substr, $start, $o ];
+            }
+        }
+    }
+    return @solns;
+}
+
 1;

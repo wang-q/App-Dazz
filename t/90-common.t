@@ -41,4 +41,76 @@ use App::Anchr::Common;
     }
 }
 
+{
+    print "#lcss\n";
+
+    my @data = (
+
+        [   [   qw{ ab
+                    b }
+            ],
+            undef,
+        ],
+
+        [   [   qw{ abc
+                    bc }
+            ],
+            "bc",
+        ],
+
+        [   [   qw{ xyzzx
+                    abcxyzefg }
+            ],
+            "xyz",
+        ],
+
+        [   [   qw{ abcxyzzx
+                    abcxyzefg }
+            ],
+            "abcxyz",
+        ],
+
+        [   [   qw{ foobar
+                    abcxyzefg }
+            ],
+            undef,
+        ],
+
+    );
+
+    for my $i ( 0 .. $#data ) {
+        my ( $refs, $expect ) = @{ $data[$i] };
+
+        my $result = App::Anchr::Common::lcss( @{$refs} );
+        is( $result, $expect, "lcss $i" );
+    }
+}
+
+{
+    print "#lcss array\n";
+
+    my @data = (
+
+        [   [   qw{ xyzzx
+                    abcxyzefg }
+            ],
+            [qw{xyz 0 3}],
+        ],
+
+        [   [   qw{ AbCdefg
+                    AbCDef }
+            ],
+            [qw{AbC 0 0}],
+        ],
+
+    );
+
+    for my $i ( 0 .. $#data ) {
+        my ( $refs, $expect ) = @{ $data[$i] };
+
+        my @results = App::Anchr::Common::lcss( @{$refs} );
+        is_deeply( \@results, $expect, "lcss array $i" );
+    }
+}
+
 done_testing();
