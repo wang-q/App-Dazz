@@ -33,6 +33,7 @@ install:
   - brew install homebrew/science/fastqc
   - brew install homebrew/science/jellyfish
   - brew install homebrew/science/picard-tools
+  - brew install homebrew/science/poa
   - brew install homebrew/science/samtools
   - brew install homebrew/science/seqtk
   - brew install homebrew/science/sickle
