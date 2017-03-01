@@ -193,6 +193,8 @@ sub judge_distance {
     my $avg = $sum / scalar( @{$d_ref} );
     return 0 if abs($avg) > $max_dis;
 
+    # max k-mer is 127.
+    # For k-unitigs, overlaps are less than k-mer
     my $v = $max - $min;
     if ( $v < 200 or abs( $v / $avg ) < 0.2 ) {
         return 1;

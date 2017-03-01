@@ -11,6 +11,13 @@ use App::Anchr::Common;
     my @data = (
 
         #                   *
+        [   [   qw{ AAATTTTGG
+                    AAAATTTTT }
+            ],
+            "AAAATTTTGG",
+        ],
+
+        #                   *
         [   [   qw{ AAAATTTTGG
                     AAAATTTTTG }
             ],
@@ -20,6 +27,13 @@ use App::Anchr::Common;
         #                      *
         [   [   qw{ TTAGCCGCTGAGAAGC
                     TTAGCCGCTGA-AAGC }
+            ],
+            "TTAGCCGCTGAGAAGC",
+        ],
+
+        #
+        [   [   qw{ CCGCTGAGAAGC
+                    TTAGCCGCTGAG }
             ],
             "TTAGCCGCTGAGAAGC",
         ],
