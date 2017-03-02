@@ -1,6 +1,7 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - Add parse_ovlp_line(), poa_consensus(), and lcss() to Common.pm
 
 0.0.17 2017-02-26T14:33:14Z
     - Add --restrict for `anchr orient`

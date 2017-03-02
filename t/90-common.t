@@ -19,6 +19,13 @@ use App::Anchr::Common;
 
         #                   *
         [   [   qw{ AAAATTTTGG
+                    }
+            ],
+            "AAAATTTTGG",
+        ],
+
+        #                   *
+        [   [   qw{ AAAATTTTGG
                     AAAATTTTTG }
             ],
             "AAAATTTTGG",
