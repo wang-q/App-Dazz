@@ -77,7 +77,7 @@
          "web" : "https://github.com/wang-q/App-Anchr"
       }
    },
-   "version" : "0.0.17",
+   "version" : "0.0.18",
    "x_authority" : "cpan:WANGQ",
    "x_serialization_backend" : "JSON::PP version 2.27400"
 }
