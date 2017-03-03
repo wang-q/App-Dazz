@@ -47,7 +47,7 @@ sub validate_args {
     }
 
     if ( !exists $opt->{outfile} ) {
-        $opt->{outfile} = Path::Tiny::path( $args->[0] )->absolute . ".merge.fasta";
+        $opt->{outfile} = Path::Tiny::path( $args->[0] )->absolute . ".contained.fasta";
     }
 }
 
@@ -66,7 +66,7 @@ sub execute {
 
     # record cwd, we'll return there
     my $cwd     = Path::Tiny->cwd;
-    my $tempdir = Path::Tiny->tempdir("anchr_merge_XXXXXXXX");
+    my $tempdir = Path::Tiny->tempdir("anchr_contained_XXXXXXXX");
     chdir $tempdir;
 
     my $basename = $tempdir->basename();
@@ -87,18 +87,18 @@ sub execute {
         $cmd .= "anchr overlap";
         $cmd .= " --len $opt->{len} --idt $opt->{idt} --parallel $opt->{parallel}";
         $cmd .= sprintf " infile.%d.fasta", $_ for ( 0 .. $#infiles );
-        $cmd .= " -o merge.ovlp.tsv";
+        $cmd .= " -o contained.ovlp.tsv";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
-        if ( !$tempdir->child("merge.ovlp.tsv")->is_file ) {
-            Carp::croak "Failed: create merge.ovlp.tsv\n";
+        if ( !$tempdir->child("contained.ovlp.tsv")->is_file ) {
+            Carp::croak "Failed: create contained.ovlp.tsv\n";
         }
     }
 
     {    # discard some SR
         my @discards;
         my %seen_pair;
-        for my $line ( $tempdir->child("merge.ovlp.tsv")->lines( { chomp => 1, } ) ) {
+        for my $line ( $tempdir->child("contained.ovlp.tsv")->lines( { chomp => 1, } ) ) {
             my $info = App::Anchr::Common::parse_ovlp_line($line);
 
             # ignore self overlapping
