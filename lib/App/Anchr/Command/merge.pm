@@ -97,6 +97,7 @@ sub execute {
 
     {    # discard some SR
         my @discards;
+        my %seen_pair;
         for my $line ( $tempdir->child("merge.ovlp.tsv")->lines( { chomp => 1, } ) ) {
             my $info = App::Anchr::Common::parse_ovlp_line($line);
 
@@ -106,6 +107,11 @@ sub execute {
             # ignore poor overlaps
             next if $info->{ovlp_idt} < $opt->{idt};
             next if $info->{ovlp_len} < $opt->{len};
+
+            # skip duplicated overlaps
+            my $pair = join( "-", sort ( $info->{f_id}, $info->{g_id} ) );
+            next if $seen_pair{$pair};
+            $seen_pair{$pair}++;
 
             # discard contained SR
             if ( $info->{contained} eq q{contains} ) {
@@ -138,14 +144,6 @@ sub execute {
                 else {
                     push @discards, $info->{f_id};
                 }
-                next;
-            }
-
-            # more strict identity
-            next if $info->{ovlp_idt} < 0.99;
-
-            if ( $info->{f_len} / $info->{g_len} > 2 and $g_r > 0.5 ) {
-                push @discards, $info->{g_id};
                 next;
             }
         }
