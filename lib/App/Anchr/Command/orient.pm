@@ -138,12 +138,8 @@ sub execute {
         }
     }
 
-    {    # To positive strands
-        my $graph = Graph->new( directed => 0 );
-
-        my @names = split /\n/, `faops size renamed.fasta | cut -f 1`;
-        my $copy = scalar @names;
-
+    my $graph = Graph->new( directed => 0 );
+    {    # Build ovlp graph
         my @lines;
         if ( $tempdir->child("restrict.ovlp.tsv")->is_file ) {
             @lines = $tempdir->child("restrict.ovlp.tsv")->lines( { chomp => 1, } );
@@ -154,72 +150,82 @@ sub execute {
 
         # load strands
         for my $line (@lines) {
-            chomp $line;
-            my @fields = split "\t", $line;
-            next unless @fields == 13;
+            my $info = App::Anchr::Common::parse_ovlp_line($line);
 
-            my $f_id     = $fields[0];
-            my $g_id     = $fields[1];
-            my $g_strand = $fields[8];
+            # ignore self overlapping
+            next if $info->{f_id} eq $info->{g_id};
 
-            $graph->add_edge( $f_id, $g_id, );
-            $graph->set_edge_attribute( $f_id, $g_id, q{strand}, $g_strand );
+            # ignore poor overlaps
+            next if $info->{ovlp_idt} < $opt->{idt};
+            next if $info->{ovlp_len} < $opt->{len};
+
+            $graph->add_edge( $info->{f_id}, $info->{g_id}, );
+            $graph->set_edge_attribute( $info->{f_id}, $info->{g_id}, q{strand},
+                $info->{g_strand} );
         }
+    }
 
-        # set first sequence to positive strand
-        my $assigned = AlignDB::IntSpan->new(0);
-        $graph->set_vertex_attribute( $names[0], q{strand}, 0 );
+    {    # To positive strands in each cc
+        for my $cc ( $graph->connected_components ) {
+            my @pieces = @{$cc};
+            my $copy   = scalar @pieces;
 
-        # need to be handled
-        my $unhandled = AlignDB::IntSpan->new->add_pair( 1, $copy - 1 );
+            next if $copy == 1;
 
-        my $prev_size = $assigned->size;
-        my $cur_loop  = 0;                 # existing point
-        while ( $assigned->size < $copy ) {
-            if ( $prev_size == $assigned->size ) {
-                $cur_loop++;
-                last if $cur_loop > 10;
-            }
-            else {
-                $cur_loop = 0;
-            }
-            $prev_size = $assigned->size;
+            # set first sequence to positive strand
+            my $assigned = AlignDB::IntSpan->new(0);
+            $graph->set_vertex_attribute( $pieces[0], q{strand}, 0 );
 
-            for my $i ( $assigned->elements ) {
-                for my $j ( $unhandled->elements ) {
-                    next unless $graph->has_edge( $names[$i], $names[$j] );
+            # need to be handled
+            my $unhandled = AlignDB::IntSpan->new->add_pair( 1, $copy - 1 );
 
-                    # assign strands
-                    my $i_strand = $graph->get_vertex_attribute( $names[$i], q{strand} );
-                    my $edge_strand
-                        = $graph->get_edge_attribute( $names[$i], $names[$j], q{strand} );
-                    if ( $edge_strand == 0 ) {
-                        $graph->set_vertex_attribute( $names[$j], q{strand}, $i_strand );
-                    }
-                    else {
-                        if ( $i_strand == 0 ) {
-                            $graph->set_vertex_attribute( $names[$j], q{strand}, 1 );
+            my $prev_size = $assigned->size;
+            my $cur_loop  = 0;                 # existing point
+            while ( $assigned->size < $copy ) {
+                if ( $prev_size == $assigned->size ) {
+                    $cur_loop++;
+                    last if $cur_loop > 10;
+                }
+                else {
+                    $cur_loop = 0;
+                }
+                $prev_size = $assigned->size;
+
+                for my $i ( $assigned->elements ) {
+                    for my $j ( $unhandled->elements ) {
+                        next unless $graph->has_edge( $pieces[$i], $pieces[$j] );
+
+                        # assign strands
+                        my $i_strand = $graph->get_vertex_attribute( $pieces[$i], q{strand} );
+                        my $edge_strand
+                            = $graph->get_edge_attribute( $pieces[$i], $pieces[$j], q{strand} );
+                        if ( $edge_strand == 0 ) {
+                            $graph->set_vertex_attribute( $pieces[$j], q{strand}, $i_strand );
                         }
                         else {
-                            $graph->set_vertex_attribute( $names[$j], q{strand}, 0 );
+                            if ( $i_strand == 0 ) {
+                                $graph->set_vertex_attribute( $pieces[$j], q{strand}, 1 );
+                            }
+                            else {
+                                $graph->set_vertex_attribute( $pieces[$j], q{strand}, 0 );
+                            }
                         }
+                        $unhandled->remove($j);
+                        $assigned->add($j);
                     }
-                    $unhandled->remove($j);
-                    $assigned->add($j);
                 }
             }
         }
+    }
 
+    {    # RC
         my @negs;
         for my $i ( sort $graph->vertices ) {
             my $i_strand = $graph->get_vertex_attribute( $i, q{strand} );
-            push @negs, $i if ( $i_strand == 1 );
+            push @negs, $i if ( defined $i_strand and $i_strand == 1 );
         }
 
         $tempdir->child("rc.list")->spew( map {"$_\n"} @negs );
-
-        # rc
-        # faops rc -l 0 -f rc.list renamed.fasta renamed.rc.fasta
 
         my $cmd;
         $cmd .= "faops rc -l 0 -n -f rc.list";
