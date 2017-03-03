@@ -1,4 +1,4 @@
-package App::Anchr::Command::merge;
+package App::Anchr::Command::contained;
 use strict;
 use warnings;
 use autodie;
@@ -6,7 +6,7 @@ use autodie;
 use App::Anchr - command;
 use App::Anchr::Common;
 
-use constant abstract => "merge super-reads, k-unitigs, or anchors";
+use constant abstract => "discard contained super-reads, k-unitigs, or anchors";
 
 sub opt_spec {
     return (

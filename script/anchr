@@ -56,5 +56,5 @@ perl -I lib/ t/13-restrict.t
 
 perl -I lib/ t/90-common.t
 
-perl -I lib/ script/anchr merge t/1_4.anchor.fasta -v -o stdout
-perl -I lib/ t/14-merge.t
+perl -I lib/ script/anchr contained t/1_4.anchor.fasta -v -o stdout
+perl -I lib/ t/14-contained.t
