@@ -21,7 +21,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr merge [options] <infile> [more infiles]";
+    return "anchr contained [options] <infile> [more infiles]";
 }
 
 sub description {
