@@ -217,7 +217,12 @@ sub g2gv {
     }
 
     for my $e ( $g->edges ) {
-        $gv->add_edge( @{$e} );
+        if ( $g->has_edge_weight( @{$e} ) ) {
+            $gv->add_edge( @{$e}, label => $g->get_edge_weight( @{$e} ) );
+        }
+        else {
+            $gv->add_edge( @{$e} );
+        }
     }
 
     Path::Tiny::path($fn)->spew_raw( $gv->as_png );
