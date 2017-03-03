@@ -12,9 +12,10 @@ sub opt_spec {
     return (
         [ "outfile|o=s", "output filename, [stdout] for screen", ],
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
-        [ "idt|i=f",      "minimal identity of overlaps", { default => 0.99 }, ],
+        [ "idt|i=f",      "minimal identity of overlaps", { default => 0.98 }, ],
         [ "parallel|p=i", "number of threads",            { default => 8 }, ],
         [ "verbose|v",    "verbose mode", ],
+        [ "png",          "write a png file via graphviz", ],
         { show_defaults => 1, }
     );
 }
@@ -122,21 +123,80 @@ sub execute {
                         $info->{f_len} - $info->{f_E} );
                 }
             }
-
         }
 
+        $tempdir->child("overlapped.txt")->spew( map {"$_\n"} $graph->vertices );
+
+        if ( $opt->{png} ) {
+            App::Anchr::Common::g2gv( $graph, $infile . ".png" );
+        }
     }
 
-    App::Anchr::Common::g2gv( $graph, $infile . ".png" );
+    {    # Output non-overlapped
+        my $cmd;
+        $cmd .= "faops some -i -l 0 $infile overlapped.txt non-overlapped.fasta";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    }
 
-    #    {    # Outputs. stdout is handeld by faops
-    #        my $cmd = "cat";
-    #        $cmd .= sprintf " infile.%d.fasta", $_ for ( 0 .. $#infiles );
-    #        $cmd .= " | faops some -i -l 0 stdin discard.txt $opt->{outfile}";
-    #        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
-    #    }
+    #----------------------------#
+    # loading sequences
+    #----------------------------#
+    my $seq_of = App::Fasops::Common::read_fasta($infile);
 
-#    chdir $cwd;
+    #----------------------------#
+    # merge
+    #----------------------------#
+    {
+        my @ts = $graph->topological_sort;
+
+        my %merge_of;
+        my $count = 1;
+        for my $wcc ( $graph->weakly_connected_components ) {
+            my @pieces = @{$wcc};
+            my $copy   = scalar @pieces;
+            next if $copy == 1;
+
+            my %idx_of;
+            for my $p (@pieces) {
+                $idx_of{$p} = App::Fasops::Common::firstidx { $_ eq $p } @ts;
+            }
+
+            @pieces = map { $_->[0] }
+                sort { $a->[1] <=> $b->[1] }
+                map { [ $_, $idx_of{$_} ] } @pieces;
+
+            my $flag_start = 1;
+            for my $i ( 0 .. $#pieces - 1 ) {
+                my $anchor_0 = $pieces[$i];
+                my $anchor_1 = $pieces[ $i + 1 ];
+
+                if ($flag_start) {
+                    $merge_of{$count} .= $seq_of->{$anchor_0};
+                    $flag_start = 0;
+                }
+
+                my $seq_anchor_1 = $seq_of->{$anchor_1};
+                my $weight = $graph->get_edge_weight( $anchor_0, $anchor_1 );
+
+                $merge_of{$count} .= substr $seq_anchor_1, -$weight;
+            }
+
+            $count++;
+        }
+
+        my @contents = map { ( ">merge_$_", $merge_of{$_}, ) } sort { $a <=> $b } keys %merge_of;
+        $tempdir->child("merged.fasta")->spew( map {"$_\n"} @contents );
+    }
+
+    {    # Outputs. stdout is handeld by faops
+        my $cmd;
+        $cmd .= "cat non-overlapped.fasta merged.fasta";
+        $cmd .= " | faops filter -l 0 stdin";
+        $cmd .= " $opt->{outfile}";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    }
+
+    chdir $cwd;
 }
 
 1;
