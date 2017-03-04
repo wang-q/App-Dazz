@@ -269,10 +269,30 @@ sub execute {
     for my $cc ( grep { scalar @{$_} == 1 } @ccs ) {
         $non_grouped->add( $cc->[0] );
     }
-    printf STDERR "Multi-matched: %s\n", $multi_matched;
-    printf STDERR "Count: %d/%d\n",      $multi_matched->size, $anchor_range->size;
-    printf STDERR "Non-grouped: %s\n",   $non_grouped;
-    printf STDERR "Count: %d/%d\n",      $non_grouped->size, $anchor_range->size;
+
+    if ( !$multi_matched->is_empty ) {
+        printf STDERR "Multi-matched: %s\n", $multi_matched;
+        printf STDERR "Count: %d/%d\n", $multi_matched->size, $anchor_range->size;
+
+        my $cmd;
+        $cmd .= "DBshow -U $fn_dazz ";
+        $cmd .= join " ", $multi_matched->as_array;
+        $cmd .= " | faops filter -l 0 stdin stdout";
+        $cmd .= " > " . $out_dir->child("multi_matched.fasta")->stringify;
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    }
+
+    if ( !$non_grouped->is_empty ) {
+        printf STDERR "Non-grouped: %s\n", $non_grouped;
+        printf STDERR "Count: %d/%d\n", $non_grouped->size, $anchor_range->size;
+
+        my $cmd;
+        $cmd .= "DBshow -U $fn_dazz ";
+        $cmd .= join " ", $non_grouped->as_array;
+        $cmd .= " | faops filter -l 0 stdin stdout";
+        $cmd .= " > " . $out_dir->child("non_grouped.fasta")->stringify;
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    }
 
     $out_dir->child("groups.txt")->remove;
     @ccs = map { $_->[0] }
