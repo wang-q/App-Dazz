@@ -196,7 +196,7 @@ sub judge_distance {
     # max k-mer is 127.
     # For k-unitigs, overlaps are less than k-mer
     my $v = $max - $min;
-    if ( $v < 200 or abs( $v / $avg ) < 0.2 ) {
+    if ( $v < 50 or abs( $v / $avg ) < 0.2 ) {
         return 1;
     }
     else {
