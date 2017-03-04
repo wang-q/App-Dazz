@@ -127,17 +127,17 @@ sub execute {
             my $f_r = $info->{ovlp_len} / $info->{f_len};
             my $g_r = $info->{ovlp_len} / $info->{g_len};
 
-            if ( $f_r <= 0.9 and $g_r > 0.9 ) {
+            if ( $f_r <= 0.95 and $g_r > 0.95 ) {
                 push @discards, $info->{g_id};
                 next;
             }
 
-            if ( $g_r <= 0.9 and $f_r > 0.9 ) {
+            if ( $g_r <= 0.95 and $f_r > 0.95 ) {
                 push @discards, $info->{f_id};
                 next;
             }
 
-            if ( $f_r > 0.9 and $g_r > 0.9 ) {
+            if ( $f_r > 0.95 and $g_r > 0.95 ) {
                 if ( $info->{f_len} >= $info->{g_len} ) {
                     push @discards, $info->{g_id};
                 }
