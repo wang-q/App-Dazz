@@ -23,4 +23,9 @@ is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 8, 'line count' );
 unlike( $result->stdout, qr{anchor576_1624}s, 'original names' );
 like( $result->stdout, qr{anchor_0\/1\/}s, 'renamed' );
 
+$result = test_app( 'App::Anchr' => [qw(contained t/contained.fasta -v -o stdout)] );
+is( ( scalar grep {/^CMD/} grep {/\S/} split( /\n/, $result->stderr ) ), 3, 'stderr line count' );
+is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 2, 'line count' );
+like( $result->stdout, qr{infile_0\/}s, 'renamed' );
+
 done_testing();
