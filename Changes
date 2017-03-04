@@ -1,7 +1,11 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+
+0.0.19 2017-03-04T05:36:25Z
     - Rename `anchr merge` to `anchr contained`
+    - `anchr orient` can be used in anchors
+    - Add a new `anchr merge` to merge oriented anchors
     - Simplify anchor.sh
 
 0.0.18 2017-03-02T12:24:38Z
