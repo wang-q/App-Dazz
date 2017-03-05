@@ -77,11 +77,20 @@ sub execute {
     # Load overlaps and build links
     #----------------------------#
 
-    # anchors match to multiple parts of a long read
-    my $multi_matched = AlignDB::IntSpan->new;
+    # Anchors may match to multiple parts of a long read.
+    # Multi-matched overlapps would create cyclic paths and ruin the graph.
+    # Some of these matchs are real, but more are false positives.
+    # If sequences from a ZMW are not splitted into subreads properly, then a multi-matched overlap
+    # is identified.
+    #       ===
+    # ------------>
+    #              )
+    #   <----------
+    #       ===
+    my $multi_matched = AlignDB::IntSpan->new;    # long_id
 
-    my $links_of   = {};    # long_id => { anchor_id => overlap_on_long, }
-    my $strands_of = {};    # long_id => { anchor_id => strand_to_long }
+    my $links_of   = {};                          # long_id => { anchor_id => overlap_on_long, }
+    my $strands_of = {};                          # long_id => { anchor_id => strand_to_long }
     {
         open my $in_fh, "<", $fn_ovlp;
 
@@ -124,12 +133,12 @@ sub execute {
                 else {
                     my $i_set = $matched->intersect( $multi_match_of{$pair} );
                     if ( $i_set->is_empty ) {
-                        $multi_matched->add($f_id);
+                        $multi_matched->add($g_id);
                     }
                     elsif ( $i_set->size
                         / List::Util::max( $matched->size, $multi_match_of{$pair}->size ) < 0.9 )
                     {
-                        $multi_matched->add($f_id);
+                        $multi_matched->add($g_id);
                     }
                 }
             }
@@ -155,6 +164,15 @@ sub execute {
             }
         }
         close $in_fh;
+    }
+
+    for my $long_id ( $multi_matched->as_array ) {
+        if ( exists $links_of->{$long_id} ) {
+            delete $links_of->{$long_id};
+        }
+        if ( exists $strands_of->{$long_id} ) {
+            delete $strands_of->{$long_id};
+        }
     }
 
     my $graph = Graph->new( directed => 0 );
@@ -227,22 +245,17 @@ sub execute {
             }
         }
 
-        # Delete multi-matched nodes
-        for my $node ( $graph->vertices ) {
-            if ( $multi_matched->contains($node) ) {
-                $graph->delete_vertex($node);
-            }
-        }
-
         # Delete unreliable edges
         for my $edge ( $graph->edges ) {
-            my $long_ids_ref = $graph->get_edge_attribute( @{$edge}, "long_ids" );
 
+            # numbers of long reads less than $opt->{coverage}
+            my $long_ids_ref = $graph->get_edge_attribute( @{$edge}, "long_ids" );
             if ( scalar @{$long_ids_ref} < $opt->{coverage} ) {
                 $graph->delete_edge( @{$edge} );
                 next;
             }
 
+            # non-consistent distances
             my $distances_ref = $graph->get_edge_attribute( @{$edge}, "distances" );
             if (!App::Anchr::Common::judge_distance( $distances_ref, $opt->{coverage}, $opt->{max},
                 )
@@ -252,6 +265,7 @@ sub execute {
                 next;
             }
 
+            # non-consistent strands
             my $strands_ref = $graph->get_edge_attribute( @{$edge}, "strands" );
             my @strands = App::Fasops::Common::uniq( @{$strands_ref} );
             if ( @strands != 1 ) {
@@ -268,18 +282,6 @@ sub execute {
     my $non_grouped = AlignDB::IntSpan->new;
     for my $cc ( grep { scalar @{$_} == 1 } @ccs ) {
         $non_grouped->add( $cc->[0] );
-    }
-
-    if ( !$multi_matched->is_empty ) {
-        printf STDERR "Multi-matched: %s\n", $multi_matched;
-        printf STDERR "Count: %d/%d\n", $multi_matched->size, $anchor_range->size;
-
-        my $cmd;
-        $cmd .= "DBshow -U $fn_dazz ";
-        $cmd .= join " ", $multi_matched->as_array;
-        $cmd .= " | faops filter -l 0 stdin stdout";
-        $cmd .= " > " . $out_dir->child("multi_matched.fasta")->stringify;
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
     if ( !$non_grouped->is_empty ) {
