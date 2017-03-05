@@ -10,7 +10,7 @@ use constant abstract => "layout anthor group";
 
 sub opt_spec {
     return (
-        [ "outfile|o=s", "output filename, [stdout] for screen", ],
+        [ "outfile|o=s", "output filename", ],
         [ 'border=i', 'length of borders in anchors', { default => 100 }, ],
         [ 'pa=s',     'prefix of anchors',            { default => "anchor" }, ],
         [ 'oa=s',     'overlaps between anchors', ],
@@ -241,17 +241,17 @@ sub execute {
     my @paths;
     if ( $anchor_graph->is_dag ) {
         if ( scalar $anchor_graph->exterior_vertices == 2 ) {
-            print "    Linear\n";
+            print STDERR "    Linear\n";
 
             my @ts = $anchor_graph->topological_sort;
             push @paths, \@ts;
         }
         else {
-            print "    Branched\n";
+            print STDERR "    Branched\n";
         }
     }
     else {
-        print "    Cyclic\n";
+        print STDERR "    Cyclic\n";
     }
 
     my $basename = Path::Tiny::path( $opt->{outfile} )->basename();
@@ -375,7 +375,6 @@ sub execute {
                     $contig .= $seq_anchor_1;
                 }
             }
-
         }
 
         $contig .= "\n";
