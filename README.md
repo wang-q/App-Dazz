@@ -13,11 +13,13 @@ App::Anchr - **A**ssembler of **N**-free **CHR**omosomes
         commands: list the application's commands
             help: display a command's help screen
 
+       contained: discard contained super-reads, k-unitigs, or anchors
            cover: trusted regions in the first file covered by the second
         dazzname: rename FASTA reads for dazz_db
              dep: check or install dependances
            group: group anthors by long reads
-           merge: merge super-reads, k-unitigs, or anchors
+          layout: layout anthor group
+           merge: merge overlapped super-reads, k-unitigs, or anchors
           orient: orient overlapped sequences to the same strand
          overlap: detect overlaps by daligner
         overlap2: detect overlaps between two (large) files by daligner
@@ -38,7 +40,7 @@ App::Anchr is tend to be an Assembler of N-free CHRomosomes.
     cpanm --installdeps https://github.com/wang-q/App-Anchr.git
     curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/install_dep.sh | bash
     curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/check_dep.sh | bash
-    cpanm -nq https://github.com/wang-q/App-Anchr/archive/0.0.18.tar.gz
+    cpanm -nq https://github.com/wang-q/App-Anchr/archive/0.1.0.tar.gz
     # cpanm -nq https://github.com/wang-q/App-Anchr.git
 
 # AUTHOR
