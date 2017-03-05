@@ -77,8 +77,9 @@ sub execute {
 
     {    # Preprocess first file for dazzler
         my $cmd;
-        $cmd .= "anchr dazzname --prefix $opt->{p1} $file1 -o stdout";
-        $cmd .= " | faops filter -l 0 -a $opt->{len} stdin $opt->{p1}.fasta";
+        $cmd .= "faops filter -l 0 -a $opt->{len} $file1 stdout";
+        $cmd .= " | anchr dazzname --prefix $opt->{p1} stdin -o stdout";
+        $cmd .= " > $opt->{p1}.fasta";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
@@ -95,8 +96,9 @@ sub execute {
     {    # Preprocess second file for dazzler
         my $second_start = $first_count + 1;
         my $cmd;
-        $cmd .= "anchr dazzname --prefix $opt->{p2} --start $second_start $file2 -o stdout";
-        $cmd .= " | faops filter -l 0 -a $opt->{len} stdin $opt->{p2}.fasta";
+        $cmd .= "faops filter -l 0 -a $opt->{len} $file2 stdout";
+        $cmd .= " | anchr dazzname --prefix $opt->{p2} --start $second_start stdin -o stdout";
+        $cmd .= " > $opt->{p2}.fasta";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
