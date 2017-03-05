@@ -2,6 +2,12 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.1.0 2017-03-05T12:42:53Z
+    - `anchr layout`
+    - Merge all read groups of E. coli
+    - Discard *long reads* multi-matched by anchors
+    - Filter short reads before dazzname
+
 0.0.19 2017-03-04T05:36:25Z
     - Rename `anchr merge` to `anchr contained`
     - `anchr orient` can be used in anchors
