@@ -175,12 +175,10 @@ sub serial2name {
 }
 
 sub judge_distance {
-    my $d_ref    = shift;
-    my $coverage = shift || 2;
-    my $max_dis  = shift || 5000;
+    my $d_ref = shift;
+    my $max_dis = shift || 5000;
 
     return 0 unless defined $d_ref;
-    return 0 if ( scalar @{$d_ref} < $coverage );
 
     my $sum = 0;
     my $min = $d_ref->[0];
@@ -191,12 +189,12 @@ sub judge_distance {
         if ( $d > $max ) { $max = $d; }
     }
     my $avg = $sum / scalar( @{$d_ref} );
-    return 0 if abs($avg) > $max_dis;
+    return 0 if $avg > $max_dis;
 
     # max k-mer is 127.
     # For k-unitigs, overlaps are less than k-mer
     my $v = $max - $min;
-    if ( $v < 50 or abs( $v / $avg ) < 0.2 ) {
+    if ( $v < 20 or abs( $v / $avg ) < 0.2 ) {
         return 1;
     }
     else {

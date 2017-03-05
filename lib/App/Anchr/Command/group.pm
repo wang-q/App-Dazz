@@ -16,6 +16,7 @@ sub opt_spec {
         [ 'max=i',        'max distance',                 { default  => 5000 }, ],
         [ "len|l=i",      "minimal length of overlaps",   { default  => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default  => 0.85 }, ],
+        [ 'oa=s',         'overlaps between anchors', ],
         [ "parallel|p=i", "number of threads",            { default  => 4 }, ],
         [ "verbose|v",    "verbose mode", ],
         [ "png",          "write a png file via graphviz", ],
@@ -51,6 +52,12 @@ sub validate_args {
 
     if ( !AlignDB::IntSpan->valid( $opt->{range} ) ) {
         $self->usage_error("Invalid --range [$opt->{range}]\n");
+    }
+
+    if ( $opt->{oa} ) {
+        if ( !Path::Tiny::path( $opt->{oa} )->is_file ) {
+            $self->usage_error("The overlap file [$opt->{oa}] doesn't exist.\n");
+        }
     }
 
     if ( !exists $opt->{dir} ) {
@@ -245,8 +252,50 @@ sub execute {
             }
         }
 
+        # overlaps between anchors
+        my $anchor_ovlp_of = {};
+        if ( $opt->{oa} ) {
+            open my $in_fh, "<", $opt->{oa};
+
+            while ( my $line = <$in_fh> ) {
+                my $info = App::Anchr::Common::parse_ovlp_line($line);
+
+                # ignore self overlapping
+                next if $info->{f_id} eq $info->{g_id};
+
+                my $pair = join( "-", sort ( $info->{f_id}, $info->{g_id} ) );
+
+                $anchor_ovlp_of->{$pair} = $info;
+            }
+            close $in_fh;
+        }
+
         # Delete unreliable edges
         for my $edge ( $graph->edges ) {
+
+            # if enough long reads support overlaps between anchors, ignore other long reads
+            my $pair = join( "-", sort ( @{$edge} ) );
+            if ( exists $anchor_ovlp_of->{$pair} ) {
+                my $d_ref = $graph->get_edge_attribute( @{$edge}, "distances" );
+                my @indexes = grep { $d_ref->[$_] < 0 } ( 0 .. scalar @{$d_ref} - 1 );
+
+                if ( @indexes >= $opt->{coverage} and ( @indexes / @{$d_ref} ) >= 0.6 ) {
+                    my $id_ref     = $graph->get_edge_attribute( @{$edge}, "long_ids" );
+                    my $strand_ref = $graph->get_edge_attribute( @{$edge}, "strands" );
+
+                    # distances are negative
+                    my ( @new_d, @new_id, @new_strand );
+                    for my $i (@indexes) {
+                        push @new_d,      $d_ref->[$i];
+                        push @new_id,     $id_ref->[$i];
+                        push @new_strand, $strand_ref->[$i];
+                    }
+
+                    $graph->set_edge_attribute( @{$edge}, "distances", \@new_d );
+                    $graph->set_edge_attribute( @{$edge}, "long_ids",  \@new_id );
+                    $graph->set_edge_attribute( @{$edge}, "strands",   \@new_strand );
+                }
+            }
 
             # numbers of long reads less than $opt->{coverage}
             my $long_ids_ref = $graph->get_edge_attribute( @{$edge}, "long_ids" );
@@ -257,10 +306,7 @@ sub execute {
 
             # non-consistent distances
             my $distances_ref = $graph->get_edge_attribute( @{$edge}, "distances" );
-            if (!App::Anchr::Common::judge_distance( $distances_ref, $opt->{coverage}, $opt->{max},
-                )
-                )
-            {
+            if ( !App::Anchr::Common::judge_distance( $distances_ref, $opt->{max}, ) ) {
                 $graph->delete_edge( @{$edge} );
                 next;
             }
