@@ -213,6 +213,52 @@ sub execute {
     my $seq_of = App::Fasops::Common::read_fasta( $args->[2] );
 
     #----------------------------#
+    # link anchors and break branches
+    #----------------------------#
+    my @paths;
+    if ( $anchor_graph->is_dag ) {
+        if ( scalar $anchor_graph->exterior_vertices == 2 ) {
+            print STDERR "    Linear\n";
+
+            my @ts = $anchor_graph->topological_sort;
+            push @paths, \@ts;
+        }
+        else {
+            print STDERR "    Branched\n";
+
+            my @ts = $anchor_graph->topological_sort;
+
+            my @branchings;
+            my %idx_of;
+            for my $idx ( 0 .. $#ts ) {
+                $idx_of{ $ts[$idx] } = $idx;
+
+                if (   $anchor_graph->out_degree( $ts[$idx] ) > 1
+                    or $anchor_graph->in_degree( $ts[$idx] ) > 1 )
+                {
+                    push @branchings, $ts[$idx];
+                }
+            }
+
+            $anchor_graph->delete_vertex($_) for @branchings;
+
+            for my $wcc ( $anchor_graph->weakly_connected_components ) {
+                my @cc = map { $_->[0] }
+                    sort { $a->[1] <=> $b->[1] }
+                    map { [ $_, $idx_of{$_} ] } @{$wcc};
+
+                push @paths, \@cc;
+            }
+
+            # standalone branching nodes
+            push @paths, [$_] for @branchings;
+        }
+    }
+    else {
+        print STDERR "    Cyclic\n";
+    }
+
+    #----------------------------#
     # existing overlaps
     #----------------------------#
     my $existing_ovlp_of = {};
@@ -235,25 +281,6 @@ sub execute {
         close $in_fh;
     }
 
-    #----------------------------#
-    # link anchors
-    #----------------------------#
-    my @paths;
-    if ( $anchor_graph->is_dag ) {
-        if ( scalar $anchor_graph->exterior_vertices == 2 ) {
-            print STDERR "    Linear\n";
-
-            my @ts = $anchor_graph->topological_sort;
-            push @paths, \@ts;
-        }
-        else {
-            print STDERR "    Branched\n";
-        }
-    }
-    else {
-        print STDERR "    Cyclic\n";
-    }
-
     my $basename = Path::Tiny::path( $opt->{outfile} )->basename();
     ($basename) = split /\./, $basename;
     my $contig;
@@ -262,6 +289,13 @@ sub execute {
         $contig .= sprintf ">%s_%d\n", $basename, $count;
 
         my @nodes = @{ $paths[$i] };
+
+        if ( @nodes == 1 ) {
+            $contig .= $seq_of->{ $nodes[0] };
+            $contig .= "\n";
+            $count++;
+            next;
+        }
 
         my $flag_start = 1;
         for my $j ( 0 .. $#nodes - 1 ) {
@@ -378,6 +412,7 @@ sub execute {
         }
 
         $contig .= "\n";
+        $count++;
     }
 
     Path::Tiny::path( $opt->{outfile} )->spew($contig);

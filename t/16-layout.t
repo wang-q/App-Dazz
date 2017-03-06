@@ -19,22 +19,22 @@ like( $result->error, qr{need .+input file}, 'need 3 infiles' );
 $result = test_app( 'App::Anchr' => [qw(layout t/not_exists t/not_exists t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
-#{
-#    # real run
-#    my $tempdir = Path::Tiny->tempdir;
-#    test_app( 'App::Anchr' =>
-#            [ qw(overlap2 t/1_4.anchor.fasta t/1_4.pac.fasta), "-d", $tempdir->stringify, ] );
-#
-#    $result = test_app(
-#        'App::Anchr' => [
-#            qw(layout --png --range 1-4),
-#            $tempdir->child("anchorLong.db")->stringify,
-#            $tempdir->child("anchorLong.ovlp.tsv")->stringify,
-#        ]
-#    );
-#
-#    ok( $tempdir->child("layout")->is_dir,              'output directory exists' );
-#    ok( $tempdir->child("layout")->child("layouts.txt"), 'layouts.txt exists' );
-#}
+{
+    my $tempdir = Path::Tiny->tempdir;
+    $result = test_app(
+        'App::Anchr' => [
+            qw(layout t/24_4.ovlp.tsv t/24_4.relation.tsv t/24_4.strand.fasta),
+            qw(--oa t/24_4.anchor.ovlp.tsv -o),
+            $tempdir->child('conTig.fasta'),
+        ]
+    );
+    is( $result->error, undef, 'no exceptions' );
+    is( ( scalar grep {/\S/} split( /\n/, $result->stderr ) ), 1, 'stderr line count' );
+    is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 0, 'line count' );
+
+    ok( $tempdir->child("conTig.fasta")->is_file, 'outfile exists' );
+
+    is( scalar $tempdir->child("conTig.fasta")->lines, 2, 'line count' );
+}
 
 done_testing();
