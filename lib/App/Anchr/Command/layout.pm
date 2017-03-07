@@ -256,13 +256,13 @@ sub execute {
     }
     else {
         print STDERR "    Cyclic\n";
-        while ( $graph->has_a_cycle ) {
-            my @cycles = $graph->find_a_cycle;
+        while ( $anchor_graph->has_a_cycle ) {
+            my @cycles = $anchor_graph->find_a_cycle;
             $anchor_graph->delete_vertex($_) for @cycles;
             push @paths, [$_] for @cycles;
         }
 
-        if ( scalar $graph->vertices ) {
+        if ( scalar $anchor_graph->vertices ) {
             my @ts = $anchor_graph->topological_sort;
             my %idx_of;
             for my $idx ( 0 .. $#ts ) {
