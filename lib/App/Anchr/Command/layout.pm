@@ -256,6 +256,27 @@ sub execute {
     }
     else {
         print STDERR "    Cyclic\n";
+        while ( $graph->has_a_cycle ) {
+            my @cycles = $graph->find_a_cycle;
+            $anchor_graph->delete_vertex($_) for @cycles;
+            push @paths, [$_] for @cycles;
+        }
+
+        if ( scalar $graph->vertices ) {
+            my @ts = $anchor_graph->topological_sort;
+            my %idx_of;
+            for my $idx ( 0 .. $#ts ) {
+                $idx_of{ $ts[$idx] } = $idx;
+            }
+
+            for my $wcc ( $anchor_graph->weakly_connected_components ) {
+                my @cc = map { $_->[0] }
+                    sort { $a->[1] <=> $b->[1] }
+                    map { [ $_, $idx_of{$_} ] } @{$wcc};
+
+                push @paths, \@cc;
+            }
+        }
     }
 
     #----------------------------#
