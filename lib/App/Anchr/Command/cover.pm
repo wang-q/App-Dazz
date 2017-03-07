@@ -221,7 +221,7 @@ sub execute {
         $cmd .= " $opt->{outfile}";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
-        $tempdir->child("covered.yml")->move("$opt->{outfile}.covered.yml");
+        $tempdir->child("covered.yml")->copy("$opt->{outfile}.covered.yml");
     }
 
     chdir $cwd;
