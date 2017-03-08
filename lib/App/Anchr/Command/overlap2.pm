@@ -17,6 +17,7 @@ sub opt_spec {
         [ "block|b=i",    "block size in Mbp",            { default => 20 }, ],
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.8 }, ],
+        [ "all",          "all overlaps instead of proper overlaps", ],
         [ "parallel|p=i", "number of threads",            { default => 8 }, ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
@@ -199,6 +200,9 @@ sub execute {
 
     {    # outputs
         my $cmd = "LAshow -o $opt->{pd}.db $opt->{pd}.las > $opt->{pd}.show.txt";
+        if ( $opt->{all} ) {
+            $cmd = "LAshow $opt->{pd}.db $opt->{pd}.las > $opt->{pd}.show.txt";
+        }
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("$opt->{pd}.show.txt")->is_file ) {
