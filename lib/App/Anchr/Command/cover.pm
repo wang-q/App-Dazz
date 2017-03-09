@@ -13,6 +13,7 @@ sub opt_spec {
         [ "outfile|o=s", "output filename, [stdout] for screen", ],
         [ "block|b=i",    "block size in Mbp",            { default => 20 }, ],
         [ 'coverage|c=i', 'minimal coverage',             { default => 2 }, ],
+        [ 'max|m=i',      'maximum contained',            { default => 40 }, ],
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.8 }, ],
         [ "parallel|p=i", "number of threads",            { default => 8 }, ],
@@ -92,6 +93,9 @@ sub execute {
     # anchor_id => tier_of => { 1 => intspan, 2 => intspan}
     my $covered = {};
 
+    # anchor_id => COUNT
+    my $contained_of = {};
+
     {
         # load overlaps and build coverages
         my %seen_pair;
@@ -138,6 +142,9 @@ sub execute {
                 App::Anchr::Common::bump_coverage( $covered->{ $info->{f_id} },
                     $beg, $end, $opt->{coverage} );
 
+                if ( $info->{contained} eq "contained" ) {
+                    $contained_of->{ $info->{f_id} }++;
+                }
             }
             elsif ( $first_range->contains( $info->{g_id} )
                 and !$first_range->contains( $info->{f_id} ) )
@@ -153,6 +160,10 @@ sub execute {
                 my ( $beg, $end, ) = App::Anchr::Common::beg_end( $info->{g_B}, $info->{g_E}, );
                 App::Anchr::Common::bump_coverage( $covered->{ $info->{g_id} },
                     $beg, $end, $opt->{coverage} );
+
+                if ( $info->{contained} eq "contains" ) {
+                    $contained_of->{ $info->{g_id} }++;
+                }
             }
         }
     }
@@ -172,7 +183,17 @@ sub execute {
                 $region_of->{$serial} = $covered->{$serial}{ $opt->{coverage} }->runlist;
             }
         }
-        my $non_trusted = $first_range->diff($trusted)->diff($non_overlapped);
+
+        my $repeat_like = AlignDB::IntSpan->new;
+        for my $serial ( keys %{$contained_of} ) {
+            if ( $contained_of->{$serial} > $opt->{max} ) {
+                $repeat_like->add($serial);
+                delete $covered->{$serial};
+            }
+        }
+        $trusted = $trusted->diff($repeat_like);
+
+        my $non_trusted = $first_range->diff($trusted)->diff($non_overlapped)->diff($repeat_like);
 
         $tempdir->child("covered.fasta")->remove;
         for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
@@ -212,6 +233,7 @@ sub execute {
                 "Trusted count"  => $trusted->size,
                 "Non-trusted"    => $non_trusted->runlist,
                 "Non-overlapped" => $non_overlapped->runlist,
+                "Repeat-like"    => $repeat_like->runlist,
                 "region_of"      => $region_of,
             }
         );
