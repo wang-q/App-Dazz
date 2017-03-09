@@ -97,59 +97,62 @@ sub execute {
         my %seen_pair;
 
         for my $line ( $tempdir->child("$basename.ovlp.tsv")->lines( { chomp => 1 } ) ) {
-            my @fields = split "\t", $line;
-            next unless @fields == 13;
-
-            my ( $f_id,     $g_id, $ovlp_len, $ovlp_idt ) = @fields[ 0 .. 3 ];
-            my ( $f_strand, $f_B,  $f_E,      $f_len )    = @fields[ 4 .. 7 ];
-            my ( $g_strand, $g_B,  $g_E,      $g_len )    = @fields[ 8 .. 11 ];
-            my $contained = $fields[12];
+            my $info = App::Anchr::Common::parse_ovlp_line($line);
 
             # ignore self overlapping
-            next if $f_id eq $g_id;
+            next if $info->{f_id} eq $info->{g_id};
 
             # ignore poor overlaps
-            next if $ovlp_idt < $opt->{idt};
-            next if $ovlp_len < $opt->{len};
+            next if $info->{ovlp_idt} < $opt->{idt};
+            next if $info->{ovlp_len} < $opt->{len};
+
+            # skip duplicated overlaps
+            my $pair = join( "-", sort ( $info->{f_id}, $info->{g_id} ) );
+            next if $seen_pair{$pair};
+            $seen_pair{$pair}++;
 
             # only want anchor-long overlaps
-            if ( $first_range->contains($f_id) and $first_range->contains($g_id) ) {
-                next;
-            }
-            if ( !$first_range->contains($f_id) and !$first_range->contains($g_id) ) {
-                next;
-            }
-
+            if (    $first_range->contains( $info->{f_id} )
+                and $first_range->contains( $info->{g_id} ) )
             {
-                # skip duplicated overlaps
-                my $pair = join( "-", sort ( $f_id, $g_id ) );
-                next if $seen_pair{$pair};
-                $seen_pair{$pair}++;
+                next;
+            }
+            if (    !$first_range->contains( $info->{f_id} )
+                and !$first_range->contains( $info->{g_id} ) )
+            {
+                next;
             }
 
-            if ( $first_range->contains($f_id) and !$first_range->contains($g_id) ) {
-                if ( !exists $covered->{$f_id} ) {
-                    $covered->{$f_id} = { all => AlignDB::IntSpan->new->add_pair( 1, $f_len ), };
+            if ( $first_range->contains( $info->{f_id} )
+                and !$first_range->contains( $info->{g_id} ) )
+            {
+                if ( !exists $covered->{ $info->{f_id} } ) {
+                    $covered->{ $info->{f_id} }
+                        = { all => AlignDB::IntSpan->new->add_pair( 1, $info->{f_len} ), };
                     for my $i ( 1 .. $opt->{coverage} ) {
-                        $covered->{$f_id}{$i} = AlignDB::IntSpan->new;
+                        $covered->{ $info->{f_id} }{$i} = AlignDB::IntSpan->new;
                     }
                 }
 
-                my ( $beg, $end, ) = App::Anchr::Common::beg_end( $f_B, $f_E, );
-                App::Anchr::Common::bump_coverage( $covered->{$f_id}, $beg, $end,
-                    $opt->{coverage} );
+                my ( $beg, $end, ) = App::Anchr::Common::beg_end( $info->{f_B}, $info->{f_E}, );
+                App::Anchr::Common::bump_coverage( $covered->{ $info->{f_id} },
+                    $beg, $end, $opt->{coverage} );
+
             }
-            elsif ( $first_range->contains($g_id) and !$first_range->contains($f_id) ) {
-                if ( !exists $covered->{$g_id} ) {
-                    $covered->{$g_id} = { all => AlignDB::IntSpan->new->add_pair( 1, $g_len ), };
+            elsif ( $first_range->contains( $info->{g_id} )
+                and !$first_range->contains( $info->{f_id} ) )
+            {
+                if ( !exists $covered->{ $info->{g_id} } ) {
+                    $covered->{ $info->{g_id} }
+                        = { all => AlignDB::IntSpan->new->add_pair( 1, $info->{g_len} ), };
                     for my $i ( 1 .. $opt->{coverage} ) {
-                        $covered->{$g_id}{$i} = AlignDB::IntSpan->new;
+                        $covered->{ $info->{g_id} }{$i} = AlignDB::IntSpan->new;
                     }
                 }
 
-                my ( $beg, $end, ) = App::Anchr::Common::beg_end( $g_B, $g_E, );
-                App::Anchr::Common::bump_coverage( $covered->{$g_id}, $beg, $end,
-                    $opt->{coverage} );
+                my ( $beg, $end, ) = App::Anchr::Common::beg_end( $info->{g_B}, $info->{g_E}, );
+                App::Anchr::Common::bump_coverage( $covered->{ $info->{g_id} },
+                    $beg, $end, $opt->{coverage} );
             }
         }
     }
