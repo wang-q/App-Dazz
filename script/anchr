@@ -63,3 +63,5 @@ perl -I lib/ script/anchr merge t/merge.fasta -v -o stdout
 perl -I lib/ t/15-merge.t
 
 perl -I lib/ t/16-layout.t
+
+perl -I lib/ t/17-break.t
