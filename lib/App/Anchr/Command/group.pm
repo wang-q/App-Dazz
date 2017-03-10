@@ -183,6 +183,9 @@ sub execute {
     }
 
     my $graph = Graph->new( directed => 0 );
+    for my $serial ( $anchor_range->as_array ) {
+        $graph->add_vertex($serial);
+    }
     {    # Grouping
         for my $long_id ( sort { $a <=> $b } keys %{$links_of} ) {
             my @anchors = sort { $a <=> $b }
