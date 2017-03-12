@@ -13,6 +13,7 @@ sub opt_spec {
         [ "outfile|o=s", "output filename, [stdout] for screen", ],
         [ "len|l=i",      "minimal length of overlaps",   { default => 500 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.98 }, ],
+        [ "proportion=f", "nearly contained proportion",  { default => 0.98 }, ],
         [ "prefix=s",     "prefix of names",              { default => "infile" }, ],
         [ "parallel|p=i", "number of threads",            { default => 8 }, ],
         [ "verbose|v",    "verbose mode", ],
@@ -127,17 +128,17 @@ sub execute {
             my $f_r = $info->{ovlp_len} / $info->{f_len};
             my $g_r = $info->{ovlp_len} / $info->{g_len};
 
-            if ( $f_r <= 0.95 and $g_r > 0.95 ) {
+            if ( $f_r <= $opt->{proportion} and $g_r > $opt->{proportion} ) {
                 push @discards, $info->{g_id};
                 next;
             }
 
-            if ( $g_r <= 0.95 and $f_r > 0.95 ) {
+            if ( $g_r <= $opt->{proportion} and $f_r > $opt->{proportion} ) {
                 push @discards, $info->{f_id};
                 next;
             }
 
-            if ( $f_r > 0.95 and $g_r > 0.95 ) {
+            if ( $f_r > $opt->{proportion} and $g_r > $opt->{proportion} ) {
                 if ( $info->{f_len} >= $info->{g_len} ) {
                     push @discards, $info->{g_id};
                 }
