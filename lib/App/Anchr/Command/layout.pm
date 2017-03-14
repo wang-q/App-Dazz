@@ -334,7 +334,12 @@ sub execute {
                 $count++;
                 $contig .= "\n";
                 $contig .= sprintf ">%s_%d\n", $basename, $count;
-                $flag_start = 1;
+                if ( $j == $#nodes - 1 ) {
+                    $contig .= $seq_of->{$anchor_1};
+                }
+                else {
+                    $flag_start = 1;
+                }
                 next;
             }
 
