@@ -97,7 +97,7 @@ sub execute {
     {    # Preprocess second file for dazzler
         my $second_start = $first_count + 1;
         my $cmd;
-        $cmd .= "faops filter -l 0 -a $opt->{len} $file2 stdout";
+        $cmd .= "faops filter -l 0 -u -a $opt->{len} $file2 stdout";
         $cmd .= " | anchr dazzname --prefix $opt->{p2} --start $second_start stdin -o stdout";
         $cmd .= " > $opt->{p2}.fasta";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
