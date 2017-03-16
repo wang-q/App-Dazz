@@ -11,11 +11,12 @@ use constant abstract => "group anthors by long reads";
 sub opt_spec {
     return (
         [ "dir|d=s", "output directory", ],
-        [ 'range|r=s',    'ranges of anchors',            { required => 1 }, ],
-        [ 'coverage|c=i', 'minimal coverage',             { default  => 2 }, ],
-        [ 'max=i',        'max distance',                 { default  => 5000 }, ],
+        [ "range|r=s",    "ranges of anchors",            { required => 1 }, ],
+        [ "coverage|c=i", "minimal coverage",             { default  => 2 }, ],
+        [ "max=i",        "max distance",                 { default  => 5000 }, ],
         [ "len|l=i",      "minimal length of overlaps",   { default  => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default  => 0.85 }, ],
+        [ "keep",         "don't remove multi-matched reads", ],
         [ 'oa=s',         'overlaps between anchors', ],
         [ "parallel|p=i", "number of threads",            { default  => 4 }, ],
         [ "verbose|v",    "verbose mode", ],
@@ -173,12 +174,14 @@ sub execute {
         close $in_fh;
     }
 
-    for my $long_id ( $multi_matched->as_array ) {
-        if ( exists $links_of->{$long_id} ) {
-            delete $links_of->{$long_id};
-        }
-        if ( exists $strands_of->{$long_id} ) {
-            delete $strands_of->{$long_id};
+    if ( !$opt->{keep} ) {
+        for my $long_id ( $multi_matched->as_array ) {
+            if ( exists $links_of->{$long_id} ) {
+                delete $links_of->{$long_id};
+            }
+            if ( exists $strands_of->{$long_id} ) {
+                delete $strands_of->{$long_id};
+            }
         }
     }
 
