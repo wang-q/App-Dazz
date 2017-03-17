@@ -24,6 +24,7 @@ App::Anchr - B<A>ssembler of B<N>-free B<CHR>omosomes
         commands: list the application's commands
             help: display a command's help screen
 
+           break: break long reads by anthors
        contained: discard contained super-reads, k-unitigs, or anchors
            cover: trusted regions in the first file covered by the second
         dazzname: rename FASTA reads for dazz_db
