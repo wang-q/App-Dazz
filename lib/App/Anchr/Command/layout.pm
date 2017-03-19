@@ -12,6 +12,7 @@ sub opt_spec {
     return (
         [ "outfile|o=s", "output filename", ],
         [ 'border=i', 'length of borders in anchors', { default => 100 }, ],
+        [ "max=i",    "max distance",                 { default => 5000 }, ],
         [ 'pa=s',     'prefix of anchors',            { default => "anchor" }, ],
         [ 'oa=s',     'overlaps between anchors', ],
         [ "png",      "write a png file via graphviz", ],
@@ -278,6 +279,7 @@ sub execute {
             }
         }
     }
+    Path::Tiny::path( $opt->{outfile} . ".paths.yml" )->spew( YAML::Syck::Dump( \@paths ) );
 
     #----------------------------#
     # existing overlaps
@@ -337,9 +339,8 @@ sub execute {
                 if ( $j == $#nodes - 1 ) {
                     $contig .= $seq_of->{$anchor_1};
                 }
-                else {
-                    $flag_start = 1;
-                }
+
+                $flag_start = 1;
                 next;
             }
 
