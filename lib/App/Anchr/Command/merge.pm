@@ -125,6 +125,11 @@ sub execute {
             }
         }
 
+        while ( $graph->has_a_cycle ) {
+            my @cycles = $graph->find_a_cycle;
+            $graph->delete_vertex($_) for @cycles;
+        }
+
         $tempdir->child("overlapped.txt")->spew( map {"$_\n"} $graph->vertices );
 
         if ( $opt->{png} ) {
