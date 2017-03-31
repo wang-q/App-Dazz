@@ -2,6 +2,10 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.1.4 2017-03-31T18:58:35Z
+    - `anchr trim` in cwd
+    - Treat cyclic nodes as non-overlapped in `anchr merge`
+
 0.1.3 2017-03-20T01:57:35Z
     - Add --proportion to contained
     - Add --keep to group
