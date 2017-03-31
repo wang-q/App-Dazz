@@ -127,7 +127,17 @@ sub execute {
 
         while ( $graph->has_a_cycle ) {
             my @cycles = $graph->find_a_cycle;
-            $graph->delete_vertex($_) for @cycles;
+
+            for my $v (@cycles) {
+                for my $s ( $graph->successors($v) ) {
+                    $graph->delete_edge( $v, $s ) if $graph->has_edge( $v, $s );
+                }
+
+                for my $p ( $graph->predecessors($v) ) {
+                    $graph->delete_edge( $p, $v ) if $graph->has_edge( $p, $v );
+                }
+                $graph->delete_vertex($v);
+            }
         }
 
         $tempdir->child("overlapped.txt")->spew( map {"$_\n"} $graph->vertices );
