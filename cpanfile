@@ -9,9 +9,9 @@ requires 'Template',         '2.26';
 requires 'YAML::Syck',       '1.29';
 requires 'AlignDB::IntSpan', '1.1.0';
 requires 'AlignDB::Stopwatch';
-requires 'App::RL::Common';
-requires 'App::Fasops::Common';
-requires 'App::Rangeops::Common';
+requires 'App::RL::Common', '0.2.31';
+requires 'App::Fasops::Common', '0.5.11';
+requires 'App::Rangeops::Common', '0.0.14';
 requires 'perl', '5.010001';
 
 on 'test' => sub {
