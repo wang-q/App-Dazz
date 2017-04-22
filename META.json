@@ -43,11 +43,11 @@
       "runtime" : {
          "requires" : {
             "AlignDB::IntSpan" : "v1.1.0",
-            "AlignDB::Stopwatch" : "0",
+            "AlignDB::Stopwatch" : "v1.1.0",
             "App::Cmd" : "0.330",
-            "App::Fasops::Common" : "0",
-            "App::RL::Common" : "0",
-            "App::Rangeops::Common" : "0",
+            "App::Fasops" : "v0.5.11",
+            "App::RL" : "v0.2.31",
+            "App::Rangeops" : "v0.0.14",
             "File::ShareDir" : "1.102",
             "Graph" : "0.9704",
             "GraphViz" : "2.20",
