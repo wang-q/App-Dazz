@@ -2,6 +2,13 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.1.5 2017-04-22T16:04:51Z
+    - Specify dependency versions
+    - Improve documents
+    - Add GAGE-B examples
+    - Don't trim reads longer than 200 bp in `anchr superreads`
+    - Add step of tally
+
 0.1.4 2017-03-31T18:58:35Z
     - `anchr trim` in cwd
     - Treat cyclic nodes as non-overlapped in `anchr merge`
