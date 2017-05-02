@@ -32,6 +32,8 @@ perl -I lib/ script/anchr superreads t/R1.fq.gz t/R2.fq.gz
 bash superreads.sh
 perl -I lib/ t/06-superreads.t
 
+perl -I lib/ script/anchr superreads t/R1.fq.gz t/R2.fq.gz --kmer 37,39
+
 perl -I lib/ script/anchr overlap t/1_4.pac.fasta -o stdout
 perl -I lib/ script/anchr overlap t/1_4.pac.fasta --idt 0.8 --len 2500 --serial -o stdout
 perl -I lib/ script/anchr overlap t/1_4.pac.fasta --idt 0.8 --len 2500 --all -o stdout
