@@ -2,6 +2,14 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.2.0 2017-05-03T19:27:23Z
+    - Parallelise the sampling step
+    - Use json to save enviroments
+    - Different K values in superreads.sh
+    - Drop contained k_unitigs
+    - Merge k_unitigs before anchor.sh
+    - Add examples from NCBI Pathogen Detection project
+
 0.1.5 2017-04-22T16:04:51Z
     - Specify dependency versions
     - Improve documents
