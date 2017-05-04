@@ -2,6 +2,11 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.2.1 2017-05-04T16:04:27Z
+    - Dealing with branching nodes in `anchr merge`
+    - Skip finished steps in superreads.sh
+    - Merge pe.anchor2.fa into pe.anchr.fa
+
 0.2.0 2017-05-03T19:27:23Z
     - Parallelise the sampling step
     - Use json to save enviroments
