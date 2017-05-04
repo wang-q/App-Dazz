@@ -125,6 +125,7 @@ sub execute {
             }
         }
 
+        # Remove cyclic nodes
         while ( $graph->has_a_cycle ) {
             my @cycles = $graph->find_a_cycle;
 
@@ -136,6 +137,13 @@ sub execute {
                 for my $p ( $graph->predecessors($v) ) {
                     $graph->delete_edge( $p, $v ) if $graph->has_edge( $p, $v );
                 }
+                $graph->delete_vertex($v);
+            }
+        }
+
+        # Remove branching nodes
+        for my $v ( $graph->vertices ) {
+            if ( $graph->out_degree($v) > 1 or $graph->in_degree($v) > 1 ) {
                 $graph->delete_vertex($v);
             }
         }
@@ -162,7 +170,7 @@ sub execute {
     # merge
     #----------------------------#
     {
-        my @ts = $graph->topological_sort;
+        my @topo_sorted = $graph->topological_sort;
 
         my %merge_of;
         my $count = 1;
@@ -173,7 +181,7 @@ sub execute {
 
             my %idx_of;
             for my $p (@pieces) {
-                $idx_of{$p} = App::Fasops::Common::firstidx { $_ eq $p } @ts;
+                $idx_of{$p} = App::Fasops::Common::firstidx { $_ eq $p } @topo_sorted;
             }
 
             @pieces = map { $_->[0] }
