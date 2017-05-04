@@ -141,12 +141,14 @@ sub execute {
             }
         }
 
+        # Branching nodes will stay
+        #
         # Remove branching nodes
-        for my $v ( $graph->vertices ) {
-            if ( $graph->out_degree($v) > 1 or $graph->in_degree($v) > 1 ) {
-                $graph->delete_vertex($v);
-            }
-        }
+        #        for my $v ( $graph->vertices ) {
+        #            if ( $graph->out_degree($v) > 1 or $graph->in_degree($v) > 1 ) {
+        #                $graph->delete_vertex($v);
+        #            }
+        #        }
 
         $tempdir->child("overlapped.txt")->spew( map {"$_\n"} $graph->vertices );
 
@@ -194,14 +196,18 @@ sub execute {
                 my $anchor_1 = $pieces[ $i + 1 ];
 
                 if ($flag_start) {
-                    $merge_of{$count} .= $seq_of->{$anchor_0};
+                    $merge_of{$count} = $seq_of->{$anchor_0};
                     $flag_start = 0;
                 }
 
-                my $seq_anchor_1 = $seq_of->{$anchor_1};
-                my $weight = $graph->get_edge_weight( $anchor_0, $anchor_1 );
-
-                $merge_of{$count} .= substr $seq_anchor_1, -$weight;
+                if ( $graph->has_edge( $anchor_0, $anchor_1 ) ) {
+                    my $weight = $graph->get_edge_weight( $anchor_0, $anchor_1 );
+                    $merge_of{$count} .= substr $seq_of->{$anchor_1}, -$weight;
+                }
+                else {
+                    $count++;
+                    $merge_of{$count} = $seq_of->{$anchor_1};
+                }
             }
 
             $count++;
