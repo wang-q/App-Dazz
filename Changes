@@ -2,6 +2,11 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.3.0 2017-05-11T01:12:28Z
+    - No more anchor2
+    - Can incorporate SE reads
+    - Separate `quorum` and `kunitigs` out of `superreads`
+
 0.2.1 2017-05-04T16:04:27Z
     - Dealing with branching nodes in `anchr merge`
     - Skip finished steps in superreads.sh
