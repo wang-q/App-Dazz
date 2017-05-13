@@ -77,7 +77,7 @@ sub execute {
         for my $i ( 0 .. $#infiles ) {
             my $cmd;
             $cmd .= "faops filter -a $opt->{len} -l 0 $infiles[$i] stdout";
-            $cmd .= " | anchr dazzname --prefix $opt->{prefix}_$i stdin -o infile.$i.fasta";
+            $cmd .= " | faops dazz -p $opt->{prefix}_$i stdin infile.$i.fasta";
 
             App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, }, );
         }
