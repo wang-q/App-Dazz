@@ -1,6 +1,8 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - Make sr_stat.sh fitting environment.json
+    - Use `faops dazz` as we don't need original names in `anchr contained`
 
 0.3.0 2017-05-11T01:12:28Z
     - No more anchor2
