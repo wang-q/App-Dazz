@@ -2,6 +2,11 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.3.2 2017-05-21T05:06:24Z
+    - Get rid of picard and genomeCoverageBed, use bbmap.sh's build in basecov
+    - No longer depend on bedrolls and picard-tools
+    - Remove share/anchor.sh
+
 0.3.1 2017-05-20T14:36:23Z
     - Make sr_stat.sh fitting environment.json
     - Use `faops dazz` as we don't need original names in `anchr contained`
