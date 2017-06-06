@@ -49,10 +49,10 @@ App::Anchr is tend to be an Assembler of N-free CHRomosomes.
 
 =head1 INSTALLATION
 
-    cpanm --installdeps https://github.com/wang-q/App-Anchr.git
+    cpanm --installdeps https://github.com/wang-q/App-Anchr/archive/0.3.2.tar.gz
     curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/install_dep.sh | bash
     curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/check_dep.sh | bash
-    cpanm -nq https://github.com/wang-q/App-Anchr/archive/0.1.4.tar.gz
+    cpanm -nq https://github.com/wang-q/App-Anchr/archive/0.3.2.tar.gz
     # cpanm -nq https://github.com/wang-q/App-Anchr.git
 
 =head1 AUTHOR
