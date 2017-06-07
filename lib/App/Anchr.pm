@@ -17,29 +17,32 @@ App::Anchr - B<A>ssembler of B<N>-free B<CHR>omosomes
 =head1 SYNOPSIS
 
     anchr <command> [-?h] [long options...]
-            -? -h --help    show help
+            -? -h --help  show help
 
     Available commands:
 
-        commands: list the application's commands
-            help: display a command's help screen
+       commands: list the application's commands
+           help: display a command's help screen
 
-           break: break long reads by anthors
-       contained: discard contained super-reads, k-unitigs, or anchors
-           cover: trusted regions in the first file covered by the second
-        dazzname: rename FASTA reads for dazz_db
-             dep: check or install dependances
-           group: group anthors by long reads
-          layout: layout anthor group
-           merge: merge overlapped super-reads, k-unitigs, or anchors
-          orient: orient overlapped sequences to the same strand
-         overlap: detect overlaps by daligner
-        overlap2: detect overlaps between two (large) files by daligner
-         replace: replace IDs in .ovlp.tsv
-        restrict: restrict overlaps to known pairs
-       show2ovlp: LAshow outputs to ovelaps
-      superreads: Run MaSuRCA to create k-unitigs and super-reads
-            trim: trim PE Illumina fastq files
+        anchors: selete anchors from k-unitigs or superreads
+          break: break long reads by anthors
+      contained: discard contained super-reads, k-unitigs, or anchors
+          cover: trusted regions in the first file covered by the second
+       dazzname: rename FASTA reads for dazz_db
+            dep: check or install dependances
+          group: group anthors by long reads
+       kunitigs: create k-unitigs from corrected reads
+         layout: layout anthor group
+          merge: merge overlapped super-reads, k-unitigs, or anchors
+         orient: orient overlapped sequences to the same strand
+        overlap: detect overlaps by daligner
+       overlap2: detect overlaps between two (large) files by daligner
+         quorum: Run quorum to discard bad reads
+        replace: replace IDs in .ovlp.tsv
+       restrict: restrict overlaps to known pairs
+       scaffold: scaffold anchors (k-unitigs/contigs) using paired-end reads
+      show2ovlp: LAshow outputs to ovelaps
+           trim: trim PE Illumina fastq files
 
 Run C<anchr help command-name> for usage information.
 
