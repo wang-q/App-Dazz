@@ -76,7 +76,7 @@ sub execute {
         # Call overlap2
         my $cmd;
         $cmd .= "anchr overlap2";
-        $cmd .= " --len $opt->{len} --idt $opt->{idt}";
+        $cmd .= " --len $opt->{len} --idt $opt->{idt} --all";
         $cmd .= " --block $opt->{block} --parallel $opt->{parallel}";
         $cmd .= " --p1 first --p2 second --pd $basename --dir .";
         $cmd .= " $file1 $file2 ";
