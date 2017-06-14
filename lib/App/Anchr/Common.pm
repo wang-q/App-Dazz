@@ -122,6 +122,42 @@ sub parse_ovlp_line {
     return $info;
 }
 
+sub create_ovlp_line {
+    my $info = shift;
+
+    my $line = join "\t",
+        $info->{f_id},     $info->{g_id}, $info->{ovlp_len}, $info->{ovlp_idt},
+        $info->{f_strand}, $info->{f_B},  $info->{f_E},      $info->{f_len},
+        $info->{g_strand}, $info->{g_B},  $info->{g_E},      $info->{g_len}, $info->{contained};
+
+    return $line;
+}
+
+sub parse_paf_line {
+    my $line = shift;
+
+    chomp $line;
+    my @fields = split "\t", $line;
+
+    my $info = {
+        f_id      => $fields[0],
+        g_id      => $fields[5],
+        ovlp_len  => $fields[10],
+        ovlp_idt  => sprintf("%.3f", $fields[9] / $fields[10]),
+        f_strand  => 0,
+        f_B       => $fields[2] + 1,
+        f_E       => $fields[3] + 1,
+        f_len     => $fields[1],
+        g_strand  => $fields[4] eq "+" ? 0 : 1,
+        g_B       => $fields[7] + 1,
+        g_E       => $fields[8] + 1,
+        g_len     => $fields[6],
+        contained => 'overlap',
+    };
+
+    return $info;
+}
+
 sub beg_end {
     my $beg = shift;
     my $end = shift;
