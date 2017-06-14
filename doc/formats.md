@@ -4,21 +4,23 @@
 
 A TAB-delimited file for pairwise overlaps.
 
-| Col |  Type  | Description                                           |
-|----:|:------:|:------------------------------------------------------|
-|   1 | string | First sequence name/serial number                     |
-|   2 | string | Second sequence name/serial number                    |
-|   3 |  int   | Overlap length                                        |
-|   4 | float  | Overlap identity                                      |
-|   5 |  0/1   | First sequence strand (0 for + and 1 for -)           |
-|   6 |  int   | First sequence begin (1-based)                        |
-|   7 |  int   | First sequence end (1-based)                          |
-|   8 |  int   | First sequence length                                 |
-|   9 |  0/1   | Second sequence strand (0 for + and 1 for -)          |
-|  10 |  int   | Second sequence begin (1-based)                       |
-|  11 |  int   | Second sequence end (1-based)                         |
-|  12 |  int   | Second sequence length                                |
-|  13 | string | type of this overlap: overlap, contains and contained |
+| Col |  Type  | Description                                  |
+|----:|:------:|:---------------------------------------------|
+|   1 | string | First sequence name/serial number            |
+|   2 | string | Second sequence name/serial number           |
+|   3 |  int   | Overlap length                               |
+|   4 | float  | Overlap identity                             |
+|   5 |  0/1   | First sequence strand (0 for + and 1 for -)  |
+|   6 |  int   | First sequence begin (1-based)               |
+|   7 |  int   | First sequence end (1-based)                 |
+|   8 |  int   | First sequence length                        |
+|   9 |  0/1   | Second sequence strand (0 for + and 1 for -) |
+|  10 |  int   | Second sequence begin (1-based)              |
+|  11 |  int   | Second sequence end (1-based)                |
+|  12 |  int   | Second sequence length                       |
+|  13 | string | type of this overlap                         |
+
+Types of overlaps:
 
 * A proper `overlap`
 
@@ -29,7 +31,7 @@ A TAB-delimited file for pairwise overlaps.
              g.B        g.E
     ```
 
-    * In this case, g.B will be 0 for for convenience
+    * In this case, g.B will be 0 for convenience
 
     ```text
              f.B        f.E
@@ -49,6 +51,9 @@ A TAB-delimited file for pairwise overlaps.
              g.B        g.E
     ```
 
+    * g.B will be 0
+    * g.E will equal to g.length
+
 * A proper `contained`
 
     ```text
@@ -57,6 +62,9 @@ A TAB-delimited file for pairwise overlaps.
     g ========+----------+=======>
              g.B        g.E
     ```
+
+    * f.B will be 0
+    * f.E will equal to f.length
 
 * Any overlaps with overhangs are not proper overlaps, and categorised to `overlap`.
 
