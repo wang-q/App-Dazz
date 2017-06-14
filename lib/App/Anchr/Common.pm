@@ -140,20 +140,32 @@ sub parse_paf_line {
     my @fields = split "\t", $line;
 
     my $info = {
-        f_id      => $fields[0],
-        g_id      => $fields[5],
-        ovlp_len  => $fields[10],
-        ovlp_idt  => sprintf("%.3f", $fields[9] / $fields[10]),
-        f_strand  => 0,
-        f_B       => $fields[2] + 1,
-        f_E       => $fields[3] + 1,
-        f_len     => $fields[1],
-        g_strand  => $fields[4] eq "+" ? 0 : 1,
-        g_B       => $fields[7] + 1,
-        g_E       => $fields[8] + 1,
+        f_id     => $fields[0],
+        g_id     => $fields[5],
+        ovlp_len => $fields[10],
+        ovlp_idt => sprintf( "%.3f", $fields[9] / $fields[10] ),
+        f_strand => 0,
+        f_B      => $fields[2] + 1,
+        f_E      => $fields[3] + 1,
+        f_len    => $fields[1],
+        $fields[4] eq "+"
+        ? ( g_strand => 0,
+            g_B      => $fields[7] + 1,
+            g_E      => $fields[8] + 1,
+            )
+        : ( g_strand => 1,
+            g_B      => $fields[8] + 1,
+            g_E      => $fields[7] + 1,
+        ),
         g_len     => $fields[6],
         contained => 'overlap',
     };
+
+    for my $key (qw(f_B f_E g_B g_E)) {
+        if ( $info->{$key} == 1 ) {
+            $info->{$key} = 0;
+        }
+    }
 
     return $info;
 }
