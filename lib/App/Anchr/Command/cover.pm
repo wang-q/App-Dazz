@@ -195,6 +195,18 @@ sub execute {
 
         my $non_trusted = $first_range->diff($trusted)->diff($non_overlapped)->diff($repeat_like);
 
+        YAML::Syck::DumpFile(
+            "covered.yml",
+            {   "Total"          => $first_count,
+                "Trusted"        => $trusted->runlist,
+                "Trusted count"  => $trusted->size,
+                "Non-trusted"    => $non_trusted->runlist,
+                "Non-overlapped" => $non_overlapped->runlist,
+                "Repeat-like"    => $repeat_like->runlist,
+                "region_of"      => $region_of,
+            }
+        );
+
         $tempdir->child("covered.fasta")->remove;
         for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
             if ( $trusted->contains($serial) ) {
@@ -225,18 +237,6 @@ sub execute {
         if ( !$tempdir->child("covered.fasta")->is_file ) {
             Carp::croak "Failed: create covered.fasta\n";
         }
-
-        YAML::Syck::DumpFile(
-            "covered.yml",
-            {   "Total"          => $first_count,
-                "Trusted"        => $trusted->runlist,
-                "Trusted count"  => $trusted->size,
-                "Non-trusted"    => $non_trusted->runlist,
-                "Non-overlapped" => $non_overlapped->runlist,
-                "Repeat-like"    => $repeat_like->runlist,
-                "region_of"      => $region_of,
-            }
-        );
     }
 
     {
