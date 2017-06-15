@@ -31,6 +31,8 @@ install:
   - brew install homebrew/science/bbtools
   - brew install homebrew/science/fastqc
   - brew install homebrew/science/jellyfish
+  - brew install homebrew/science/minimap
+  - brew install homebrew/science/miniasm
   - brew install homebrew/science/poa
   - brew install homebrew/science/samtools
   - brew install homebrew/science/seqtk
