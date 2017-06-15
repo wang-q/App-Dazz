@@ -1,11 +1,20 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+
+0.4.0 2017-06-15T20:21:55Z
+    - Add command `anchr paf2ovlp`
+    - Add command `anchr trimlong`
     - Add command `anchr scaffold`
     - Remove command `anchr superreads`
     - `anchr anchors`
         - Swap <k_unitigs.fasta> <pe.cor.fa>
         - Add coverage filter
+    - `anchr cover`
+        - Same --idt
+        - Add `--all` in `overlap2`
+    - Add create_ovlp_line() and parse_paf_line() to Common.pm
+    - Document .ovlp.tsv
 
 0.3.2 2017-05-21T05:06:24Z
     - Get rid of picard and genomeCoverageBed, use bbmap.sh's build in basecov
