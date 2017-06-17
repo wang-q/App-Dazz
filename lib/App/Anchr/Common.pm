@@ -9,6 +9,7 @@ use Carp qw();
 use File::ShareDir qw();
 use Graph;
 use GraphViz;
+use IO::Zlib;
 use IPC::Cmd qw();
 use List::Util;
 use Path::Tiny qw();
