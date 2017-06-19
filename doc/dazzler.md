@@ -15,7 +15,7 @@ Create two files, `renamed.fasta`, `stdout.replace.tsv`.
 mkdir -p ~/data/test/dazzler
 cd ~/data/test/dazzler
 
-cat ~/data/anchr/n2/Q20L80_25000000/k_unitigs.fasta \
+cat ~/data/anchr/iso_1/merge/anchor.merge.fasta \
     | anchr dazzname stdin -o stdout \
     | faops filter -l 0 stdin renamed.fasta
 ```
@@ -104,6 +104,17 @@ LAcheck -vS myDB myDB.3
 rm myDB.1.myDB.1.las myDB.1.myDB.2.las myDB.1.myDB.3.las
 rm myDB.2.myDB.1.las myDB.2.myDB.2.las myDB.2.myDB.3.las
 rm myDB.3.myDB.1.las myDB.3.myDB.2.las myDB.3.myDB.3.las
+```
+
+The 3 lines of daligner are equivalent to the following:
+
+```bash
+daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.1
+daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.2
+daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.3
+daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.2 myDB.2
+daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.2 myDB.3
+daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.3 myDB.3
 ```
 
 Results.

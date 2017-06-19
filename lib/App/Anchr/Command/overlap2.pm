@@ -156,10 +156,11 @@ sub execute {
         }
 
         # Don't use HPC.daligner as we want to avoid all-vs-all comparisions.
+        # HPC.daligner tries to give every sequences the same change to match with others.
         for my $i ( 1 .. $first_idx ) {
-            for my $j ( 1 .. $block_number ) {
+            for my $j ( $i .. $block_number ) {
                 my $cmd;
-                $cmd .= "daligner  -M16 -T$opt->{parallel}";
+                $cmd .= "daligner -M16 -T$opt->{parallel}";
                 $cmd .= " -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust";
                 $cmd .= " $opt->{pd}.$i $opt->{pd}.$j";
                 $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$i.$opt->{pd}.$j";
