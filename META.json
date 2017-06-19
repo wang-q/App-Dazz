@@ -51,7 +51,9 @@
             "File::ShareDir" : "1.102",
             "Graph" : "0.9704",
             "GraphViz" : "2.20",
+            "IO::Zlib" : "0",
             "List::Util" : "1.36",
+            "MCE" : "1.810",
             "Number::Format" : "1.75",
             "Path::Tiny" : "0.076",
             "Template" : "2.26",
@@ -77,7 +79,7 @@
          "web" : "https://github.com/wang-q/App-Anchr"
       }
    },
-   "version" : "0.4.0",
+   "version" : "0.4.1",
    "x_authority" : "cpan:WANGQ",
    "x_serialization_backend" : "JSON::PP version 2.94"
 }
