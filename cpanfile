@@ -3,6 +3,7 @@ requires 'File::ShareDir',          '1.102';
 requires 'Graph',                   '0.9704';
 requires 'GraphViz',                '2.20';
 requires 'IO::Zlib',                '1.04_02';
+requires 'JSON',                    '2.93';
 requires 'List::Util',              '1.36';
 requires 'MCE',                     '1.810';
 requires 'Number::Format',          '1.75';

@@ -11,8 +11,10 @@ use Graph;
 use GraphViz;
 use IO::Zlib;
 use IPC::Cmd qw();
+use JSON qw();
 use List::Util;
 use Path::Tiny qw();
+use Statistics::Descriptive qw();
 use Template;
 use YAML::Syck qw();
 
