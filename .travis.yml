@@ -38,6 +38,7 @@ install:
   - brew install homebrew/science/seqtk
   - brew install homebrew/science/sickle
   - brew install wang-q/tap/faops
+  - brew install wang-q/tap/jrange
   - brew install wang-q/tap/jrunlist
   - brew install wang-q/tap/scythe
   - brew install wang-q/tap/sparsemem
