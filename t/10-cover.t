@@ -4,23 +4,31 @@ use warnings;
 use Test::More;
 
 #use App::Cmd::Tester;
-use App::Cmd::Tester::CaptureExternal;    # `anchr cover` calls `anchr show2ovlp` to write outputs
+use App::Cmd::Tester::CaptureExternal;
 
 use App::Anchr;
 
-my $result = test_app( 'App::Anchr' => [qw(help cover)] );
+my $result = test_app( 'App::Anchr' => [qw(help cover --range 1-4)] );
 like( $result->stdout, qr{cover}, 'descriptions' );
 
-$result = test_app( 'App::Anchr' => [qw(cover)] );
+$result = test_app( 'App::Anchr' => [qw(cover --range 1-4)] );
 like( $result->error, qr{need .+input file}, 'need infile' );
 
-$result = test_app( 'App::Anchr' => [qw(cover t/1_4.pac.fasta t/not_exists)] );
+$result = test_app( 'App::Anchr' => [qw(cover t/not_exists --range 1-4)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
-$result = test_app( 'App::Anchr' => [qw(cover t/1_4.anchor.fasta t/1_4.pac.fasta -v -o stdout)] );
-is( ( scalar grep {/^CMD/} grep {/\S/} split( /\n/, $result->stderr ) ), 6, 'stderr line count' );
-is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 8, 'line count' );
-like( $result->stdout, qr{anchor148_9124}s, 'original names' );
-unlike( $result->stdout, qr{anchor148_9124:1}s, 'uncovered region' );
+{
+    # real run
+    my $tempdir = Path::Tiny->tempdir;
+    test_app( 'App::Anchr' =>
+            [ qw(overlap2 t/1_4.anchor.fasta t/1_4.pac.fasta), "-d", $tempdir->stringify, ] );
+
+    $result = test_app( 'App::Anchr' =>
+            [ qw(cover --range 1-4), $tempdir->child("anchorLong.ovlp.tsv")->stringify, ] );
+
+    ok( $tempdir->child("meta.cover.json"), 'meta.cover.json exists' );
+    ok( $tempdir->child("partial.txt"),     'partial.txt exists' );
+    ok( $tempdir->child("coverage.yml"),    'coverage.yml exists' );
+}
 
 done_testing();
