@@ -221,7 +221,7 @@ sub execute {
         $tempdir->child("meta.cover.json")->copy( $opt->{outfile} );
 
         $tempdir->child("partial.txt")
-            ->spew( map { sprintf "%s:%s\n", $_, $covered_of->{$_}->runlist } keys %{$covered_of} );
+            ->spew( map { sprintf "%s:%s\n", $_, $covered_of->{$_} } keys %{$covered_of} );
         $tempdir->child("partial.txt")->copy("$opt->{outfile}.partial.txt");
 
         YAML::Syck::DumpFile( "coverage.yml", $coverage_of );
