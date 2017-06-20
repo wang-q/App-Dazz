@@ -11,19 +11,18 @@ use constant abstract => "trusted regions in the first file covered by the secon
 sub opt_spec {
     return (
         [ "outfile|o=s", "output filename, [stdout] for screen", ],
-        [ "block|b=i",    "block size in Mbp",            { default => 20 }, ],
-        [ 'coverage|c=i', 'minimal coverage',             { default => 2 }, ],
-        [ 'max|m=i',      'maximum contained',            { default => 40 }, ],
-        [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
-        [ "idt|i=f",      "minimal identity of overlaps", { default => 0.8 }, ],
-        [ "parallel|p=i", "number of threads",            { default => 8 }, ],
+        [ "range|r=s",    "ranges of first sequences",    { required => 1 }, ],
+        [ 'coverage|c=i', 'minimal coverage',             { default  => 2 }, ],
+        [ 'max|m=i',      'maximal coverage',             { default  => 200 }, ],
+        [ "len|l=i",      "minimal length of overlaps",   { default  => 1000 }, ],
+        [ "idt|i=f",      "minimal identity of overlaps", { default  => 0.85 }, ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
     );
 }
 
 sub usage_desc {
-    return "anchr cover [options] <infile1> <infile2>";
+    return "anchr cover [options] <.ovlp.tsv>";
 }
 
 sub description {
@@ -36,8 +35,8 @@ sub description {
 sub validate_args {
     my ( $self, $opt, $args ) = @_;
 
-    if ( @{$args} != 2 ) {
-        my $message = "This command need two input files.\n\tIt found";
+    if ( @{$args} != 1 ) {
+        my $message = "This command need one input file.\n\tIt found";
         $message .= sprintf " [%s]", $_ for @{$args};
         $message .= ".\n";
         $self->usage_error($message);
@@ -49,7 +48,7 @@ sub validate_args {
     }
 
     if ( !exists $opt->{outfile} ) {
-        $opt->{outfile} = Path::Tiny::path( $args->[0] )->absolute . ".cover.fasta";
+        $opt->{outfile} = Path::Tiny::path( $args->[0] )->absolute . ".cover.json";
     }
 }
 
@@ -57,8 +56,7 @@ sub execute {
     my ( $self, $opt, $args ) = @_;
 
     # make paths absolute before we chdir
-    my $file1 = Path::Tiny::path( $args->[0] )->absolute->stringify;
-    my $file2 = Path::Tiny::path( $args->[1] )->absolute->stringify;
+    my $infile = Path::Tiny::path( $args->[0] )->absolute->stringify;
 
     if ( lc $opt->{outfile} ne "stdout" ) {
         $opt->{outfile} = Path::Tiny::path( $opt->{outfile} )->absolute->stringify;
@@ -72,181 +70,162 @@ sub execute {
     my $basename = $tempdir->basename();
     $basename =~ s/\W+/_/g;
 
+    #@type AlignDB::IntSpan
+    my $first_range = AlignDB::IntSpan->new->add_runlist( $opt->{range} );
+
     {
-        # Call overlap2
+        # paf to meancov
         my $cmd;
-        $cmd .= "anchr overlap2";
-        $cmd .= " --len $opt->{len} --idt $opt->{idt} --all";
-        $cmd .= " --block $opt->{block} --parallel $opt->{parallel}";
-        $cmd .= " --p1 first --p2 second --pd $basename --dir .";
-        $cmd .= " $file1 $file2 ";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => 1, } );
-
-        if ( !$tempdir->child("$basename.ovlp.tsv")->is_file ) {
-            Carp::croak "Failed: create $basename.ovlp.tsv\n";
-        }
-    }
-
-    chomp( my $first_count = `faops n50 -H -N 0 -C first.fasta` );
-    my $first_range = AlignDB::IntSpan->new->add_pair( 1, $first_count, );
-
-    # anchor_id => tier_of => { 1 => intspan, 2 => intspan}
-    my $covered = {};
-
-    # anchor_id => COUNT
-    my $contained_of = {};
-
-    {
-        # load overlaps and build coverages
-        my %seen_pair;
-
-        for my $line ( $tempdir->child("$basename.ovlp.tsv")->lines( { chomp => 1 } ) ) {
-            my $info = App::Anchr::Common::parse_ovlp_line($line);
-
-            # ignore self overlapping
-            next if $info->{f_id} eq $info->{g_id};
-
-            # ignore poor overlaps
-            next if $info->{ovlp_idt} < $opt->{idt};
-            next if $info->{ovlp_len} < $opt->{len};
-
-            # skip duplicated overlaps
-            my $pair = join( "-", sort ( $info->{f_id}, $info->{g_id} ) );
-            next if $seen_pair{$pair};
-            $seen_pair{$pair}++;
-
-            # only want anchor-long overlaps
-            if (    $first_range->contains( $info->{f_id} )
-                and $first_range->contains( $info->{g_id} ) )
-            {
-                next;
-            }
-            if (    !$first_range->contains( $info->{f_id} )
-                and !$first_range->contains( $info->{g_id} ) )
-            {
-                next;
-            }
-
-            if ( $first_range->contains( $info->{f_id} )
-                and !$first_range->contains( $info->{g_id} ) )
-            {
-                if ( !exists $covered->{ $info->{f_id} } ) {
-                    $covered->{ $info->{f_id} }
-                        = { all => AlignDB::IntSpan->new->add_pair( 1, $info->{f_len} ), };
-                    for my $i ( 1 .. $opt->{coverage} ) {
-                        $covered->{ $info->{f_id} }{$i} = AlignDB::IntSpan->new;
-                    }
-                }
-
-                my ( $beg, $end, ) = App::Anchr::Common::beg_end( $info->{f_B}, $info->{f_E}, );
-                App::Anchr::Common::bump_coverage( $covered->{ $info->{f_id} },
-                    $beg, $end, $opt->{coverage} );
-
-                if ( $info->{contained} eq "contained" ) {
-                    $contained_of->{ $info->{f_id} }++;
-                }
-            }
-            elsif ( $first_range->contains( $info->{g_id} )
-                and !$first_range->contains( $info->{f_id} ) )
-            {
-                if ( !exists $covered->{ $info->{g_id} } ) {
-                    $covered->{ $info->{g_id} }
-                        = { all => AlignDB::IntSpan->new->add_pair( 1, $info->{g_len} ), };
-                    for my $i ( 1 .. $opt->{coverage} ) {
-                        $covered->{ $info->{g_id} }{$i} = AlignDB::IntSpan->new;
-                    }
-                }
-
-                my ( $beg, $end, ) = App::Anchr::Common::beg_end( $info->{g_B}, $info->{g_E}, );
-                App::Anchr::Common::bump_coverage( $covered->{ $info->{g_id} },
-                    $beg, $end, $opt->{coverage} );
-
-                if ( $info->{contained} eq "contains" ) {
-                    $contained_of->{ $info->{g_id} }++;
-                }
-            }
-        }
-    }
-
-    {
-        # Create covered.fasta
-        my $region_of      = {};
-        my $trusted        = AlignDB::IntSpan->new;
-        my $non_overlapped = $first_range->copy;
-        for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
-            $non_overlapped->remove($serial);
-
-            if ( $covered->{$serial}{ $opt->{coverage} }->equals( $covered->{$serial}{all} ) ) {
-                $trusted->add($serial);
-            }
-            else {
-                $region_of->{$serial} = $covered->{$serial}{ $opt->{coverage} }->runlist;
-            }
-        }
-
-        my $repeat_like = AlignDB::IntSpan->new;
-        for my $serial ( keys %{$contained_of} ) {
-            if ( $contained_of->{$serial} > $opt->{max} ) {
-                $repeat_like->add($serial);
-                delete $covered->{$serial};
-            }
-        }
-        $trusted = $trusted->diff($repeat_like);
-
-        my $non_trusted = $first_range->diff($trusted)->diff($non_overlapped)->diff($repeat_like);
-
-        YAML::Syck::DumpFile(
-            "covered.yml",
-            {   "Total"          => $first_count,
-                "Trusted"        => $trusted->runlist,
-                "Trusted count"  => $trusted->size,
-                "Non-trusted"    => $non_trusted->runlist,
-                "Non-overlapped" => $non_overlapped->runlist,
-                "Repeat-like"    => $repeat_like->runlist,
-                "region_of"      => $region_of,
-            }
-        );
-
-        $tempdir->child("covered.fasta")->remove;
-        for my $serial ( sort { $a <=> $b } keys %{$covered} ) {
-            if ( $trusted->contains($serial) ) {
-                my $cmd;
-                $cmd .= "DBshow -U $basename $serial";
-                $cmd .= " | faops replace -l 0 stdin first.replace.tsv stdout";
-                $cmd .= " >> covered.fasta";
-                App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
-            }
-            else {
-
-                #@type AlignDB::IntSpan
-                my $region = $covered->{$serial}{ $opt->{coverage} };
-
-                for my $set ( $region->sets ) {
-                    next if $set->size < $opt->{len};
-
-                    my $cmd;
-                    $cmd .= "DBshow -U $basename $serial";
-                    $cmd .= " | faops replace -l 0 stdin first.replace.tsv stdout";
-                    $cmd .= " | faops frag -l 0 stdin @{[$set->min]} @{[$set->max]} stdout";
-                    $cmd .= " >> covered.fasta";
-                    App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
-                }
-            }
-        }
-
-        if ( !$tempdir->child("covered.fasta")->is_file ) {
-            Carp::croak "Failed: create covered.fasta\n";
-        }
-    }
-
-    {
-        # Outputs. stdout is handeld by faops
-        my $cmd;
-        $cmd .= "faops filter -l 0 covered.fasta";
-        $cmd .= " $opt->{outfile}";
+        $cmd .= "jrange covered";
+        $cmd .= " $infile";
+        $cmd .= " --coverage $opt->{max}";
+        $cmd .= " --meancov";
+        $cmd .= " --len $opt->{len} --idt $opt->{idt}";
+        $cmd .= " -o $basename.meancov.txt";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
-        $tempdir->child("covered.yml")->copy("$opt->{outfile}.covered.yml");
+        if ( !$tempdir->child("$basename.meancov.txt")->is_file ) {
+            Carp::croak "Failed: create $basename.meancov.txt\n";
+        }
+    }
+
+    # anchor_id => mean coverage
+    my $coverage_of = {};
+    my $len_of      = {};
+    my $stat        = Statistics::Descriptive::Full->new();
+    for my $line ( App::RL::Common::read_lines("$basename.meancov.txt") ) {
+        my @parts = split "\t", $line;
+        next unless @parts == 3;
+
+        my $seq_id = $parts[0];
+        next unless $first_range->contains($seq_id);
+
+        $len_of->{$seq_id} = $parts[1];
+
+        $coverage_of->{$seq_id} = $parts[2];
+        $stat->add_data( $parts[2] );
+    }
+
+    my $meta_of = { TRUSTED => $first_range->copy, };
+    {
+        my $median       = $stat->median();
+        my @abs_res      = map { abs( $median - $_ ) } $stat->get_data();
+        my $abs_res_stat = Statistics::Descriptive::Full->new();
+        $abs_res_stat->add_data(@abs_res);
+        my $MAD = $abs_res_stat->median();
+
+        # the scale factor
+        my $k = 3;
+
+        my $lower_limit = ( $median - $k * $MAD ) / 2;
+        my $upper_limit = ( $median + $k * $MAD ) * 1.5;
+
+        my $non_overlapped = AlignDB::IntSpan->new;
+        my $repeat_like    = AlignDB::IntSpan->new;
+        for my $key ( keys %{$coverage_of} ) {
+            if ( $coverage_of->{$key} < $lower_limit ) {
+                $non_overlapped->add($key);
+            }
+            if ( $coverage_of->{$key} > $upper_limit ) {
+                $repeat_like->add($key);
+            }
+        }
+
+        $meta_of->{COV_MEDIAN}      = $median;
+        $meta_of->{COV_MAD}         = $MAD;
+        $meta_of->{COV_LOWER_LIMIT} = $lower_limit;
+        $meta_of->{COV_UPPER_LIMIT} = $upper_limit;
+        $meta_of->{NON_OVERLAPPED}  = $non_overlapped;
+        $meta_of->{REPEAT_LIKE}     = $repeat_like;
+
+        $meta_of->{TRUSTED}->subtract($non_overlapped);
+        $meta_of->{TRUSTED}->subtract($repeat_like);
+    }
+
+    {
+        # paf to covered
+        my $cmd;
+        $cmd .= "jrange covered";
+        $cmd .= " $infile";
+        $cmd .= " --coverage $opt->{coverage}";
+        $cmd .= " --len $opt->{len} --idt $opt->{idt}";
+        $cmd .= " -o $basename.covered.txt";
+        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+
+        if ( !$tempdir->child("$basename.covered.txt")->is_file ) {
+            Carp::croak "Failed: create $basename.covered.txt\n";
+        }
+    }
+
+    # anchor_id => covered ragion
+    my $covered_of = {};
+
+    for my $line ( App::RL::Common::read_lines("$basename.covered.txt") ) {
+        my @parts = split ":", $line;
+        next unless @parts == 2;
+
+        my $seq_id = $parts[0];
+        next unless $first_range->contains($seq_id);
+
+        my $covered = AlignDB::IntSpan->new()->add_runlist( $parts[1] );
+
+        if ( $covered->size < $len_of->{$seq_id} ) {
+            $meta_of->{TRUSTED}->remove($seq_id);
+            $meta_of->{NON_OVERLAPPED}->add($seq_id);
+            $covered_of->{$seq_id} = $covered->runlist;
+        }
+    }
+
+    #    {
+    #        # Create covered.fasta
+    #        $tempdir->child("covered.fasta")->remove;
+    #        for my $serial ( sort { $a <=> $b } keys %{$covered_of} ) {
+    #            if ( $trusted->contains($serial) ) {
+    #                my $cmd;
+    #                $cmd .= "DBshow -U $basename $serial";
+    #                $cmd .= " | faops replace -l 0 stdin first.replace.tsv stdout";
+    #                $cmd .= " >> covered.fasta";
+    #                App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    #            }
+    #            else {
+    #
+    #                #@type AlignDB::IntSpan
+    #                my $region = $covered_of->{$serial}{ $opt->{coverage} };
+    #
+    #                for my $set ( $region->sets ) {
+    #                    next if $set->size < $opt->{len};
+    #
+    #                    my $cmd;
+    #                    $cmd .= "DBshow -U $basename $serial";
+    #                    $cmd .= " | faops replace -l 0 stdin first.replace.tsv stdout";
+    #                    $cmd .= " | faops frag -l 0 stdin @{[$set->min]} @{[$set->max]} stdout";
+    #                    $cmd .= " >> covered.fasta";
+    #                    App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    #                }
+    #            }
+    #        }
+    #
+    #        if ( !$tempdir->child("covered.fasta")->is_file ) {
+    #            Carp::croak "Failed: create covered.fasta\n";
+    #        }
+    #    }
+
+    {
+        $meta_of->{TRUSTED}        = $meta_of->{TRUSTED}->runlist;
+        $meta_of->{NON_OVERLAPPED} = $meta_of->{NON_OVERLAPPED}->runlist;
+        $meta_of->{REPEAT_LIKE}    = $meta_of->{REPEAT_LIKE}->runlist;
+        $meta_of->{TOTAL_RANGE}    = $first_range->runlist;
+
+        $tempdir->child("meta.cover.json")
+            ->spew( JSON::to_json( $meta_of, { pretty => 1, canonical => 1, } ) );
+        $tempdir->child("meta.cover.json")->copy( $opt->{outfile} );
+
+        $tempdir->child("partial.txt")
+            ->spew( map { sprintf "%s:%s\n", $_, $covered_of->{$_}->runlist } keys %{$covered_of} );
+        $tempdir->child("partial.txt")->copy("$opt->{outfile}.partial.txt");
+
+        YAML::Syck::DumpFile( "coverage.yml", $coverage_of );
+        $tempdir->child("coverage.yml")->copy("$opt->{outfile}.coverage.yml");
     }
 
     chdir $cwd;
