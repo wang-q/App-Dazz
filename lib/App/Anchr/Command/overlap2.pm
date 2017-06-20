@@ -158,6 +158,8 @@ sub execute {
         # Don't use HPC.daligner as we want to avoid all-vs-all comparisions.
         # HPC.daligner tries to give every sequences the same change to match with others.
         for my $i ( 1 .. $first_idx ) {
+
+            # Start from $i instead of $first_idx for conveniences of LAmerge
             for my $j ( $i .. $block_number ) {
                 my $cmd;
                 $cmd .= "daligner -M16 -T$opt->{parallel}";
