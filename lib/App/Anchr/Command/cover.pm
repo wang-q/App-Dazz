@@ -137,7 +137,7 @@ sub execute {
         $meta_of->{COV_UPPER_LIMIT} = $upper_limit;
 
         $meta_of->{TRUSTED}->subtract( $meta_of->{NON_OVERLAPPED} );
-        $meta_of->{TRUSTED}->subtract( $$meta_of->{REPEAT_LIKE} );
+        $meta_of->{TRUSTED}->subtract( $meta_of->{REPEAT_LIKE} );
     }
 
     {
