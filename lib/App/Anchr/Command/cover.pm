@@ -120,14 +120,14 @@ sub execute {
         my $lower_limit = ( $median - $k * $MAD ) / 2;
         my $upper_limit = ( $median + $k * $MAD ) * 1.5;
 
-        my $non_overlapped = AlignDB::IntSpan->new;
-        my $repeat_like    = AlignDB::IntSpan->new;
+        $meta_of->{NON_OVERLAPPED} = AlignDB::IntSpan->new;
+        $meta_of->{REPEAT_LIKE}    = AlignDB::IntSpan->new;
         for my $key ( keys %{$coverage_of} ) {
             if ( $coverage_of->{$key} < $lower_limit ) {
-                $non_overlapped->add($key);
+                $meta_of->{NON_OVERLAPPED}->add($key);
             }
             if ( $coverage_of->{$key} > $upper_limit ) {
-                $repeat_like->add($key);
+                $meta_of->{REPEAT_LIKE}->add($key);
             }
         }
 
@@ -135,11 +135,9 @@ sub execute {
         $meta_of->{COV_MAD}         = $MAD;
         $meta_of->{COV_LOWER_LIMIT} = $lower_limit;
         $meta_of->{COV_UPPER_LIMIT} = $upper_limit;
-        $meta_of->{NON_OVERLAPPED}  = $non_overlapped;
-        $meta_of->{REPEAT_LIKE}     = $repeat_like;
 
-        $meta_of->{TRUSTED}->subtract($non_overlapped);
-        $meta_of->{TRUSTED}->subtract($repeat_like);
+        $meta_of->{TRUSTED}->subtract( $meta_of->{NON_OVERLAPPED} );
+        $meta_of->{TRUSTED}->subtract( $$meta_of->{REPEAT_LIKE} );
     }
 
     {
@@ -159,7 +157,7 @@ sub execute {
 
     # anchor_id => covered ragion
     my $covered_of = {};
-
+    $meta_of->{PARTIAL_COVERED} = AlignDB::IntSpan->new;
     for my $line ( App::RL::Common::read_lines("$basename.covered.txt") ) {
         my @parts = split ":", $line;
         next unless @parts == 2;
@@ -171,7 +169,7 @@ sub execute {
 
         if ( $covered->size < $len_of->{$seq_id} ) {
             $meta_of->{TRUSTED}->remove($seq_id);
-            $meta_of->{NON_OVERLAPPED}->add($seq_id);
+            $meta_of->{PARTIAL_COVERED}->add($seq_id);
             $covered_of->{$seq_id} = $covered->runlist;
         }
     }
@@ -211,10 +209,11 @@ sub execute {
     #    }
 
     {
-        $meta_of->{TRUSTED}        = $meta_of->{TRUSTED}->runlist;
-        $meta_of->{NON_OVERLAPPED} = $meta_of->{NON_OVERLAPPED}->runlist;
-        $meta_of->{REPEAT_LIKE}    = $meta_of->{REPEAT_LIKE}->runlist;
-        $meta_of->{TOTAL_RANGE}    = $first_range->runlist;
+        $meta_of->{TRUSTED}         = $meta_of->{TRUSTED}->runlist;
+        $meta_of->{NON_OVERLAPPED}  = $meta_of->{NON_OVERLAPPED}->runlist;
+        $meta_of->{REPEAT_LIKE}     = $meta_of->{REPEAT_LIKE}->runlist;
+        $meta_of->{PARTIAL_COVERED} = $meta_of->{PARTIAL_COVERED}->runlist;
+        $meta_of->{TOTAL_RANGE}     = $first_range->runlist;
 
         $tempdir->child("meta.cover.json")
             ->spew( JSON::to_json( $meta_of, { pretty => 1, canonical => 1, } ) );
