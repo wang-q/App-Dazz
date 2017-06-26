@@ -1,6 +1,8 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - Add command `anchr localcor`
+    - PARTIAL_COVERED for `anchr cover`
 
 0.4.2 2017-06-20T13:12:51Z
     - Completely rewrite command cover
