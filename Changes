@@ -1,8 +1,11 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+
+0.4.3 2017-10-14T14:28:26Z
     - Add command `anchr localcor`
     - PARTIAL_COVERED for `anchr cover`
+    - Add --jvm to trimlong
 
 0.4.2 2017-06-20T13:12:51Z
     - Completely rewrite command cover
