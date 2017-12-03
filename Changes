@@ -2,6 +2,10 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.4.7 2017-12-03T17:53:01Z
+    - Add --nosickle to `anchr trim`
+    - Use suffix of .sickle.fq.gz
+
 0.4.6 2017-12-03T16:29:41Z
     - Add --uniq, --shuffle, and --scythe to `anchr trim`
 
