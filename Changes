@@ -1,6 +1,7 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - Add --sample to `anchr trim`
 
 0.4.7 2017-12-03T17:53:01Z
     - Add --nosickle to `anchr trim`
