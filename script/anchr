@@ -62,6 +62,7 @@ perl -I lib/ t/16-layout.t
 perl -I lib/ t/17-break.t
 
 perl -I lib/ t/20-anchors.t
+perl -I lib/ script/anchr anchors t/merge.fasta t/R1.fq.gz -o stdout
 
 perl -I lib/ script/anchr paf2ovlp t/1_4.pac.paf -o stdout
 perl -I lib/ script/anchr overlap t/1_4.pac.fasta -o t/1_4.pac.ovlp.tsv
