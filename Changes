@@ -1,12 +1,15 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+
+0.4.8 2017-12-13T04:31:24Z
     - Add --sample to `anchr trim`
     - Move bash templates to share/
         - `anchr anchors`
         - `anchr kunitigs`
         - `anchr quorum`
         - `anchr trim`
+    - Add --tmp to some commands
     - Bring anchor2 back
 
 0.4.7 2017-12-03T17:53:01Z
