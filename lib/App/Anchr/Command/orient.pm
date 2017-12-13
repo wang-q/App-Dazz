@@ -14,6 +14,7 @@ sub opt_spec {
         [ "restrict|r=s", "limit to known pairs", ],
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.85 }, ],
+        [ "tmp=s",        "user defined tempdir", ],
         [ "parallel|p=i", "number of threads",            { default => 4 }, ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
@@ -76,8 +77,17 @@ sub execute {
     }
 
     # record cwd, we'll return there
-    my $cwd     = Path::Tiny->cwd;
-    my $tempdir = Path::Tiny->tempdir("anchr_orient_XXXXXXXX");
+    my $cwd = Path::Tiny->cwd;
+    my $tempdir;
+    if ( $opt->{tmp} ) {
+        $tempdir = Path::Tiny->tempdir(
+            TEMPLATE => "anchr_orient_XXXXXXXX",
+            DIR      => $opt->{tmp},
+        );
+    }
+    else {
+        $tempdir = Path::Tiny->tempdir("anchr_orient_XXXXXXXX");
+    }
     chdir $tempdir;
 
     my $basename = $tempdir->basename();

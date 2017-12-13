@@ -15,6 +15,7 @@ sub opt_spec {
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.98 }, ],
         [ "proportion=f", "nearly contained proportion",  { default => 0.98 }, ],
         [ "prefix=s",     "prefix of names",              { default => "infile" }, ],
+        [ "tmp=s",        "user defined tempdir", ],
         [ "parallel|p=i", "number of threads",            { default => 8 }, ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
@@ -50,6 +51,7 @@ sub validate_args {
     if ( !exists $opt->{outfile} ) {
         $opt->{outfile} = Path::Tiny::path( $args->[0] )->absolute . ".contained.fasta";
     }
+
 }
 
 sub execute {
@@ -66,8 +68,17 @@ sub execute {
     }
 
     # record cwd, we'll return there
-    my $cwd     = Path::Tiny->cwd;
-    my $tempdir = Path::Tiny->tempdir("anchr_contained_XXXXXXXX");
+    my $cwd = Path::Tiny->cwd;
+    my $tempdir;
+    if ( $opt->{tmp} ) {
+        $tempdir = Path::Tiny->tempdir(
+            TEMPLATE => "anchr_contained_XXXXXXXX",
+            DIR      => $opt->{tmp},
+        );
+    }
+    else {
+        $tempdir = Path::Tiny->tempdir("anchr_contained_XXXXXXXX");
+    }
     chdir $tempdir;
 
     my $basename = $tempdir->basename();

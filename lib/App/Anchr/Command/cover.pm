@@ -16,6 +16,7 @@ sub opt_spec {
         [ 'max|m=i',      'maximal coverage',             { default  => 200 }, ],
         [ "len|l=i",      "minimal length of overlaps",   { default  => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default  => 0.85 }, ],
+        [ "tmp=s",        "user defined tempdir", ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
     );
@@ -63,8 +64,17 @@ sub execute {
     }
 
     # record cwd, we'll return there
-    my $cwd     = Path::Tiny->cwd;
-    my $tempdir = Path::Tiny->tempdir("anchr_cover_XXXXXXXX");
+    my $cwd = Path::Tiny->cwd;
+    my $tempdir;
+    if ( $opt->{tmp} ) {
+        $tempdir = Path::Tiny->tempdir(
+            TEMPLATE => "anchr_cover_XXXXXXXX",
+            DIR      => $opt->{tmp},
+        );
+    }
+    else {
+        $tempdir = Path::Tiny->tempdir("anchr_cover_XXXXXXXX");
+    }
     chdir $tempdir;
 
     my $basename = $tempdir->basename();

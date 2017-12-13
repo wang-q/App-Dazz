@@ -13,6 +13,7 @@ sub opt_spec {
         [ "outfile|o=s", "output filename, [stdout] for screen", ],
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.98 }, ],
+        [ "tmp=s",        "user defined tempdir", ],
         [ "parallel|p=i", "number of threads",            { default => 8 }, ],
         [ "verbose|v",    "verbose mode", ],
         [ "png",          "write a png file via graphviz", ],
@@ -62,8 +63,17 @@ sub execute {
     }
 
     # record cwd, we'll return there
-    my $cwd     = Path::Tiny->cwd;
-    my $tempdir = Path::Tiny->tempdir("anchr_merge_XXXXXXXX");
+    my $cwd = Path::Tiny->cwd;
+    my $tempdir;
+    if ( $opt->{tmp} ) {
+        $tempdir = Path::Tiny->tempdir(
+            TEMPLATE => "anchr_merge_XXXXXXXX",
+            DIR      => $opt->{tmp},
+        );
+    }
+    else {
+        $tempdir = Path::Tiny->tempdir("anchr_merge_XXXXXXXX");
+    }
     chdir $tempdir;
 
     {    # overlaps
