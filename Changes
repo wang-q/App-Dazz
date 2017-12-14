@@ -2,6 +2,11 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.5.0 2017-12-14T23:15:44Z
+    - Add command `anchr template`
+    - Simplify e_coli processing steps
+    - Don't check GraphViz.pm
+
 0.4.9 2017-12-14T19:15:44Z
     - Use common bash headers, header.tt2
 

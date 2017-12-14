@@ -50,7 +50,6 @@
             "App::Rangeops" : "v0.0.14",
             "File::ShareDir" : "1.102",
             "Graph" : "0.9704",
-            "GraphViz" : "2.20",
             "IO::Zlib" : "1.04_02",
             "JSON" : "2.93",
             "List::Util" : "1.36",
@@ -81,7 +80,7 @@
          "web" : "https://github.com/wang-q/App-Anchr"
       }
    },
-   "version" : "0.4.9",
+   "version" : "0.5.0",
    "x_authority" : "cpan:WANGQ",
    "x_serialization_backend" : "JSON::PP version 2.97000"
 }
