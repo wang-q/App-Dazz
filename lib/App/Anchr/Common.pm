@@ -8,7 +8,6 @@ use 5.010001;
 use Carp qw();
 use File::ShareDir qw();
 use Graph;
-use GraphViz;
 use IO::Zlib;
 use IPC::Cmd qw();
 use JSON qw();
@@ -254,6 +253,7 @@ sub judge_distance {
 }
 
 sub g2gv {
+    require GraphViz;
 
     #@type Graph
     my $g  = shift;
@@ -278,6 +278,7 @@ sub g2gv {
 }
 
 sub g2gv0 {
+    require GraphViz;
 
     #@type Graph
     my $g  = shift;
