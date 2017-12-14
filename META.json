@@ -4,7 +4,7 @@
       "Qiang Wang <wang-q@outlook.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.12, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.14, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -81,7 +81,7 @@
          "web" : "https://github.com/wang-q/App-Anchr"
       }
    },
-   "version" : "0.4.8",
+   "version" : "0.4.9",
    "x_authority" : "cpan:WANGQ",
-   "x_serialization_backend" : "JSON::PP version 2.94"
+   "x_serialization_backend" : "JSON::PP version 2.97000"
 }

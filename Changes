@@ -2,6 +2,9 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.4.9 2017-12-14T19:15:44Z
+    - Use common bash headers, header.tt2
+
 0.4.8 2017-12-13T04:31:24Z
     - Add --sample to `anchr trim`
     - Move bash templates to share/
