@@ -2,6 +2,12 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.5.1 2017-12-15T18:15:33Z
+    - Extract complex bash codes to .tt2
+    - --coverage2 can be "all"
+    - SE as examples for LSF
+    - Merge Adapter filtering into quorum
+
 0.5.0 2017-12-14T23:15:44Z
     - Add command `anchr template`
     - Simplify e_coli processing steps
