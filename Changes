@@ -1,6 +1,8 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+
+0.5.2 2017-12-17T20:51:24Z
     - s/down_sampling/downSampling/g
     - Use `find` to get file list of anchors
         - reverse sort files, so that Q30L60X80 will be infile_0
