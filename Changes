@@ -3,6 +3,10 @@ Revision history for App-Anchr
 {{$NEXT}}
     - s/down_sampling/downSampling/g
     - Use `find` to get file list of anchors
+        - reverse sort files, so that Q30L60X80 will be infile_0
+    - --coverage3 can be "all"
+    - Add gen_canu(), gen_statCanu(), gen_statFinal() and gen_quast() to `anchr template`
+    - Less columns in statQuorum and statAnchors
 
 0.5.1 2017-12-15T18:15:33Z
     - Extract complex bash codes to .tt2
