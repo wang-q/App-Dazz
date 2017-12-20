@@ -2,6 +2,12 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.5.3 2017-12-20T04:47:07Z
+    - Also remove intermediate illumina reads in 0_cleanup.sh
+    - Can skip fastqc and kmergenie
+    - Add gen_master(), gen_cleanup(), gen_anchorLong(), gen_anchorFill(), gen_spades() and gen_platanus() to `anchr template`
+    - --coverage2 to --cov2; --coverage3 to --cov3
+
 0.5.2 2017-12-17T20:51:24Z
     - s/down_sampling/downSampling/g
     - Use `find` to get file list of anchors
