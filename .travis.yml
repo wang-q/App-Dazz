@@ -98,6 +98,12 @@ before_install:
   - env | grep TRAVIS | tee /tmp/travis.env
   - ulimit -n 1024
 
+matrix:
+  fast_finish: true
+  allow_failures:
+    - os: linux
+    - rvm: 2.3
+
 install:
   - brew install graphviz jdk parallel pigz
   - brew install homebrew/science/bbtools
