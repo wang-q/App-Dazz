@@ -1,6 +1,10 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - Add gen_realClean() to `anchr template`
+    - Remove "pe.cor.log"
+    - Don't overwrite statReads.md
+    - Update Travis config from linuxbrew
 
 0.5.3 2017-12-20T04:47:07Z
     - Also remove intermediate illumina reads in 0_cleanup.sh
