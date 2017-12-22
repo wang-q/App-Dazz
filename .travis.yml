@@ -3,6 +3,9 @@ language:
   - perl
 sudo: required
 dist: trusty
+os: linux
+rvm: 2.0.0
+perl: 5.18
 
 before_install:
   - sudo apt-get -qq update
@@ -94,13 +97,6 @@ before_install:
   - export HOMEBREW_VERBOSE=1 HOMEBREW_VERBOSE_USING_DOTS=1
   - env | grep TRAVIS | tee /tmp/travis.env
   - ulimit -n 1024
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - os: linux
-    - rvm: 2.0.0
-    - perl: 5.18
 
 install:
   - brew install graphviz jdk parallel pigz
