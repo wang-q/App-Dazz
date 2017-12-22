@@ -2,7 +2,7 @@ language:
   - perl
   - ruby
 perl: "5.18"
-rvm: 2.0.0
+rvm: 2.3
 os: linux
 sudo: required
 dist: trusty
