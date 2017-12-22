@@ -1,9 +1,6 @@
 language:
-  - perl
   - ruby
-perl: "5.18"
-rvm: 2.3
-os: linux
+  - perl
 sudo: required
 dist: trusty
 
@@ -102,7 +99,8 @@ matrix:
   fast_finish: true
   allow_failures:
     - os: linux
-    - rvm: 2.3
+    - rvm: 2.0.0
+    - perl: 5.18
 
 install:
   - brew install graphviz jdk parallel pigz
