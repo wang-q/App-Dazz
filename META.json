@@ -54,6 +54,7 @@
             "JSON" : "2.93",
             "List::Util" : "1.36",
             "MCE" : "1.810",
+            "Module::Build::Tiny" : "0.039",
             "Number::Format" : "1.75",
             "Path::Tiny" : "0.076",
             "Statistics::Descriptive" : "3.0612",

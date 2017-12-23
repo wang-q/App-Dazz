@@ -5,6 +5,7 @@ requires 'IO::Zlib',                '1.04_02';
 requires 'JSON',                    '2.93';
 requires 'List::Util',              '1.36';
 requires 'MCE',                     '1.810';
+requires 'Module::Build::Tiny',     '0.039';
 requires 'Number::Format',          '1.75';
 requires 'Path::Tiny',              '0.076';
 requires 'Statistics::Descriptive', '3.0612';
