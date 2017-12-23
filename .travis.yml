@@ -1,11 +1,8 @@
-language:
-  - ruby
-  - perl
+language: ruby
 sudo: required
 dist: trusty
 os: linux
 rvm: 2.0.0
-perl: 5.18
 
 before_install:
   - sudo apt-get -qq update
@@ -101,6 +98,9 @@ before_install:
   - ulimit -n 1024
 
 install:
+  - brew install perl
+  - brew link perl
+  - curl -L https://cpanmin.us | perl - App::cpanminus
   - brew install graphviz jdk parallel pigz
   - brew install homebrew/science/bbtools
   - brew install homebrew/science/fastqc
