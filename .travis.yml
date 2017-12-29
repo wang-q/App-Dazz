@@ -95,11 +95,14 @@ before_install:
   - env | grep TRAVIS | tee /tmp/travis.env
   - ulimit -n 1024
   - brew vendor-install ruby
-
-install:
   - brew install perl
   - brew link perl
   - curl -L https://cpanmin.us | perl - App::cpanminus
+  - PERL_BREW=$(brew --prefix)/Cellar/$(brew list --versions perl | sed 's/ /\//')
+  - export PATH="PERL_BREW/bin:$PATH"
+  - export PERL5LIB="$(brew --prefix)/lib/perl5/site_perl:$PERL5LIB"
+
+install:
   - brew install graphviz jdk parallel pigz
   - brew install homebrew/science/bbtools
   - brew install homebrew/science/fastqc
