@@ -115,7 +115,6 @@ install:
   - brew install wang-q/tap/faops
   - brew install wang-q/tap/jrange
   - brew install wang-q/tap/jrunlist
-  - brew install wang-q/tap/scythe
   - brew install wang-q/tap/sparsemem
   - brew install wang-q/tap/jellyfish@2.2.4
   - brew install wang-q/tap/quorum@1.1.1
