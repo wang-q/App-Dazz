@@ -2,6 +2,21 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.5.6 2018-01-12T10:13:10Z
+    - Don't use scythe anymore. Use bbduk.sh instead.
+    - quorum
+        - Don't filter reads
+        - /1 and /2 for paired reads
+        - pe.cor.fa.gz
+        - shuffle.sh pe.cor.fa.gz
+        - Accept Rs.sickle.fq.gz in all qual
+    - anchors
+        - Default lower range of anchors from 3 to 20
+        - fill_all or fill_hole can be empty
+        - anchors from megahit and spades
+    - Create anchors from spades and platanus contigs
+    - Add gen_megahit() to `anchr template`
+
 0.5.5 2017-12-30T05:33:50Z
     - Add command `anchr mergereads`
     - Add gen_mergereads() to `anchr template`
