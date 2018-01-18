@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use App::Cmd::Setup -app;
 
-our $VERSION = "0.5.6";
+our $VERSION = "0.5.7";
 
 =pod
 

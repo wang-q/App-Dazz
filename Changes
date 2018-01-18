@@ -2,6 +2,23 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.5.7 2018-01-18T17:18:19Z
+    - Rewrite 2_insertSize.sh
+        - Mapping against genome and tadpole contigs
+        - Stats with reformat.sh and picard
+    - `anchr mergereads`
+        - Set dupesubs=0 to clumpify.sh, default value is 2
+        - Separate U1, U2, Us.fq.gz from unmerged.fq.gz
+        - Create pe.cor.fa.gz from mergereads
+        - environment.json
+    - Add table captions to statXXX.md
+    - Rename 6_mergeXXX and 6_anchorXXX to 7_
+    - Add 6_downSampling.sh
+    - Limit MAX_SERIAL to 50
+    - Add gen_6_kunitigs() to `anchr template`
+    - Add gen_6_anchors() to `anchr template`
+    - Add gen_statMRAnchors() to `anchr template`
+
 0.5.6 2018-01-12T10:13:10Z
     - Don't use scythe anymore. Use bbduk.sh instead.
     - quorum
