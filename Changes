@@ -1,6 +1,7 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - Use awk and shuf to shuffle interleaved reads
 
 0.5.7 2018-01-18T17:18:19Z
     - Rewrite 2_insertSize.sh
