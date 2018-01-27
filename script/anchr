@@ -25,7 +25,6 @@ perl -I lib/ script/anchr show2ovlp t/1_4.renamed.fasta t/1_4.show.txt -o stdout
 perl -I lib/ script/anchr show2ovlp t/1_4.renamed.fasta t/1_4.show.txt -r t/1_4.replace.tsv -o stdout
 perl -I lib/ t/04-show2ovlp.t
 
-perl -I lib/ script/anchr trim t/R1.fq.gz t/R2.fq.gz -b NAMES -o stdout | bash
 perl -I lib/ t/05-trim.t
 
 perl -I lib/ script/anchr overlap t/1_4.pac.fasta -o stdout
