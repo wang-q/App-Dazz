@@ -1,7 +1,25 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
-    - Use awk and shuf to shuffle interleaved reads
+
+0.5.8 2018-01-31T20:13:58Z
+    - Adopt bbtools pipeline in `anchr trim`
+        - Move duplicated parts from `anchr mergereads` to `anchr trim`
+        - Move templates from 2_trim.tt2 to template.pm
+        - Store BBTOOLS_RESOURCES in share/
+        - No longer use tally (part from reaper)
+        - Add `-f` to `rm`
+        - Remove .sickle and .clean suffixes
+        - Separate some stats of statReads into statTrimReads
+    - Execute trim.sh in 2_illumina/trim/
+        - Use 2_illumina/trim as inputs for spades, platanus, and megahit
+    - Treat 2_illumina/trim as 2_illumina/Q0L0
+        - Accept Q0L0 in kunitigs and anchors
+    - Use `awk` and `shuf` to shuffle interleaved fasta reads
+    - MRMegahit and MRSpades
+        - MRMegahit is all right
+        - Don't use MRSpades
+    - Add gen_bsub() to `anchr template`
 
 0.5.7 2018-01-18T17:18:19Z
     - Rewrite 2_insertSize.sh
