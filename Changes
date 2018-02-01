@@ -1,6 +1,11 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - Treat 2GS contigs as long reads
+        - --mergemax and --fillmax
+    - `anchr layout`
+        - Move <strand.fasta> as 1st argment
+        - add anchors missed in `$anchor_graph`, i.e., not correctly linked to long.fasta
 
 0.5.8 2018-01-31T20:13:58Z
     - Adopt bbtools pipeline in `anchr trim`
