@@ -63,12 +63,17 @@ sub execute {
     # loading sequences
     #----------------------------#
     my $seq_of = App::Fasops::Common::read_fasta( $args->[0] );
+    my %is_anchor;
+    for my $id ( keys %{$seq_of} ) {
+        if ( index( $id, $opt->{pa} . "/" ) == 0 ) {
+            $is_anchor{$id} = 1;
+        }
+    }
 
     #----------------------------#
     # load overlaps and build graph
     #----------------------------#
     my $graph = Graph->new( directed => 1 );
-    my %is_anchor;
     my $links_of = {};    # long_id => { anchor_id => overlap_on_long, }
     {
         open my $in_fh, "<", $args->[1];
@@ -88,11 +93,7 @@ sub execute {
             next if $seen_pair{$pair};
             $seen_pair{$pair}++;
 
-            $is_anchor{ $info->{f_id} }++ if ( index( $info->{f_id}, $opt->{pa} . "/" ) == 0 );
-            $is_anchor{ $info->{g_id} }++ if ( index( $info->{g_id}, $opt->{pa} . "/" ) == 0 );
-
             if ( $info->{f_B} > 0 ) {
-
                 if ( $info->{f_E} == $info->{f_len} ) {
 
                     #          f.B        f.E
@@ -185,6 +186,13 @@ sub execute {
             }
         }
 
+        # add anchors missed in $anchor_graph, i.e., not correctly linked to long.fasta
+        for my $id ( keys %is_anchor ) {
+            if ( !$anchor_graph->has_vertex($id) ) {
+                $anchor_graph->add_vertex($id);
+            }
+        }
+
         if ( $opt->{png} ) {
             App::Anchr::Common::g2gv( $anchor_graph, $args->[1] . ".png" );
         }
@@ -224,7 +232,18 @@ sub execute {
             print STDERR "    Linear\n";
 
             my @ts = $anchor_graph->topological_sort;
-            push @paths, \@ts;
+
+            my %idx_of;
+            for my $idx ( 0 .. $#ts ) {
+                $idx_of{ $ts[$idx] } = $idx;
+            }
+            for my $wcc ( $anchor_graph->weakly_connected_components ) {
+                my @cc = map { $_->[0] }
+                    sort { $a->[1] <=> $b->[1] }
+                    map { [ $_, $idx_of{$_} ] } @{$wcc};
+
+                push @paths, \@cc;
+            }
         }
         else {
             print STDERR "    Branched\n";
