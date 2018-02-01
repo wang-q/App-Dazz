@@ -11,7 +11,7 @@ use constant abstract => "layout anthor group";
 sub opt_spec {
     return (
         [ "outfile|o=s", "output filename", ],
-        [ 'border=i', 'length of borders in anchors', { default => 100 }, ],
+        [ 'border=i', 'length of borders in anchors', { default => 500 }, ],
         [ "max=i",    "max distance",                 { default => 5000 }, ],
         [ 'pa=s',     'prefix of anchors',            { default => "anchor" }, ],
         [ 'oa=s',     'overlaps between anchors', ],
@@ -21,7 +21,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr layout [options] <.ovlp.tsv> <.relation.tsv> <strand.fasta>";
+    return "anchr layout [options] <strand.fasta> <.ovlp.tsv> <.relation.tsv>";
 }
 
 sub description {
@@ -34,7 +34,7 @@ sub validate_args {
     my ( $self, $opt, $args ) = @_;
 
     if ( @{$args} != 3 ) {
-        my $message = "This command need one or more input files.\n\tIt found";
+        my $message = "This command need three input files.\n\tIt found";
         $message .= sprintf " [%s]", $_ for @{$args};
         $message .= ".\n";
         $self->usage_error($message);
@@ -52,12 +52,17 @@ sub validate_args {
     }
 
     if ( !exists $opt->{outfile} ) {
-        $opt->{outfile} = Path::Tiny::path( $args->[0] )->absolute . ".contig.fasta";
+        $opt->{outfile} = Path::Tiny::path( $args->[1] )->absolute . ".contig.fasta";
     }
 }
 
 sub execute {
     my ( $self, $opt, $args ) = @_;
+
+    #----------------------------#
+    # loading sequences
+    #----------------------------#
+    my $seq_of = App::Fasops::Common::read_fasta( $args->[0] );
 
     #----------------------------#
     # load overlaps and build graph
@@ -66,7 +71,7 @@ sub execute {
     my %is_anchor;
     my $links_of = {};    # long_id => { anchor_id => overlap_on_long, }
     {
-        open my $in_fh, "<", $args->[0];
+        open my $in_fh, "<", $args->[1];
 
         my %seen_pair;
         while ( my $line = <$in_fh> ) {
@@ -136,9 +141,11 @@ sub execute {
                 $links_of->{ $info->{f_id} }{ $info->{g_id} }
                     = AlignDB::IntSpan->new->add_pair( $beg, $end );
             }
-
         }
         close $in_fh;
+    }
+    if ( $opt->{png} ) {
+        App::Anchr::Common::g2gv( $graph, $args->[1] . ".linker.png" );
     }
 
     #----------------------------#
@@ -179,11 +186,11 @@ sub execute {
         }
 
         if ( $opt->{png} ) {
-            App::Anchr::Common::g2gv( $anchor_graph, $args->[0] . ".png" );
+            App::Anchr::Common::g2gv( $anchor_graph, $args->[1] . ".png" );
         }
         App::Anchr::Common::transitive_reduction($anchor_graph);
         if ( $opt->{png} ) {
-            App::Anchr::Common::g2gv( $anchor_graph, $args->[0] . ".reduced.png" );
+            App::Anchr::Common::g2gv( $anchor_graph, $args->[1] . ".reduced.png" );
         }
     }
 
@@ -192,7 +199,7 @@ sub execute {
     #----------------------------#
     my $relation_of = {};
     {
-        for my $line ( Path::Tiny::path( $args->[1] )->lines( { chomp => 1 } ) ) {
+        for my $line ( Path::Tiny::path( $args->[2] )->lines( { chomp => 1 } ) ) {
             my @fields = split "\t", $line;
 
             my $anchor_0   = $fields[0];
@@ -207,11 +214,6 @@ sub execute {
             };
         }
     }
-
-    #----------------------------#
-    # loading sequences
-    #----------------------------#
-    my $seq_of = App::Fasops::Common::read_fasta( $args->[2] );
 
     #----------------------------#
     # link anchors and break branches

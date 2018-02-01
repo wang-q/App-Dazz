@@ -23,7 +23,7 @@ like( $result->error, qr{doesn't exist}, 'infile not exists' );
     my $tempdir = Path::Tiny->tempdir;
     $result = test_app(
         'App::Anchr' => [
-            qw(layout t/24_4.ovlp.tsv t/24_4.relation.tsv t/24_4.strand.fasta),
+            qw(layout t/24_4.strand.fasta t/24_4.ovlp.tsv t/24_4.relation.tsv),
             qw(--oa t/24_4.anchor.ovlp.tsv -o),
             $tempdir->child('conTig.fasta'),
         ]
