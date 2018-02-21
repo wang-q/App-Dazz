@@ -1,12 +1,16 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+
+0.5.9 2018-02-21T23:16:42Z
     - Treat 2GS contigs as long reads
         - --mergemax and --fillmax
     - `anchr layout`
         - Move <strand.fasta> as 1st argment
         - add anchors missed in `$anchor_graph`, i.e., not correctly linked to long.fasta
     - Add gen_sgaPreQC() to `anchr template`
+    - Anchors with all reads in 7_mergeAnchors.sh
+    - Add gen_statMergeAnchors() to `anchr template`
 
 0.5.8 2018-01-31T20:13:58Z
     - Adopt bbtools pipeline in `anchr trim`
