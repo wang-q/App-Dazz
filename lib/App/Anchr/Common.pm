@@ -408,4 +408,27 @@ sub _lcss {
     return @solns;
 }
 
+sub histogram_percentile {
+    my $hist_of  = shift;
+    my $fraction = shift;
+
+    my @keys = sort { $a <=> $b } keys %{$hist_of};
+    if ( scalar @keys == 0 ) {
+        return 0;
+    }
+
+    my $target     = List::Util::sum( values %{$hist_of} ) * $fraction;
+    my $cumulative = 0;
+
+    for my $i (@keys) {
+        $cumulative += $hist_of->{$i};
+
+        if ( $cumulative >= $target ) {
+            return $i;
+        }
+    }
+
+    return $keys[-1];
+}
+
 1;

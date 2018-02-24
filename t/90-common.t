@@ -134,4 +134,14 @@ use App::Anchr::Common;
     }
 }
 
+{
+    print "#histogram\n";
+    my @bins = ( 1 .. 100 );
+    my %hist_of = map { ( $_, 1 ) } @bins;
+
+    is( App::Anchr::Common::histogram_percentile( \%hist_of, 0.5 ), 50,  "median" );
+    is( App::Anchr::Common::histogram_percentile( \%hist_of, 0.25 ), 25,  "quartile" );
+    is( App::Anchr::Common::histogram_percentile( \%hist_of, 1 ),   100, "all" );
+}
+
 done_testing();
