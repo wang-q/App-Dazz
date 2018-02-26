@@ -2,6 +2,20 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.5.11 2018-02-26T13:37:48Z
+    - `anchr anchors`
+        - Histogram of per base coverages
+        - Add histogram_percentile() to Common.pm
+        - Use `samtools view -c` to count reads
+    - `anchr template`
+        - Add --sgastats
+        - Add --splitp
+        - Add --statp
+        - Add --redoanchors
+    - 7_mergeAnchors.sh
+        - Redoing anchors when merging anchors is now optional
+        - Remove sequences of Others contained by Anchors
+
 0.5.10 2018-02-22T19:03:47Z
     - Add 8_spades_MR.sh to `anchr template`
     - Add 8_megahit_MR.sh to `anchr template`
