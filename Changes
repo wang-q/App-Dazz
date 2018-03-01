@@ -2,6 +2,17 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.5.12 2018-03-01T23:41:31Z
+    - `anchr template`
+        - Save sampled directories to 4_downSampling/ or 6_downSampling/
+        - Save kunitigs and anchors generated from 4_downSampling/ to 4_kunitigs/ and 4_tadpole/
+        - Save kunitigs and anchors generated from 6_downSampling/ to 6_kunitigs/ and 6_tadpole/
+        - 2GS and pacbio need different values of GAP_COV
+        - Add --fastqc and --kmergenie
+    - Add --cutoff and --cutk to `anchr trim`
+    - `touch` empty kunitigs.fasta in `anchr kunitigs`
+    - Fill small holes near edges in `anchr anchors`
+
 0.5.11 2018-02-26T13:37:48Z
     - `anchr anchors`
         - Histogram of per base coverages
