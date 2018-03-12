@@ -2,6 +2,29 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+0.6.0 2018-03-12T07:34:02Z
+    - `anchr template`
+        - Support up to 3 Illumina libraries
+        - Gzip pacbio.fasta
+        - Add --xmx to set Java memory usage
+        - Remove 9_statQuorum.sh
+        - Use `fint` instead of `repair` in repair.sh when possible
+        - Use merged pe.cor.fa.gz in spades, megahit and platanus
+    - `anchr anchors`
+        - Non-covered regions should be ignored
+        - Add --keepedge
+    - `anchr trim`
+        - Add --prefix
+        - Rename peaks.highpass to peaks
+    - `anchr quorum`
+        - Add --prefix
+        - Clean quorum.tt2
+        - Overwrite existing files
+    - `anchr mergereads`
+        - Dedupe merged reads
+        - Add --prefixm and --prefixu
+        - Move section of pe.cor.fa.gz to 2_mergereads.sh
+
 0.5.12 2018-03-01T23:41:31Z
     - `anchr template`
         - Save sampled directories to 4_downSampling/ or 6_downSampling/
