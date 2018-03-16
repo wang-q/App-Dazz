@@ -1,12 +1,21 @@
 language: ruby
+rvm: system
+os: linux
 sudo: required
 dist: trusty
-os: linux
-rvm: 2.0.0
+
+addons:
+  apt_packages:
+    - csh
+    - cython
+    - python-astropy
+    - python-nose
+    - python-pip
+    - python-sphinx
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libc6-dbg libxml-parser-perl libxml-sax-perl
+  - sudo apt-get install -y libxml-parser-perl libxml-sax-perl
   - DEBIAN_FRONTEND=noninteractive sudo apt-get autoremove -y --purge
       bison
       comerr-dev
@@ -25,6 +34,7 @@ before_install:
       libgeos-dev
       libgl1-mesa-dev
       libgmp-dev
+      libgdbm-dev
       libice-dev
       libicu-dev
       libidn11-dev
@@ -38,11 +48,13 @@ before_install:
       libkrb5-dev
       libldap2-dev
       libltdl-dev
+      liblapack-dev
       liblzma-dev
       liblzo2-dev
       libmagic-dev
       libmemcached-dev
       libncurses5-dev
+      libopenblas-dev
       libossp-uuid-dev
       libpcre3-dev
       libpq-dev
@@ -80,18 +92,16 @@ before_install:
   - git clone --depth=1 https://github.com/Linuxbrew/brew "$LINUXBREW/Homebrew"
   - ln -s ../Homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/
   - export PATH="$LINUXBREW/bin:$LINUXBREW/sbin:$PATH"
+  - export HOMEBREW_DEVELOPER=1
+  - export HOMEBREW_FORCE_VENDOR_RUBY=1
+  - export HOMEBREW_NO_AUTO_UPDATE=1
   - HOMEBREW_TAP_DIR="$(brew --repo "$TRAVIS_REPO_SLUG")"
   - rm -rf "$HOMEBREW_TAP_DIR"
   - mkdir -p "$(dirname "$HOMEBREW_TAP_DIR")"
   - ln -s "$PWD" "$HOMEBREW_TAP_DIR"
   # Fix error: Incorrect file permissions (664)
-  - if [ -f "Formula/*.rb" ]; then
-      chmod 0644 Formula/*.rb;
-    fi
+  - chmod 0644 Formula/*.rb
   - umask 022
-  - export HOMEBREW_DEVELOPER=1
-  - export HOMEBREW_NO_AUTO_UPDATE=1
-  - export HOMEBREW_VERBOSE=1 HOMEBREW_VERBOSE_USING_DOTS=1
   - env | grep TRAVIS | tee /tmp/travis.env
   - ulimit -n 1024
   - brew vendor-install ruby
