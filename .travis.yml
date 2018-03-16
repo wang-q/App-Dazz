@@ -110,7 +110,7 @@ before_install:
   - brew link perl
   - curl -L https://cpanmin.us | perl - App::cpanminus
   - PERL_BREW=$(brew --prefix)/Cellar/$(brew list --versions perl | sed 's/ /\//')
-  - export PATH="PERL_BREW/bin:$PATH"
+  - export PATH="$PERL_BREW/bin:$PATH"
   - export PERL5LIB="$(brew --prefix)/lib/perl5/site_perl:$PERL5LIB"
 
 install:
