@@ -119,8 +119,8 @@ install:
   - brew install graphviz jdk parallel pigz
   - brew install bbtools
   - brew install fastqc
-  - brew install minimap
-  - brew install miniasm
+  - brew install brewsci/bio/minimap
+  - brew install brewsci/bio/miniasm
   - brew install poa
   - brew install samtools
   - brew install seqtk
