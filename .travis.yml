@@ -114,15 +114,17 @@ before_install:
   - export PERL5LIB="$(brew --prefix)/lib/perl5/site_perl:$PERL5LIB"
 
 install:
+  - brew tap brewsci/science
+  - brew tap brewsci/bio
   - brew install graphviz jdk parallel pigz
-  - brew install homebrew/science/bbtools
-  - brew install homebrew/science/fastqc
-  - brew install homebrew/science/minimap
-  - brew install homebrew/science/miniasm
-  - brew install homebrew/science/poa
-  - brew install homebrew/science/samtools
-  - brew install homebrew/science/seqtk
-  - brew install homebrew/science/sickle
+  - brew install bbtools
+  - brew install fastqc
+  - brew install minimap
+  - brew install miniasm
+  - brew install poa
+  - brew install samtools
+  - brew install seqtk
+  - brew install sickle
   - brew install wang-q/tap/faops
   - brew install wang-q/tap/jrange
   - brew install wang-q/tap/jrunlist
