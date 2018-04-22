@@ -6,7 +6,9 @@ use autodie;
 use App::Anchr -command;
 use App::Anchr::Common;
 
-use constant abstract => "layout anthor group";
+sub abstract {
+    return 'layout anchor group';
+}
 
 sub opt_spec {
     return (
@@ -401,13 +403,13 @@ sub execute {
                             }
                             else {
                                 # call poa
-                                $ovlp_seq = App::Anchr::Common::poa_consensus(
+                                $ovlp_seq = App::Fasops::Common::poa_consensus(
                                     [ $ovlp_seq_contig, $ovlp_seq_anchor_1 ] );
                             }
                         }
                         else {
                             # call poa
-                            $ovlp_seq = App::Anchr::Common::poa_consensus(
+                            $ovlp_seq = App::Fasops::Common::poa_consensus(
                                 [ $ovlp_seq_contig, $ovlp_seq_anchor_1 ] );
                         }
 
@@ -447,7 +449,7 @@ sub execute {
                         substr $s, -$opt->{border}, $opt->{border}, $right_border;
                     }
 
-                    my $space_seq = App::Anchr::Common::poa_consensus( \@spaces );
+                    my $space_seq = App::Fasops::Common::poa_consensus( \@spaces );
 
                     # remove length of $opt->{border} from contig and anchor_1
                     substr $contig, -$opt->{border}, $opt->{border}, "";
