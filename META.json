@@ -4,13 +4,13 @@
       "Qiang Wang <wang-q@outlook.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.14, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.16, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : 2
+      "version" : "2"
    },
    "name" : "App-Anchr",
    "no_index" : {
@@ -45,7 +45,7 @@
             "AlignDB::IntSpan" : "v1.1.0",
             "AlignDB::Stopwatch" : "v1.1.0",
             "App::Cmd" : "0.330",
-            "App::Fasops" : "v0.5.11",
+            "App::Fasops" : "v0.6.0",
             "App::RL" : "v0.2.31",
             "App::Rangeops" : "v0.0.14",
             "File::ShareDir" : "1.102",
@@ -81,7 +81,7 @@
          "web" : "https://github.com/wang-q/App-Anchr"
       }
    },
-   "version" : "0.6.0",
+   "version" : "0.6.1",
    "x_authority" : "cpan:WANGQ",
-   "x_serialization_backend" : "JSON::PP version 2.97000"
+   "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

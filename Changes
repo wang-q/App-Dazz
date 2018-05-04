@@ -1,8 +1,11 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+
+0.6.1 2018-05-04T07:54:10Z
     - Remove `ordered` from all bbtools options
     - Move poa_consensus() to App::Fasops
+    - Experimental keys on scalar is now forbidden
 
 0.6.0 2018-03-12T07:34:02Z
     - `anchr template`
