@@ -1,6 +1,10 @@
 Revision history for App-Anchr
 
 {{$NEXT}}
+    - `anchr template`
+        - Add --trinity, R1/R2, trim/pe.cor, and mergereads/pe.cor
+    - Add `ulimit -s unlimited` to header.tt2
+    - rm k_unitigs_K*.fasta
 
 0.6.1 2018-05-04T07:54:10Z
     - Remove `ordered` from all bbtools options
