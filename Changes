@@ -6,6 +6,8 @@ Revision history for App-Anchr
     - Add `ulimit -s unlimited` to header.tt2
     - rm k_unitigs_K*.fasta
     - Remove `anchr sep`
+    - Use spanr to replace jrunlist
+    - Use linkr to replace rangeops
 
 0.6.1 2018-05-04T07:54:10Z
     - Remove `ordered` from all bbtools options
