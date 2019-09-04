@@ -112,7 +112,7 @@ before_install:
   - PERL_BREW=$(brew --prefix)/Cellar/$(brew list --versions perl | sed 's/ /\//')
   - export PATH="$PERL_BREW/bin:$PATH"
   - export PERL5LIB="$(brew --prefix)/lib/perl5/site_perl:$PERL5LIB"
-  - curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh
+  - curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- -y
   - export PATH=${TRAVIS_HOME}/.cargo/bin:$PATH
 
 install:
