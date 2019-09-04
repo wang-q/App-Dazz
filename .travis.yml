@@ -123,6 +123,7 @@ install:
   - brew install fastqc
   - brew install brewsci/bio/minimap
   - brew install brewsci/bio/miniasm
+  - brew install brewsci/bio/masurca
   - brew install poa
   - brew install samtools
   - brew install seqtk
@@ -130,9 +131,6 @@ install:
   - brew install wang-q/tap/faops
   - brew install wang-q/tap/jrange
   - brew install wang-q/tap/sparsemem
-  - brew install wang-q/tap/jellyfish@2.2.4
-  - brew install wang-q/tap/quorum@1.1.1
-  - brew install wang-q/tap/superreads
   - brew install wang-q/tap/dazz_db@20161112
   - brew install wang-q/tap/daligner@20170203
   - cargo install intspan
