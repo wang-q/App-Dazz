@@ -15,7 +15,6 @@ requires 'AlignDB::IntSpan',        '1.1.0';
 requires 'AlignDB::Stopwatch',      '1.1.0';
 requires 'App::RL',                 '0.2.31';
 requires 'App::Fasops',             '0.6.0';
-requires 'App::Rangeops',           '0.0.14';
 requires 'perl',                    '5.010001';
 
 on 'test' => sub {
