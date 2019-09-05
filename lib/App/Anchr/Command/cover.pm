@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use autodie;
 
-use App::Anchr - command;
+use App::Anchr -command;
 use App::Anchr::Common;
 
 use constant abstract => "trusted regions in the first file covered by the second";

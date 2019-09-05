@@ -6,6 +6,7 @@ Revision history for App-Anchr
     - Add `ulimit -s unlimited` to header.tt2
     - rm k_unitigs_K*.fasta
     - Remove `anchr sep`
+    - Use brewsci/bio/masurca
     - Use spanr to replace jrunlist
     - Use linkr to replace rangeops
 
