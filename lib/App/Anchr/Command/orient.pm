@@ -247,7 +247,7 @@ sub execute {
         }
     }
 
-    {    # Outputs. stdout is handeld by faops
+    {    # Outputs. stdout is handled by faops
         my $cmd;
         $cmd .= "faops replace -l 0 renamed.rc.fasta stdout.replace.tsv";
         $cmd .= " $opt->{outfile}";

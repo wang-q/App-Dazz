@@ -6,7 +6,7 @@ use autodie;
 use App::Anchr -command;
 use App::Anchr::Common;
 
-use constant abstract => "group anthors by long reads";
+use constant abstract => "group anchors by long reads";
 
 sub opt_spec {
     return (
