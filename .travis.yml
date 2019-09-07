@@ -5,11 +5,10 @@ dist: trusty
 
 before_install:
   # Install Linuxbrew
-  - test -d $HOME/.linuxbrew/bin || git clone https://github.com/Linuxbrew/brew.git $HOME/.linuxbrew
-  - PATH="$HOME/.linuxbrew/bin:$PATH"
-  - echo 'export PATH="$HOME/.linuxbrew/bin:$PATH"' >>~/.bash_profile
-  - export MANPATH="$(brew --prefix)/share/man:$MANPATH"
-  - export INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
+  - git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
+  - mkdir ~/.linuxbrew/bin
+  - ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin
+  - eval $(~/.linuxbrew/bin/brew shellenv)
   - brew --version
   - ulimit -n 1024
   # Install GCC
