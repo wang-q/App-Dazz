@@ -86,7 +86,7 @@ sub execute {
     {
         # paf to meancov
         my $cmd;
-        $cmd .= "jrange covered";
+        $cmd .= "ovlpr covered";
         $cmd .= " $infile";
         $cmd .= " --coverage $opt->{max}";
         $cmd .= " --meancov";
@@ -153,7 +153,7 @@ sub execute {
     {
         # paf to covered
         my $cmd;
-        $cmd .= "jrange covered";
+        $cmd .= "ovlpr covered";
         $cmd .= " $infile";
         $cmd .= " --coverage $opt->{coverage}";
         $cmd .= " --len $opt->{len} --idt $opt->{idt}";
@@ -165,7 +165,7 @@ sub execute {
         }
     }
 
-    # anchor_id => covered ragion
+    # anchor_id => covered region
     my $covered_of = {};
     $meta_of->{PARTIAL_COVERED} = AlignDB::IntSpan->new;
     for my $line ( App::RL::Common::read_lines("$basename.covered.txt") ) {

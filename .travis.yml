@@ -128,7 +128,6 @@ install:
   - brew install samtools
   - brew install sickle
   - brew install wang-q/tap/faops
-  - brew install wang-q/tap/jrange
   - brew install wang-q/tap/sparsemem
   - brew install wang-q/tap/dazz_db@20161112
   - brew install wang-q/tap/daligner@20170203
