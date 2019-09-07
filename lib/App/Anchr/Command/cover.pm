@@ -89,7 +89,7 @@ sub execute {
         $cmd .= "ovlpr covered";
         $cmd .= " $infile";
         $cmd .= " --coverage $opt->{max}";
-        $cmd .= " --meancov";
+        $cmd .= " --mean";
         $cmd .= " --len $opt->{len} --idt $opt->{idt}";
         $cmd .= " -o $basename.meancov.txt";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
