@@ -2,6 +2,8 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+    - Use ovlpr to replace jrange
+
 0.6.2 2019-09-05T10:45:38Z
     - `anchr template`
         - Add --trinity, R1/R2, trim/pe.cor, and mergereads/pe.cor
