@@ -64,8 +64,7 @@ perl -I lib/ script/anchr paf2ovlp t/1_4.pac.paf -o stdout
 perl -I lib/ script/anchr overlap t/1_4.pac.fasta -o t/1_4.pac.ovlp.tsv
 perl -I lib/ t/22-paf2ovlp.t
 
-perl -I lib/ script/anchr trimlong t/1_4.pac.fasta -o stdout
-perl -I lib/ script/anchr trimlong t/1_4.pac.fasta -o stdout -v --jvm '-d64 -server'
+perl -I lib/ script/anchr trimlong t/1_4.pac.fasta -o stdout -v
 perl -I lib/ t/23-trimlong.t
 
 perl -I lib/ t/91-template.t
