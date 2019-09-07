@@ -14,6 +14,7 @@ before_install:
   # Install GCC
   - brew install gcc
   # Install others
+  - brew install openjdk@9
   - brew install perl
   - brew link perl
   - curl -L https://cpanmin.us | perl - App::cpanminus
@@ -26,7 +27,7 @@ before_install:
 install:
   - brew tap brewsci/science
   - brew tap brewsci/bio
-  - brew install graphviz jdk parallel pigz
+  - brew install parallel pigz
   - brew install bbtools
   - brew install fastqc
   - brew install brewsci/bio/minimap
