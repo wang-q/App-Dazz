@@ -14,7 +14,6 @@ before_install:
   # Install GCC
   - brew install gcc
   # Install others
-  - brew install openssl
   - brew install openjdk@9
   - brew install perl
   - brew link perl
@@ -22,6 +21,7 @@ before_install:
   - PERL_BREW=$(brew --prefix)/Cellar/$(brew list --versions perl | sed 's/ /\//')
   - export PATH="$PERL_BREW/bin:$PATH"
   - export PERL5LIB="$(brew --prefix)/lib/perl5/site_perl:$PERL5LIB"
+  - cpanm --notest --verbose Net::SSLeay IO::Socket::SSL
   - curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- -y
   - export PATH=${TRAVIS_HOME}/.cargo/bin:$PATH
 
