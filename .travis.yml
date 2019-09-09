@@ -1,7 +1,9 @@
-language: generic
+language: perl
 os: linux
 sudo: required
 dist: bionic
+perl:
+  - "5.24"
 
 before_install:
   # Install Linuxbrew
@@ -15,14 +17,6 @@ before_install:
   - brew install gcc
   # Install others
   - brew install openjdk@9
-  - brew install perl
-  - brew link perl
-  - curl -L https://cpanmin.us | perl - App::cpanminus
-  - PERL_BREW=$(brew --prefix)/Cellar/$(brew list --versions perl | sed 's/ /\//')
-  - export PATH="$PERL_BREW/bin:$PATH"
-  - export PERL5LIB="$(brew --prefix)/lib/perl5/site_perl:$PERL5LIB"
-  - brew link openssl --force
-  - cpanm --notest --verbose Net::SSLeay IO::Socket::SSL
   - curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- -y
   - export PATH=${TRAVIS_HOME}/.cargo/bin:$PATH
 
