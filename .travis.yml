@@ -37,6 +37,7 @@ install:
   - brew install wang-q/tap/dazz_db@20161112
   - brew install wang-q/tap/daligner@20170203
   - cargo install intspan
+  - brew unlink perl
   - cpanm -nq --installdeps --with-develop .
   - cpanm -nq . # install App::Anchr prior as some commands need `anchr` in $PATH
 
