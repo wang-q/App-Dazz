@@ -6,7 +6,7 @@ use autodie;
 use App::Anchr -command;
 use App::Anchr::Common;
 
-use constant abstract => 'LAshow outputs to ovelaps';
+use constant abstract => 'LAshow outputs to overlaps';
 
 sub opt_spec {
     return (
