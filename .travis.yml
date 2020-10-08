@@ -16,14 +16,14 @@ before_install:
   # Install gcc & jdk
   - brew install gcc
   - brew install openjdk
-  - brew link openjdk
+  - brew link adoptopenjdk
 
 install:
   - brew tap brewsci/science
   - brew tap brewsci/bio
   - brew install parallel pigz
   - brew install bbtools
-  - brew install fastqc
+  - brew install fastqc --ignore-dependencies
   - brew install brewsci/bio/minimap
   - brew install brewsci/bio/miniasm
   - brew install brewsci/bio/masurca
