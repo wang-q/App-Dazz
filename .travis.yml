@@ -16,7 +16,7 @@ before_install:
   # Install GCC
   - brew install gcc
   # Install others
-  - brew install openjdk@9
+  - brew install openjdk
 
 install:
   - brew tap brewsci/science
@@ -32,8 +32,8 @@ install:
   - brew install sickle
   - brew install wang-q/tap/faops
   - brew install wang-q/tap/sparsemem
-  - brew install wang-q/tap/dazz_db@20161112
-  - brew install wang-q/tap/daligner@20170203
+  - brew install wang-q/tap/dazz_db@20201008
+  - brew install wang-q/tap/daligner@20201008
   - brew install wang-q/tap/intspan
   - brew unlink perl
   - cpanm -nq --installdeps --with-develop .
