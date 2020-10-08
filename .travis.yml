@@ -22,7 +22,7 @@ install:
   - brew tap brewsci/bio
   - brew install parallel pigz
   - brew install bbtools
-  - brew install fastqc --ignore-dependencies
+  # - brew install fastqc --ignore-dependencies
   - brew install brewsci/bio/minimap
   - brew install brewsci/bio/miniasm
   - brew install brewsci/bio/masurca
