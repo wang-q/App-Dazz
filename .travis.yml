@@ -13,10 +13,10 @@ before_install:
   - eval $(~/.linuxbrew/bin/brew shellenv)
   - brew --version
   - ulimit -n 1024
-  # Install GCC
+  # Install gcc & jdk
   - brew install gcc
-  # Install others
-  - brew install adoptopenjdk@11
+  - brew install openjdk
+  - brew link openjdk
 
 install:
   - brew tap brewsci/science
