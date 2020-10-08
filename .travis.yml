@@ -15,8 +15,7 @@ before_install:
   - ulimit -n 1024
   # Install gcc & jdk
   - brew install gcc
-  - brew install openjdk
-  - brew link adoptopenjdk
+  - brew install adoptopenjdk
 
 install:
   - brew tap brewsci/science
