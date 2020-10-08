@@ -16,7 +16,7 @@ before_install:
   # Install GCC
   - brew install gcc
   # Install others
-  - brew install openjdk
+  - brew install adoptopenjdk@11
 
 install:
   - brew tap brewsci/science
