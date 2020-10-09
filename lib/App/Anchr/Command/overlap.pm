@@ -10,12 +10,12 @@ use constant abstract => "detect overlaps by daligner";
 
 sub opt_spec {
     return (
-        [ "outfile|o=s", "output filename, [stdout] for screen", ],
-        [ "len|l=i", "minimal length of overlaps",   { default => 500 }, ],
-        [ "idt|i=f", "minimal identity of overlaps", { default => 0.7 }, ],
-        [ "serial", "serials instead of original names in the output file", ],
-        [ "all",    "all overlaps instead of proper overlaps", ],
-        [ "tmp=s",  "user defined tempdir", ],
+        [ "outfile|o=s",  "output filename, [stdout] for screen", ],
+        [ "len|l=i",      "minimal length of overlaps",   { default => 500 }, ],
+        [ "idt|i=f",      "minimal identity of overlaps", { default => 0.7 }, ],
+        [ "serial",       "serials instead of original names in the output file", ],
+        [ "all",          "all overlaps instead of proper overlaps", ],
+        [ "tmp=s",        "user defined tempdir", ],
         [ "parallel|p=i", "number of threads", { default => 8 }, ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
@@ -117,12 +117,15 @@ sub execute {
             }
         }
 
-        my $cmd
-            = "HPC.daligner $basename -M16 -T$opt->{parallel} -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust | bash";
+        my $cmd;
+        $cmd
+            .= "HPC.daligner $basename -M16 -T$opt->{parallel} -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust";
+        $cmd .= " | sed 's/ -vS / -S /'";    # don't show LAcheck prompts
+        $cmd .= " | bash";
         App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( defined $block_number and $block_number > 1 ) {
-            $cmd = "LAcat $basename.#.las > $basename.las";
+            $cmd = "LAcat $basename.\@.las > $basename.las";
             App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
         }
 

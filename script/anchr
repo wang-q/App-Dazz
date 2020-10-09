@@ -25,6 +25,7 @@ perl -I lib/ t/04-show2ovlp.t
 perl -I lib/ t/05-trim.t
 
 perl -I lib/ script/anchr overlap t/1_4.pac.fasta -o stdout
+perl -I lib/ script/anchr overlap t/1_4.pac.fasta -v -o stdout
 perl -I lib/ script/anchr overlap t/1_4.pac.fasta --idt 0.8 --len 2500 --serial -o stdout
 perl -I lib/ script/anchr overlap t/1_4.pac.fasta --idt 0.8 --len 2500 --all -o stdout
 perl -I lib/ t/07-overlap.t

@@ -10,15 +10,15 @@ use constant abstract => "detect overlaps between two (large) files by daligner"
 
 sub opt_spec {
     return (
-        [ "dir|d=s",      "working directory",            { default => "." }, ],
-        [ "p1=s",         "prefix of first file",         { default => "anchor" }, ],
-        [ "p2=s",         "prefix of second file",        { default => "long" }, ],
+        [ "dir|d=s",      "working directory",     { default => "." }, ],
+        [ "p1=s",         "prefix of first file",  { default => "anchor" }, ],
+        [ "p2=s",         "prefix of second file", { default => "long" }, ],
         [ "pd=s",         "prefix of result files", ],
         [ "block|b=i",    "block size in Mbp",            { default => 20 }, ],
         [ "len|l=i",      "minimal length of overlaps",   { default => 1000 }, ],
         [ "idt|i=f",      "minimal identity of overlaps", { default => 0.8 }, ],
         [ "all",          "all overlaps instead of proper overlaps", ],
-        [ "parallel|p=i", "number of threads",            { default => 8 }, ],
+        [ "parallel|p=i", "number of threads", { default => 8 }, ],
         [ "verbose|v",    "verbose mode", ],
         { show_defaults => 1, }
     );
@@ -32,7 +32,7 @@ sub description {
     my $desc;
     $desc .= ucfirst(abstract) . ".\n";
     $desc .= "\tAll intermediate files (.fasta, .replace.tsv, .db, .las, .show.txt, .ovlp.tsv)";
-    $desc .= " are keept in the working directory.\n";
+    $desc .= " are kept in the working directory.\n";
     return $desc;
 }
 
@@ -165,8 +165,8 @@ sub execute {
                 $cmd .= "daligner -M16 -T$opt->{parallel}";
                 $cmd .= " -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust";
                 $cmd .= " $opt->{pd}.$i $opt->{pd}.$j";
-                $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$i.$opt->{pd}.$j";
-                $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$j.$opt->{pd}.$i";
+                $cmd .= " && LAcheck -S $opt->{pd} $opt->{pd}.$i.$opt->{pd}.$j";
+                $cmd .= " && LAcheck -S $opt->{pd} $opt->{pd}.$j.$opt->{pd}.$i";
 
                 App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
             }
@@ -180,7 +180,7 @@ sub execute {
                 $cmd .= " $opt->{pd}.$i.$opt->{pd}.$j";
             }
 
-            $cmd .= " && LAcheck -vS $opt->{pd} $opt->{pd}.$i";
+            $cmd .= " && LAcheck -S $opt->{pd} $opt->{pd}.$i";
 
             App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
         }
@@ -190,7 +190,7 @@ sub execute {
 
         {
             my $cmd;
-            $cmd .= "LAcat $opt->{pd}.#.las > $opt->{pd}.las";
+            $cmd .= "LAcat $opt->{pd}.\@.las > $opt->{pd}.las";
             App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
             App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.las", { verbose => $opt->{verbose}, } );
