@@ -11,21 +11,31 @@
 
 Create two files, `renamed.fasta`, `stdout.replace.tsv`.
 
-```bash
-mkdir -p ~/data/test/dazzler
-cd ~/data/test/dazzler
+```shell script
+# Dmel iso_1 reference genome
+mkdir -p ~/data/anchr/ref
+cd ~/data/anchr/ref
 
-cat ~/data/anchr/iso_1/merge/anchor.merge.fasta \
-    | anchr dazzname stdin -o stdout \
-    | faops filter -l 0 stdin renamed.fasta
+rsync -avP \
+    ftp.ncbi.nlm.nih.gov::genomes/all/GCF/000/001/215/GCF_000001215.4_Release_6_plus_ISO1_MT/ \
+    iso_1/
+
+# rename
+mkdir -p ~/data/anchr/dazzler
+cd ~/data/anchr/dazzler
+
+gzip -dcf ../ref/iso_1/GCF_000001215.4_Release_6_plus_ISO1_MT_genomic.fna.gz |
+    anchr dazzname stdin -o stdout |
+    faops filter -l 0 stdin renamed.fasta
+
 ```
 
 ### Create and split DB
 
 `myDB.db` and its hidden companions.
 
-```bash
-cd ~/data/test/dazzler
+```shell script
+cd ~/data/anchr/dazzler
 
 echo "Make the dazzler DB"
 DBrm myDB
@@ -36,20 +46,22 @@ DBsplit -s50 myDB
 
 BLOCK_NUMBER=$(cat myDB.db | perl -nl -e '/^blocks\s+=\s+(\d+)/ and print $1')
 echo ${BLOCK_NUMBER}
+
 ```
 
 ### Retrieve some records from DB
 
 * If the `-n` option is set then the DNA sequence is **not** displayed
 
-```bash
-cd ~/data/test/dazzler
+```shell script
+cd ~/data/anchr/dazzler
 
 # headers
-DBshow -n myDB 1-10 102 100-101
+DBshow -n myDB 5-10 102 100-101
 
 # sequences from the original file
-faops some -l 0 renamed.fasta <(DBshow -n myDB 1-10 102 100-101 | sed 's/^>//') stdout
+faops some -l 0 renamed.fasta <(DBshow -n myDB 5-10 102 100-101 | sed 's/^>//') stdout
+
 ```
 
 ## daligner
@@ -69,8 +81,8 @@ faops some -l 0 renamed.fasta <(DBshow -n myDB 1-10 102 100-101 | sed 's/^>//') 
 
 Three .las (`myDB.[1-3].las`) files are generated then concatenated to `myDB.las`.
 
-```bash
-cd ~/data/test/dazzler
+```shell script
+cd ~/data/anchr/dazzler
 
 if [[ -e myDB.las || -e myDB.1.las ]]; then
     rm myDB*.las
@@ -78,53 +90,53 @@ fi
 HPC.daligner -v -M16 -e.96 -l500 -s500 -mdust myDB > job.sh
 bash job.sh
 
-LAcat -v myDB.#.las > myDB.las
+LAcat -v myDB.@.las > myDB.las
+
 ```
 
 Contents of `job.sh`
 
-```bash
+```shell script
 # Daligner jobs (3)
-daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.1
-daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.2 myDB.1 myDB.2
-daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.3 myDB.1 myDB.2 myDB.3
+daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.@1-1
+daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.2 myDB.@1-2
+daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.3 myDB.@1-3
 # Check initial .las files jobs (3) (optional but recommended)
-LAcheck -vS myDB myDB.1.myDB.1 myDB.1.myDB.2 myDB.1.myDB.3
-LAcheck -vS myDB myDB.2.myDB.1 myDB.2.myDB.2 myDB.2.myDB.3
-LAcheck -vS myDB myDB.3.myDB.1 myDB.3.myDB.2 myDB.3.myDB.3
-# Level 1 merge jobs (3)
-LAmerge -v myDB.1 myDB.1.myDB.1 myDB.1.myDB.2 myDB.1.myDB.3
-LAmerge -v myDB.2 myDB.2.myDB.1 myDB.2.myDB.2 myDB.2.myDB.3
-LAmerge -v myDB.3 myDB.3.myDB.1 myDB.3.myDB.2 myDB.3.myDB.3
-# Check level 2 .las files jobs (3) (optional but recommended)
-LAcheck -vS myDB myDB.1
-LAcheck -vS myDB myDB.2
-LAcheck -vS myDB myDB.3
-# Remove level 1 .las files (optional)
-rm myDB.1.myDB.1.las myDB.1.myDB.2.las myDB.1.myDB.3.las
-rm myDB.2.myDB.1.las myDB.2.myDB.2.las myDB.2.myDB.3.las
-rm myDB.3.myDB.1.las myDB.3.myDB.2.las myDB.3.myDB.3.las
+LAcheck -vS myDB myDB.1.myDB.@
+LAcheck -vS myDB myDB.2.myDB.@
+LAcheck -vS myDB myDB.3.myDB.@
+# Merge jobs (3)
+LAmerge -v myDB.1 myDB.1.myDB.@ && LAcheck -vS myDB myDB.1
+LAmerge -v myDB.2 myDB.2.myDB.@ && LAcheck -vS myDB myDB.2
+LAmerge -v myDB.3 myDB.3.myDB.@ && LAcheck -vS myDB myDB.3
+# Remove block .las files (optional)
+rm myDB.1.myDB.*.las
+rm myDB.2.myDB.*.las
+rm myDB.3.myDB.*.las
+
 ```
 
 The 3 lines of daligner are equivalent to the following:
 
-```bash
+```shell script
 daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.1
 daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.2
 daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.3
 daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.2 myDB.2
 daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.2 myDB.3
 daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.3 myDB.3
+
 ```
 
 Results.
 
-```bash
-cd ~/data/test/dazzler
+```shell script
+cd ~/data/anchr/dazzler
 
 LAshow myDB.db myDB.las
 LAshow -o myDB.db myDB.las
 LAshow -co myDB.db myDB.las
+
 ```
 
 ## Between two files
@@ -134,18 +146,19 @@ LAshow -co myDB.db myDB.las
 
 Only between other than all-vs-all to reduce computational tasks.
 
-```bash
-mkdir -p ~/data/test/dazzler2
-cd ~/data/test/dazzler2
+```shell script
+mkdir -p ~/data/anchr/dazzler2
+cd ~/data/anchr/dazzler2
 
-cat ~/data/anchr/e_coli/Q20L150_1600000/anchor/pe.anchor.fa \
-    | anchr dazzname --prefix first stdin -o stdout \
-    | faops filter -l 0 stdin first.fasta
+cat ~/data/anchr/e_coli/4_kunitigs/Q20L60X80P000/anchor/anchor.fasta |
+    anchr dazzname --prefix first stdin -o stdout |
+    faops filter -l 0 stdin first.fasta
 mv stdout.replace.tsv first.replace.tsv
 
-head -n 20000 ~/data/anchr/e_coli/3_pacbio/pacbio.fasta \
-    | anchr dazzname --prefix second stdin -o stdout \
-    | faops filter -l 0 -a 1000 stdin second.fasta
+gzip -dcf ~/data/anchr/e_coli/3_pacbio/pacbio.X80.trim.fasta.gz |
+    head -n 20000 |
+    anchr dazzname --prefix second stdin -o stdout |
+    faops filter -l 0 -a 1000 stdin second.fasta
 mv stdout.replace.tsv second.replace.tsv
 
 echo "Make the dazzler DB"
@@ -162,8 +175,8 @@ if [[ -e myDB.las || -e myDB.1.las ]]; then
     rm myDB*.las
 fi
 
-seq 1 1 ${BLOCK_NUMBER} \
-    | parallel --no-run-if-empty --keep-order -j 4 '
+seq 1 1 ${BLOCK_NUMBER} |
+    parallel --no-run-if-empty --keep-order -j 4 '
         daligner -e0.96 -l500 -s500 -M16 -mdust myDB.1 myDB.{};
         LAcheck -vS myDB myDB.1.myDB.{};
         LAcheck -vS myDB myDB.{}.myDB.1;
@@ -177,7 +190,7 @@ LAcheck -vS myDB myDB.2
 
 rm myDB.*.myDB.*.las
 
-LAcat -v myDB.#.las > myDB.las
+LAcat -v myDB.@.las > myDB.las
 LAcheck -vS myDB myDB
 rm myDB.*.las
 
