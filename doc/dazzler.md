@@ -155,7 +155,7 @@ cat ~/data/anchr/e_coli/4_kunitigs/Q20L60X80P000/anchor/anchor.fasta |
     faops filter -l 0 stdin first.fasta
 mv stdout.replace.tsv first.replace.tsv
 
-gzip -dcf ~/data/anchr/e_coli/3_pacbio/pacbio.X80.trim.fasta.gz |
+gzip -dcf ~/data/anchr/e_coli/3_long/L.X80.trim.fasta.gz |
     head -n 20000 |
     anchr dazzname --prefix second stdin -o stdout |
     faops filter -l 0 -a 1000 stdin second.fasta
