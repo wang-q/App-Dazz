@@ -25,6 +25,20 @@ sub opt_spec {
     );
 }
 
+
+# 三代 reads 里有一个常见的错误, 即单一 ZMW 里的测序结果中, 接头序列部分的测序结果出现了较多的错误,
+# 因此并没有将接头序列去除干净, 形成的 subreads 里含有多份基因组上同一片段, 它们之间以接头序列为间隔.
+#
+# `anchr group` 命令默认会将这种三代的 reads 去除. `--keep` 选项会留下这种 reads, 这适用于组装好的三代序列.
+#
+# ```text
+#       ===
+# ------------>
+#              )
+#   <----------
+#       ===
+# ```
+
 sub usage_desc {
     return "anchr group [options] <dazz DB> <ovlp file>";
 }
