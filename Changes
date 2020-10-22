@@ -2,7 +2,9 @@ Revision history for App-Anchr
 
 {{$NEXT}}
 
+    - Add `ena_info.pl` and `ena_prep.pl`
     - Use ovlpr to replace jrange
+    - Fit new versions of quast, daligner, bbtools, canu, and picard
 
 0.6.2 2019-09-05T10:45:38Z
     - `anchr template`
