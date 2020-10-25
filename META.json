@@ -47,17 +47,14 @@
             "App::Cmd" : "0.330",
             "App::Fasops" : "v0.6.0",
             "App::RL" : "v0.2.31",
-            "File::ShareDir" : "1.102",
             "Graph" : "0.9704",
             "IO::Zlib" : "1.04_02",
             "JSON" : "2.93",
             "List::Util" : "1.36",
-            "MCE" : "1.810",
             "Module::Build::Tiny" : "0.039",
             "Number::Format" : "1.75",
             "Path::Tiny" : "0.076",
             "Statistics::Descriptive" : "3.0612",
-            "Template" : "2.26",
             "YAML::Syck" : "1.29",
             "perl" : "5.010001"
          }

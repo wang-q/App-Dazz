@@ -7,7 +7,7 @@ use App::Dazz -command;
 use App::Dazz::Common;
 
 sub abstract {
-    return 'layout anchor group';
+    return 'layout anchors within a group';
 }
 
 sub opt_spec {

@@ -6,7 +6,6 @@ use autodie;
 use 5.010001;
 
 use Carp qw();
-use File::ShareDir qw();
 use Graph;
 use IO::Zlib;
 use IPC::Cmd qw();
@@ -14,7 +13,6 @@ use JSON qw();
 use List::Util;
 use Path::Tiny qw();
 use Statistics::Descriptive qw();
-use Template;
 use YAML::Syck qw();
 
 use AlignDB::IntSpan;
