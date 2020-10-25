@@ -137,9 +137,9 @@ sub execute {
     # filter overlaps
     if ( $opt->{restrict} ) {
         my $cmd;
-        $cmd .= "dazz replace renamed.ovlp.tsv stdout.replace.tsv -o stdout";
-        $cmd .= " | dazz restrict stdin $opt->{restrict} -o stdout";
-        $cmd .= " | dazz replace stdin stdout.replace.tsv -r -o stdout";
+        $cmd .= "ovlpr replace renamed.ovlp.tsv stdout.replace.tsv -o stdout";
+        $cmd .= " | ovlpr restrict stdin $opt->{restrict} -o stdout";
+        $cmd .= " | ovlpr replace stdin stdout.replace.tsv -r -o stdout";
         $cmd .= " > restrict.ovlp.tsv";
         App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 

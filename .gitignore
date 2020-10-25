@@ -41,4 +41,5 @@ MYMETA.*
 *.gz
 *.fq
 *.fa
+*.fasta
 *.tsv
