@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/wang-q/App-Dazz.svg?branch=master)](https://travis-ci.org/wang-q/App-Dazz) [![Coverage Status](http://codecov.io/github/wang-q/App-Dazz/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Dazz?branch=master)
 # NAME
 
-App::Dazz - **A**ssembler of **N**-free **CHR**omosomes
+App::Dazz - Daligner-based UniTig utils
 
 # SYNOPSIS
 
@@ -28,17 +28,19 @@ Run `dazz help command-name` for usage information.
 
 # DESCRIPTION
 
-App::Dazz is tend to be an Assembler of N-free CHRomosomes.
+App::Dazz comprises some Daligner-based UniTig utils
 
 # INSTALLATION
 
-    cpanm --installdeps https://github.com/wang-q/App-Dazz/archive/0.5.4.tar.gz
-    # cpanm --installdeps --verbose --mirror-only --mirror http://mirrors.ustc.edu.cn/CPAN/ https://github.com/wang-q/App-Dazz.git
+    brew install brewsci/science/poa
     brew install wang-q/tap/faops
     brew install wang-q/tap/dazz_db@20201008
     brew install wang-q/tap/daligner@20201008
     brew install wang-q/tap/intspan
-    cpanm -nq https://github.com/wang-q/App-Dazz/archive/0.5.4.tar.gz
+
+    cpanm --installdeps https://github.com/wang-q/App-Dazz/archive/0.1.0.tar.gz
+    # cpanm --installdeps --verbose --mirror-only --mirror http://mirrors.ustc.edu.cn/CPAN/ https://github.com/wang-q/App-Dazz.git
+    cpanm -nq https://github.com/wang-q/App-Dazz/archive/0.1.0.tar.gz
     # cpanm -nq https://github.com/wang-q/App-Dazz.git
 
 # AUTHOR

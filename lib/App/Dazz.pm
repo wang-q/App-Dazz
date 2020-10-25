@@ -12,7 +12,7 @@ our $VERSION = "0.1.0";
 
 =head1 NAME
 
-App::Dazz - B<A>ssembler of B<N>-free B<CHR>omosomes
+App::Dazz - Daligner-based UniTig utils
 
 =head1 SYNOPSIS
 
@@ -40,17 +40,19 @@ Run C<dazz help command-name> for usage information.
 
 =head1 DESCRIPTION
 
-App::Dazz is tend to be an Assembler of N-free CHRomosomes.
+App::Dazz comprises some Daligner-based UniTig utils
 
 =head1 INSTALLATION
 
-    cpanm --installdeps https://github.com/wang-q/App-Dazz/archive/0.5.4.tar.gz
-    # cpanm --installdeps --verbose --mirror-only --mirror http://mirrors.ustc.edu.cn/CPAN/ https://github.com/wang-q/App-Dazz.git
+    brew install brewsci/science/poa
     brew install wang-q/tap/faops
     brew install wang-q/tap/dazz_db@20201008
     brew install wang-q/tap/daligner@20201008
     brew install wang-q/tap/intspan
-    cpanm -nq https://github.com/wang-q/App-Dazz/archive/0.5.4.tar.gz
+
+    cpanm --installdeps https://github.com/wang-q/App-Dazz/archive/0.1.0.tar.gz
+    # cpanm --installdeps --verbose --mirror-only --mirror http://mirrors.ustc.edu.cn/CPAN/ https://github.com/wang-q/App-Dazz.git
+    cpanm -nq https://github.com/wang-q/App-Dazz/archive/0.1.0.tar.gz
     # cpanm -nq https://github.com/wang-q/App-Dazz.git
 
 =head1 AUTHOR

@@ -1,5 +1,5 @@
 {
-   "abstract" : "B<A>ssembler of B<N>-free B<CHR>omosomes",
+   "abstract" : "Daligner-based UniTig utils",
    "author" : [
       "Qiang Wang <wang-q@outlook.com>"
    ],
