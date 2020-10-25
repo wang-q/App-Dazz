@@ -19,6 +19,7 @@ before_install:
 install:
   - brew tap brewsci/science
   - brew tap brewsci/bio
+  - brew install brewsci/science/poa
   - brew install wang-q/tap/faops
   - brew install wang-q/tap/dazz_db@20201008
   - brew install wang-q/tap/daligner@20201008
