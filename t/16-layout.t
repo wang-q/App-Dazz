@@ -19,7 +19,11 @@ like( $result->error, qr{need .+input file}, 'need 3 infiles' );
 $result = test_app( 'App::Dazz' => [qw(layout t/not_exists t/not_exists t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
-{
+SKIP: {
+    skip "dazz and its deps not installed", 3
+        unless IPC::Cmd::can_run('dazz')
+            or IPC::Cmd::can_run('poa');
+
     my $tempdir = Path::Tiny->tempdir;
     $result = test_app(
         'App::Dazz' => [
