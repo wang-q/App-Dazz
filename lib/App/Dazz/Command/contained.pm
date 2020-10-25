@@ -6,7 +6,7 @@ use autodie;
 use App::Dazz - command;
 use App::Dazz::Common;
 
-use constant abstract => "discard contained super-reads, k-unitigs, or anchors";
+use constant abstract => "discard contained unitigs";
 
 sub opt_spec {
     return (

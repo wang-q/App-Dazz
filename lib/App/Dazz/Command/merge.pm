@@ -6,7 +6,7 @@ use autodie;
 use App::Dazz - command;
 use App::Dazz::Common;
 
-use constant abstract => "merge overlapped super-reads, k-unitigs, or anchors";
+use constant abstract => "merge overlapped unitigs";
 
 sub opt_spec {
     return (

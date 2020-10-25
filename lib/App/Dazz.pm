@@ -24,12 +24,12 @@ App::Dazz - Daligner-based UniTig utils
        commands: list the application's commands
            help: display a command's help screen
 
-      contained: discard contained super-reads, k-unitigs, or anchors
+      contained: discard contained unitigs
           cover: trusted regions in the first file covered by the second
        dazzname: rename FASTA reads for dazz_db
           group: group anchors by long reads
-         layout: layout anchor group
-          merge: merge overlapped super-reads, k-unitigs, or anchors
+         layout: layout anchors within a group
+          merge: merge overlapped unitigs
          orient: orient overlapped sequences to the same strand
         overlap: detect overlaps by daligner
        overlap2: detect overlaps between two (large) files by daligner
