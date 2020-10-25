@@ -38,9 +38,9 @@ App::Dazz comprises some Daligner-based UniTig utils
     brew install wang-q/tap/daligner@20201008
     brew install wang-q/tap/intspan
 
-    cpanm --installdeps https://github.com/wang-q/App-Dazz/archive/0.1.0.tar.gz
+    cpanm --installdeps App::Dazz
     # cpanm --installdeps --verbose --mirror-only --mirror http://mirrors.ustc.edu.cn/CPAN/ https://github.com/wang-q/App-Dazz.git
-    cpanm -nq https://github.com/wang-q/App-Dazz/archive/0.1.0.tar.gz
+    cpanm -nq App::Dazz
     # cpanm -nq https://github.com/wang-q/App-Dazz.git
 
 # AUTHOR
