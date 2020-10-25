@@ -15,22 +15,11 @@ before_install:
   - ulimit -n 1024
   # Install gcc & jdk
   - brew install gcc
-  - brew install adoptopenjdk
 
 install:
   - brew tap brewsci/science
   - brew tap brewsci/bio
-  - brew install parallel pigz
-  - brew install bbtools
-  # - brew install fastqc --ignore-dependencies
-  - brew install brewsci/bio/minimap
-  - brew install brewsci/bio/miniasm
-  - brew install brewsci/bio/masurca
-  - brew install poa
-  - brew install samtools
-  - brew install sickle
   - brew install wang-q/tap/faops
-  - brew install wang-q/tap/sparsemem
   - brew install wang-q/tap/dazz_db@20201008
   - brew install wang-q/tap/daligner@20201008
   - brew install wang-q/tap/intspan
