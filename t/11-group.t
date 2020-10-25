@@ -20,8 +20,14 @@ like( $result->error, qr{need .+input file}, 'need 2 infiles' );
 $result = test_app( 'App::Dazz' => [qw(group t/not_exists t/not_exists --range 1-4)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
-{
-    # real run
+SKIP: {
+    skip "dazz and its deps not installed", 2
+        unless IPC::Cmd::can_run('dazz')
+            or IPC::Cmd::can_run('faops')
+            or IPC::Cmd::can_run('fasta2DB')
+            or IPC::Cmd::can_run('LAshow')
+            or IPC::Cmd::can_run('ovlpr');
+
     my $tempdir = Path::Tiny->tempdir;
     test_app( 'App::Dazz' =>
             [ qw(overlap2 t/1_4.anchor.fasta t/1_4.pac.fasta), "-d", $tempdir->stringify, ] );
