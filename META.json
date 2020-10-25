@@ -66,6 +66,17 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/wang-q/App-Dazz/issues"
+      },
+      "homepage" : "https://github.com/wang-q/App-Dazz",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/wang-q/App-Dazz.git",
+         "web" : "https://github.com/wang-q/App-Dazz"
+      }
+   },
    "version" : "0.1.0",
    "x_authority" : "cpan:WANGQ",
    "x_contributors" : [

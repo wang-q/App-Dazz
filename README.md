@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/wang-q/App-Dazz.svg?branch=master)](https://travis-ci.org/wang-q/App-Dazz) [![Coverage Status](http://codecov.io/github/wang-q/App-Dazz/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Dazz?branch=master)
 # NAME
 
 App::Dazz - **A**ssembler of **N**-free **CHR**omosomes
