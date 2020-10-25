@@ -1,10 +1,10 @@
-package App::Anchr::Command::overlap2;
+package App::Dazz::Command::overlap2;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr -command;
-use App::Anchr::Common;
+use App::Dazz -command;
+use App::Dazz::Common;
 
 use constant abstract => "detect overlaps between two (large) files by daligner";
 
@@ -25,7 +25,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr overlap2 [options] <infile1> <infile2>";
+    return "dazz overlap2 [options] <infile1> <infile2>";
 }
 
 sub description {
@@ -79,9 +79,9 @@ sub execute {
     {    # Preprocess first file for dazzler
         my $cmd;
         $cmd .= "faops filter -l 0 $file1 stdout";
-        $cmd .= " | anchr dazzname --prefix $opt->{p1} stdin -o stdout";
+        $cmd .= " | dazz dazzname --prefix $opt->{p1} stdin -o stdout";
         $cmd .= " > $opt->{p1}.fasta";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
             Carp::croak "Failed: create $opt->{p1}.replace.tsv\n";
@@ -98,9 +98,9 @@ sub execute {
         my $second_start = $first_count + 1;
         my $cmd;
         $cmd .= "faops filter -l 0 -u -a $opt->{len} $file2 stdout";
-        $cmd .= " | anchr dazzname --prefix $opt->{p2} --start $second_start stdin -o stdout";
+        $cmd .= " | dazz dazzname --prefix $opt->{p2} --start $second_start stdin -o stdout";
         $cmd .= " > $opt->{p2}.fasta";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("stdout.replace.tsv")->is_file ) {
             Carp::croak "Failed: create $opt->{p2}.replace.tsv\n";
@@ -114,7 +114,7 @@ sub execute {
         if (   $out_dir->child( $opt->{pd} . ".db" )->is_file
             or $out_dir->child( "." . $opt->{pd} . ".bps" )->is_file )
         {
-            App::Anchr::Common::exec_cmd( "DBrm $opt->{pd}", { verbose => $opt->{verbose}, } );
+            App::Dazz::Common::exec_cmd( "DBrm $opt->{pd}", { verbose => $opt->{verbose}, } );
         }
 
         my $cmd;
@@ -122,7 +122,7 @@ sub execute {
         $cmd .= " && fasta2DB $opt->{pd} $opt->{p2}.fasta";
         $cmd .= " && DBdust $opt->{pd}";
         $cmd .= " && DBsplit -s$opt->{block} $opt->{pd}";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("$opt->{pd}.db")->is_file ) {
             Carp::croak "Failed: fasta2DB\n";
@@ -152,7 +152,7 @@ sub execute {
         if (   $out_dir->child( $opt->{pd} . ".las" )->is_file
             or $out_dir->child( $opt->{pd} . ".1.las" )->is_file )
         {
-            App::Anchr::Common::exec_cmd( "rm $opt->{pd}*.las", { verbose => $opt->{verbose}, } );
+            App::Dazz::Common::exec_cmd( "rm $opt->{pd}*.las", { verbose => $opt->{verbose}, } );
         }
 
         # Don't use HPC.daligner as we want to avoid all-vs-all comparisions.
@@ -168,7 +168,7 @@ sub execute {
                 $cmd .= " && LAcheck -S $opt->{pd} $opt->{pd}.$i.$opt->{pd}.$j";
                 $cmd .= " && LAcheck -S $opt->{pd} $opt->{pd}.$j.$opt->{pd}.$i";
 
-                App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+                App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
             }
         }
 
@@ -182,18 +182,18 @@ sub execute {
 
             $cmd .= " && LAcheck -S $opt->{pd} $opt->{pd}.$i";
 
-            App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+            App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
         }
 
-        App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.$opt->{pd}.*.las",
+        App::Dazz::Common::exec_cmd( "rm $opt->{pd}.*.$opt->{pd}.*.las",
             { verbose => $opt->{verbose}, } );
 
         {
             my $cmd;
             $cmd .= "LAcat $opt->{pd}.\@.las > $opt->{pd}.las";
-            App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+            App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
-            App::Anchr::Common::exec_cmd( "rm $opt->{pd}.*.las", { verbose => $opt->{verbose}, } );
+            App::Dazz::Common::exec_cmd( "rm $opt->{pd}.*.las", { verbose => $opt->{verbose}, } );
         }
 
         if ( !$out_dir->child("$opt->{pd}.las")->is_file ) {
@@ -206,16 +206,16 @@ sub execute {
         if ( $opt->{all} ) {
             $cmd = "LAshow $opt->{pd}.db $opt->{pd}.las > $opt->{pd}.show.txt";
         }
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$out_dir->child("$opt->{pd}.show.txt")->is_file ) {
             Carp::croak "Failed: LAshow\n";
         }
 
         $cmd = "cat $opt->{p1}.fasta $opt->{p2}.fasta ";
-        $cmd .= " | anchr show2ovlp stdin $opt->{pd}.show.txt";
+        $cmd .= " | dazz show2ovlp stdin $opt->{pd}.show.txt";
         $cmd .= " -o $opt->{pd}.ovlp.tsv";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
 }

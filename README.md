@@ -1,11 +1,11 @@
 [![Build Status](https://travis-ci.org/wang-q/App-Anchr.svg?branch=master)](https://travis-ci.org/wang-q/App-Anchr) [![Coverage Status](http://codecov.io/github/wang-q/App-Anchr/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Anchr?branch=master)
 # NAME
 
-App::Anchr - **A**ssembler of **N**-free **CHR**omosomes
+App::Dazz - **A**ssembler of **N**-free **CHR**omosomes
 
 # SYNOPSIS
 
-    anchr <command> [-?h] [long options...]
+    dazz <command> [-?h] [long options...]
             -? -h --help  show help
 
     Available commands:
@@ -33,11 +33,11 @@ App::Anchr - **A**ssembler of **N**-free **CHR**omosomes
       show2ovlp: LAshow outputs to ovelaps
            trim: trim PE Illumina fastq files
 
-Run `anchr help command-name` for usage information.
+Run `dazz help command-name` for usage information.
 
 # DESCRIPTION
 
-App::Anchr is tend to be an Assembler of N-free CHRomosomes.
+App::Dazz is tend to be an Assembler of N-free CHRomosomes.
 
 # INSTALLATION
 

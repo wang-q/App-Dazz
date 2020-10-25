@@ -1,4 +1,4 @@
-package App::Anchr;
+package App::Dazz;
 use 5.010001;
 use strict;
 use warnings;
@@ -12,11 +12,11 @@ our $VERSION = "0.6.2";
 
 =head1 NAME
 
-App::Anchr - B<A>ssembler of B<N>-free B<CHR>omosomes
+App::Dazz - B<A>ssembler of B<N>-free B<CHR>omosomes
 
 =head1 SYNOPSIS
 
-    anchr <command> [-?h] [long options...]
+    dazz <command> [-?h] [long options...]
             -? -h --help  show help
 
     Available commands:
@@ -44,11 +44,11 @@ App::Anchr - B<A>ssembler of B<N>-free B<CHR>omosomes
       show2ovlp: LAshow outputs to ovelaps
            trim: trim PE Illumina fastq files
 
-Run C<anchr help command-name> for usage information.
+Run C<dazz help command-name> for usage information.
 
 =head1 DESCRIPTION
 
-App::Anchr is tend to be an Assembler of N-free CHRomosomes.
+App::Dazz is tend to be an Assembler of N-free CHRomosomes.
 
 =head1 INSTALLATION
 

@@ -1,10 +1,10 @@
-package App::Anchr::Command::show2ovlp;
+package App::Dazz::Command::show2ovlp;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr -command;
-use App::Anchr::Common;
+use App::Dazz -command;
+use App::Dazz::Common;
 
 use constant abstract => 'LAshow outputs to overlaps';
 
@@ -17,7 +17,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr show2ovlp [options] <fasta file> <LAshow outputs>";
+    return "dazz show2ovlp [options] <fasta file> <LAshow outputs>";
 }
 
 sub description {
@@ -56,13 +56,13 @@ sub validate_args {
 sub execute {
     my ( $self, $opt, $args ) = @_;
 
-    my $len_of = App::Anchr::Common::get_len_from_header( $args->[0] );
+    my $len_of = App::Dazz::Common::get_len_from_header( $args->[0] );
 
     #    print STDERR "Get @{[scalar keys %{$len_of}]} records of sequence length\n";
 
     my $replace_of = {};
     if ( exists $opt->{replace} ) {
-        $replace_of = App::Anchr::Common::get_replaces( $opt->{replace} );
+        $replace_of = App::Dazz::Common::get_replaces( $opt->{replace} );
     }
 
     # A stream from 'stdin' or a standard file.

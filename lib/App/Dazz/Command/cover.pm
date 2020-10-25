@@ -1,10 +1,10 @@
-package App::Anchr::Command::cover;
+package App::Dazz::Command::cover;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr -command;
-use App::Anchr::Common;
+use App::Dazz -command;
+use App::Dazz::Common;
 
 use constant abstract => "trusted regions in the first file covered by the second";
 
@@ -23,7 +23,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr cover [options] <.ovlp.tsv>";
+    return "dazz cover [options] <.ovlp.tsv>";
 }
 
 sub description {
@@ -68,12 +68,12 @@ sub execute {
     my $tempdir;
     if ( $opt->{tmp} ) {
         $tempdir = Path::Tiny->tempdir(
-            TEMPLATE => "anchr_cover_XXXXXXXX",
+            TEMPLATE => "dazz_cover_XXXXXXXX",
             DIR      => $opt->{tmp},
         );
     }
     else {
-        $tempdir = Path::Tiny->tempdir("anchr_cover_XXXXXXXX");
+        $tempdir = Path::Tiny->tempdir("dazz_cover_XXXXXXXX");
     }
     chdir $tempdir;
 
@@ -92,7 +92,7 @@ sub execute {
         $cmd .= " --mean";
         $cmd .= " --len $opt->{len} --idt $opt->{idt}";
         $cmd .= " -o $basename.meancov.txt";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("$basename.meancov.txt")->is_file ) {
             Carp::croak "Failed: create $basename.meancov.txt\n";
@@ -158,7 +158,7 @@ sub execute {
         $cmd .= " --coverage $opt->{coverage}";
         $cmd .= " --len $opt->{len} --idt $opt->{idt}";
         $cmd .= " -o $basename.covered.txt";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("$basename.covered.txt")->is_file ) {
             Carp::croak "Failed: create $basename.covered.txt\n";
@@ -193,7 +193,7 @@ sub execute {
     #                $cmd .= "DBshow -U $basename $serial";
     #                $cmd .= " | faops replace -l 0 stdin first.replace.tsv stdout";
     #                $cmd .= " >> covered.fasta";
-    #                App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    #                App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     #            }
     #            else {
     #
@@ -208,7 +208,7 @@ sub execute {
     #                    $cmd .= " | faops replace -l 0 stdin first.replace.tsv stdout";
     #                    $cmd .= " | faops frag -l 0 stdin @{[$set->min]} @{[$set->max]} stdout";
     #                    $cmd .= " >> covered.fasta";
-    #                    App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+    #                    App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     #                }
     #            }
     #        }

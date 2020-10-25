@@ -1,10 +1,10 @@
-package App::Anchr::Command::overlap;
+package App::Dazz::Command::overlap;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr -command;
-use App::Anchr::Common;
+use App::Dazz -command;
+use App::Dazz::Common;
 
 use constant abstract => "detect overlaps by daligner";
 
@@ -23,7 +23,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr overlap [options] <infiles>";
+    return "dazz overlap [options] <infiles>";
 }
 
 sub description {
@@ -72,12 +72,12 @@ sub execute {
     my $tempdir;
     if ( $opt->{tmp} ) {
         $tempdir = Path::Tiny->tempdir(
-            TEMPLATE => "anchr_ovlp_XXXXXXXX",
+            TEMPLATE => "dazz_ovlp_XXXXXXXX",
             DIR      => $opt->{tmp},
         );
     }
     else {
-        $tempdir = Path::Tiny->tempdir("anchr_ovlp_XXXXXXXX");
+        $tempdir = Path::Tiny->tempdir("dazz_ovlp_XXXXXXXX");
     }
     chdir $tempdir;
 
@@ -87,9 +87,9 @@ sub execute {
     {    # Preprocess reads to format them for dazzler
         my $cmd = "cat";
         $cmd .= sprintf " %s", $_ for @infiles;
-        $cmd .= " | anchr dazzname stdin -o stdout";
+        $cmd .= " | dazz dazzname stdin -o stdout";
         $cmd .= " | faops filter -l 0 stdin renamed.fasta";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("stdout.replace.tsv")->is_file ) {
             Carp::croak "Failed: create stdout.replace.tsv\n";
@@ -101,7 +101,7 @@ sub execute {
         $cmd .= "fasta2DB $basename renamed.fasta";
         $cmd .= " && DBdust $basename";
         $cmd .= " && DBsplit -s50 $basename";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("$basename.db")->is_file ) {
             Carp::croak "Failed: fasta2DB\n";
@@ -122,11 +122,11 @@ sub execute {
             .= "HPC.daligner $basename -M16 -T$opt->{parallel} -e$opt->{idt} -l$opt->{len} -s$opt->{len} -mdust";
         $cmd .= " | sed 's/ -vS / -S /'";    # don't show LAcheck prompts
         $cmd .= " | bash";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( defined $block_number and $block_number > 1 ) {
             $cmd = "LAcat $basename.\@.las > $basename.las";
-            App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+            App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
         }
 
         if ( !$tempdir->child("$basename.las")->is_file ) {
@@ -139,18 +139,18 @@ sub execute {
         if ( $opt->{all} ) {
             $cmd = "LAshow $basename.db $basename.las > show.txt";
         }
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("show.txt")->is_file ) {
             Carp::croak "Failed: LAshow\n";
         }
 
-        $cmd = "anchr show2ovlp renamed.fasta show.txt";
+        $cmd = "dazz show2ovlp renamed.fasta show.txt";
         if ( !$opt->{serial} ) {
             $cmd .= " -r stdout.replace.tsv";
         }
         $cmd .= " -o $opt->{outfile}";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
     chdir $cwd;

@@ -36,7 +36,7 @@ install:
   - brew install wang-q/tap/intspan
   - brew unlink perl
   - cpanm -nq --installdeps --with-develop .
-  - cpanm -nq . # install App::Anchr prior as some commands need `anchr` in $PATH
+  - cpanm -nq . # install App::Dazz prior as some commands need `dazz` in $PATH
 
 before_script:
   - cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecov

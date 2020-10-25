@@ -1,4 +1,4 @@
-package App::Anchr::Common;
+package App::Dazz::Common;
 use strict;
 use warnings;
 use autodie;
@@ -124,54 +124,6 @@ sub parse_ovlp_line {
     return $info;
 }
 
-sub create_ovlp_line {
-    my $info = shift;
-
-    my $line = join "\t",
-        $info->{f_id},     $info->{g_id}, $info->{ovlp_len}, $info->{ovlp_idt},
-        $info->{f_strand}, $info->{f_B},  $info->{f_E},      $info->{f_len},
-        $info->{g_strand}, $info->{g_B},  $info->{g_E},      $info->{g_len}, $info->{contained};
-
-    return $line;
-}
-
-sub parse_paf_line {
-    my $line = shift;
-
-    chomp $line;
-    my @fields = split "\t", $line;
-
-    my $info = {
-        f_id     => $fields[0],
-        g_id     => $fields[5],
-        ovlp_len => $fields[10],
-        ovlp_idt => sprintf( "%.3f", $fields[9] / $fields[10] ),
-        f_strand => 0,
-        f_B      => $fields[2] + 1,
-        f_E      => $fields[3] + 1,
-        f_len    => $fields[1],
-        $fields[4] eq "+"
-        ? ( g_strand => 0,
-            g_B      => $fields[7] + 1,
-            g_E      => $fields[8] + 1,
-            )
-        : ( g_strand => 1,
-            g_B      => $fields[8] + 1,
-            g_E      => $fields[7] + 1,
-        ),
-        g_len     => $fields[6],
-        contained => 'overlap',
-    };
-
-    for my $key (qw(f_B f_E g_B g_E)) {
-        if ( $info->{$key} == 1 ) {
-            $info->{$key} = 0;
-        }
-    }
-
-    return $info;
-}
-
 sub beg_end {
     my $beg = shift;
     my $end = shift;
@@ -187,26 +139,6 @@ sub beg_end {
     return ( $beg, $end );
 }
 
-sub bump_coverage {
-    my $tier_of  = shift;
-    my $beg      = shift;
-    my $end      = shift;
-    my $coverage = shift || 2;
-
-    return if $tier_of->{$coverage}->equals( $tier_of->{all} );
-
-    ( $beg, $end ) = beg_end( $beg, $end );
-
-    my $new_set = AlignDB::IntSpan->new->add_pair( $beg, $end );
-    for my $i ( 1 .. $coverage ) {
-        my $i_set = $tier_of->{$i}->intersect($new_set);
-        $tier_of->{$i}->add($new_set);
-
-        my $j = $i + 1;
-        last if $j > $coverage;
-        $new_set = $i_set->copy;
-    }
-}
 
 sub serial2name {
     my $dazz_db = shift;

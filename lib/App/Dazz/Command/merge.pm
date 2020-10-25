@@ -1,10 +1,10 @@
-package App::Anchr::Command::merge;
+package App::Dazz::Command::merge;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr - command;
-use App::Anchr::Common;
+use App::Dazz - command;
+use App::Dazz::Common;
 
 use constant abstract => "merge overlapped super-reads, k-unitigs, or anchors";
 
@@ -22,7 +22,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr merge [options] <infile>";
+    return "dazz merge [options] <infile>";
 }
 
 sub description {
@@ -67,22 +67,22 @@ sub execute {
     my $tempdir;
     if ( $opt->{tmp} ) {
         $tempdir = Path::Tiny->tempdir(
-            TEMPLATE => "anchr_merge_XXXXXXXX",
+            TEMPLATE => "dazz_merge_XXXXXXXX",
             DIR      => $opt->{tmp},
         );
     }
     else {
-        $tempdir = Path::Tiny->tempdir("anchr_merge_XXXXXXXX");
+        $tempdir = Path::Tiny->tempdir("dazz_merge_XXXXXXXX");
     }
     chdir $tempdir;
 
     {    # overlaps
         my $cmd;
-        $cmd .= "anchr overlap";
+        $cmd .= "dazz overlap";
         $cmd .= " --len $opt->{len} --idt $opt->{idt} --parallel $opt->{parallel}";
         $cmd .= " $infile";
         $cmd .= " -o merge.ovlp.tsv";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("merge.ovlp.tsv")->is_file ) {
             Carp::croak "Failed: create merge.ovlp.tsv\n";
@@ -93,7 +93,7 @@ sub execute {
     {    # build graph
         my %seen_pair;
         for my $line ( $tempdir->child("merge.ovlp.tsv")->lines( { chomp => 1, } ) ) {
-            my $info = App::Anchr::Common::parse_ovlp_line($line);
+            my $info = App::Dazz::Common::parse_ovlp_line($line);
 
             # ignore self overlapping
             next if $info->{f_id} eq $info->{g_id};
@@ -163,14 +163,14 @@ sub execute {
         $tempdir->child("overlapped.txt")->spew( map {"$_\n"} $graph->vertices );
 
         if ( $opt->{png} ) {
-            App::Anchr::Common::g2gv( $graph, $infile . ".png" );
+            App::Dazz::Common::g2gv( $graph, $infile . ".png" );
         }
     }
 
     {    # Output non-overlapped
         my $cmd;
         $cmd .= "faops some -i -l 0 $infile overlapped.txt non-overlapped.fasta";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
     #----------------------------#
@@ -232,7 +232,7 @@ sub execute {
         $cmd .= "cat non-overlapped.fasta merged.fasta";
         $cmd .= " | faops filter -l 0 stdin";
         $cmd .= " $opt->{outfile}";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
     chdir $cwd;

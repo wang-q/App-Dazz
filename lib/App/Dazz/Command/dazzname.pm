@@ -1,10 +1,10 @@
-package App::Anchr::Command::dazzname;
+package App::Dazz::Command::dazzname;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr -command;
-use App::Anchr::Common;
+use App::Dazz -command;
+use App::Dazz::Common;
 
 use constant abstract => 'rename FASTA reads for dazz_db';
 
@@ -18,7 +18,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr dazzname [options] <infile>";
+    return "dazz dazzname [options] <infile>";
 }
 
 sub description {

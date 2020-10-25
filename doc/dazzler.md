@@ -13,19 +13,19 @@ Create two files, `renamed.fasta`, `stdout.replace.tsv`.
 
 ```shell script
 # Dmel iso_1 reference genome
-mkdir -p ~/data/anchr/ref
-cd ~/data/anchr/ref
+mkdir -p ~/data/dazz/ref
+cd ~/data/dazz/ref
 
 rsync -avP \
     ftp.ncbi.nlm.nih.gov::genomes/all/GCF/000/001/215/GCF_000001215.4_Release_6_plus_ISO1_MT/ \
     iso_1/
 
 # rename
-mkdir -p ~/data/anchr/dazzler
-cd ~/data/anchr/dazzler
+mkdir -p ~/data/dazz/dazzler
+cd ~/data/dazz/dazzler
 
 gzip -dcf ../ref/iso_1/GCF_000001215.4_Release_6_plus_ISO1_MT_genomic.fna.gz |
-    anchr dazzname stdin -o stdout |
+    dazz dazzname stdin -o stdout |
     faops filter -l 0 stdin renamed.fasta
 
 ```
@@ -35,7 +35,7 @@ gzip -dcf ../ref/iso_1/GCF_000001215.4_Release_6_plus_ISO1_MT_genomic.fna.gz |
 `myDB.db` and its hidden companions.
 
 ```shell script
-cd ~/data/anchr/dazzler
+cd ~/data/dazz/dazzler
 
 echo "Make the dazzler DB"
 DBrm myDB
@@ -54,7 +54,7 @@ echo ${BLOCK_NUMBER}
 * If the `-n` option is set then the DNA sequence is **not** displayed
 
 ```shell script
-cd ~/data/anchr/dazzler
+cd ~/data/dazz/dazzler
 
 # headers
 DBshow -n myDB 5-10 102 100-101
@@ -82,7 +82,7 @@ faops some -l 0 renamed.fasta <(DBshow -n myDB 5-10 102 100-101 | sed 's/^>//') 
 Three .las (`myDB.[1-3].las`) files are generated then concatenated to `myDB.las`.
 
 ```shell script
-cd ~/data/anchr/dazzler
+cd ~/data/dazz/dazzler
 
 if [[ -e myDB.las || -e myDB.1.las ]]; then
     rm myDB*.las
@@ -131,7 +131,7 @@ daligner -v -e0.96 -l500 -s500 -M16 -mdust myDB.3 myDB.3
 Results.
 
 ```shell script
-cd ~/data/anchr/dazzler
+cd ~/data/dazz/dazzler
 
 LAshow myDB.db myDB.las
 LAshow -o myDB.db myDB.las
@@ -147,17 +147,17 @@ LAshow -co myDB.db myDB.las
 Only between other than all-vs-all to reduce computational tasks.
 
 ```shell script
-mkdir -p ~/data/anchr/dazzler2
-cd ~/data/anchr/dazzler2
+mkdir -p ~/data/dazz/dazzler2
+cd ~/data/dazz/dazzler2
 
-cat ~/data/anchr/e_coli/4_kunitigs/Q20L60X80P000/anchor/anchor.fasta |
-    anchr dazzname --prefix first stdin -o stdout |
+cat ~/data/dazz/e_coli/4_kunitigs/Q20L60X80P000/anchor/anchor.fasta |
+    dazz dazzname --prefix first stdin -o stdout |
     faops filter -l 0 stdin first.fasta
 mv stdout.replace.tsv first.replace.tsv
 
-gzip -dcf ~/data/anchr/e_coli/3_long/L.X80.trim.fasta.gz |
+gzip -dcf ~/data/dazz/e_coli/3_long/L.X80.trim.fasta.gz |
     head -n 20000 |
-    anchr dazzname --prefix second stdin -o stdout |
+    dazz dazzname --prefix second stdin -o stdout |
     faops filter -l 0 -a 1000 stdin second.fasta
 mv stdout.replace.tsv second.replace.tsv
 

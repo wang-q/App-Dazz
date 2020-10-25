@@ -6,28 +6,28 @@ use Test::More;
 #use App::Cmd::Tester;
 use App::Cmd::Tester::CaptureExternal;
 
-use App::Anchr;
+use App::Dazz;
 
-my $result = test_app( 'App::Anchr' => [qw(help group --range 1-4)] );
+my $result = test_app( 'App::Dazz' => [qw(help group --range 1-4)] );
 like( $result->stdout, qr{group}, 'descriptions' );
 
-$result = test_app( 'App::Anchr' => [qw(group --range 1-4)] );
+$result = test_app( 'App::Dazz' => [qw(group --range 1-4)] );
 like( $result->error, qr{need .+input file}, 'need infile' );
 
-$result = test_app( 'App::Anchr' => [qw(group t/not_exists --range 1-4)] );
+$result = test_app( 'App::Dazz' => [qw(group t/not_exists --range 1-4)] );
 like( $result->error, qr{need .+input file}, 'need 2 infiles' );
 
-$result = test_app( 'App::Anchr' => [qw(group t/not_exists t/not_exists --range 1-4)] );
+$result = test_app( 'App::Dazz' => [qw(group t/not_exists t/not_exists --range 1-4)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 {
     # real run
     my $tempdir = Path::Tiny->tempdir;
-    test_app( 'App::Anchr' =>
+    test_app( 'App::Dazz' =>
             [ qw(overlap2 t/1_4.anchor.fasta t/1_4.pac.fasta), "-d", $tempdir->stringify, ] );
 
     $result = test_app(
-        'App::Anchr' => [
+        'App::Dazz' => [
             qw(group --png --range 1-4),
             $tempdir->child("anchorLong.db")->stringify,
             $tempdir->child("anchorLong.ovlp.tsv")->stringify,

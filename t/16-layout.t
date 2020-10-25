@@ -5,24 +5,24 @@ use Test::More;
 
 use App::Cmd::Tester::CaptureExternal;
 
-use App::Anchr;
+use App::Dazz;
 
-my $result = test_app( 'App::Anchr' => [qw(help layout)] );
+my $result = test_app( 'App::Dazz' => [qw(help layout)] );
 like( $result->stdout, qr{layout}, 'descriptions' );
 
-$result = test_app( 'App::Anchr' => [qw(layout)] );
+$result = test_app( 'App::Dazz' => [qw(layout)] );
 like( $result->error, qr{need .+input file}, 'need infile' );
 
-$result = test_app( 'App::Anchr' => [qw(layout t/not_exists)] );
+$result = test_app( 'App::Dazz' => [qw(layout t/not_exists)] );
 like( $result->error, qr{need .+input file}, 'need 3 infiles' );
 
-$result = test_app( 'App::Anchr' => [qw(layout t/not_exists t/not_exists t/not_exists)] );
+$result = test_app( 'App::Dazz' => [qw(layout t/not_exists t/not_exists t/not_exists)] );
 like( $result->error, qr{doesn't exist}, 'infile not exists' );
 
 {
     my $tempdir = Path::Tiny->tempdir;
     $result = test_app(
-        'App::Anchr' => [
+        'App::Dazz' => [
             qw(layout t/24_4.strand.fasta t/24_4.ovlp.tsv t/24_4.relation.tsv),
             qw(--oa t/24_4.anchor.ovlp.tsv -o),
             $tempdir->child('conTig.fasta'),

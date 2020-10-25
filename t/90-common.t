@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::More;
-use App::Anchr::Common;
+use App::Dazz::Common;
 
 {
     print "#lcss\n";
@@ -45,7 +45,7 @@ use App::Anchr::Common;
     for my $i ( 0 .. $#data ) {
         my ( $refs, $expect ) = @{ $data[$i] };
 
-        my $result = App::Anchr::Common::lcss( @{$refs} );
+        my $result = App::Dazz::Common::lcss( @{$refs} );
         is( $result, $expect, "lcss $i" );
     }
 }
@@ -72,7 +72,7 @@ use App::Anchr::Common;
     for my $i ( 0 .. $#data ) {
         my ( $refs, $expect ) = @{ $data[$i] };
 
-        my @results = App::Anchr::Common::lcss( @{$refs} );
+        my @results = App::Dazz::Common::lcss( @{$refs} );
         is_deeply( \@results, $expect, "lcss array $i" );
     }
 }
@@ -82,9 +82,9 @@ use App::Anchr::Common;
     my @bins = ( 1 .. 100 );
     my %hist_of = map { ( $_, 1 ) } @bins;
 
-    is( App::Anchr::Common::histogram_percentile( \%hist_of, 0.5 ), 50,  "median" );
-    is( App::Anchr::Common::histogram_percentile( \%hist_of, 0.25 ), 25,  "quartile" );
-    is( App::Anchr::Common::histogram_percentile( \%hist_of, 1 ),   100, "all" );
+    is( App::Dazz::Common::histogram_percentile( \%hist_of, 0.5 ), 50,  "median" );
+    is( App::Dazz::Common::histogram_percentile( \%hist_of, 0.25 ), 25,  "quartile" );
+    is( App::Dazz::Common::histogram_percentile( \%hist_of, 1 ),   100, "all" );
 }
 
 done_testing();

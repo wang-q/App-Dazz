@@ -1,10 +1,10 @@
-package App::Anchr::Command::group;
+package App::Dazz::Command::group;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr -command;
-use App::Anchr::Common;
+use App::Dazz -command;
+use App::Dazz::Common;
 
 use constant abstract => "group anchors by long reads";
 
@@ -29,7 +29,7 @@ sub opt_spec {
 # 三代 reads 里有一个常见的错误, 即单一 ZMW 里的测序结果中, 接头序列部分的测序结果出现了较多的错误,
 # 因此并没有将接头序列去除干净, 形成的 subreads 里含有多份基因组上同一片段, 它们之间以接头序列为间隔.
 #
-# `anchr group` 命令默认会将这种三代的 reads 去除. `--keep` 选项会留下这种 reads, 这适用于组装好的三代序列.
+# `dazz group` 命令默认会将这种三代的 reads 去除. `--keep` 选项会留下这种 reads, 这适用于组装好的三代序列.
 #
 # ```text
 #       ===
@@ -40,7 +40,7 @@ sub opt_spec {
 # ```
 
 sub usage_desc {
-    return "anchr group [options] <dazz DB> <ovlp file>";
+    return "dazz group [options] <dazz DB> <ovlp file>";
 }
 
 sub description {
@@ -148,7 +148,7 @@ sub execute {
             if ( $anchor_range->contains($f_id) and !$anchor_range->contains($g_id) ) {
                 my $pair = join( "-", ( $f_id, $g_id ) );
                 my $matched
-                    = AlignDB::IntSpan->new->add_pair( App::Anchr::Common::beg_end( $g_B, $g_E, ) );
+                    = AlignDB::IntSpan->new->add_pair( App::Dazz::Common::beg_end( $g_B, $g_E, ) );
                 if ( !exists $multi_match_of{$pair} ) {
                     $multi_match_of{$pair} = $matched;
                 }
@@ -172,14 +172,14 @@ sub execute {
             }
 
             if ( $anchor_range->contains($f_id) and !$anchor_range->contains($g_id) ) {
-                my ( $beg, $end ) = App::Anchr::Common::beg_end( $g_B, $g_E, );
+                my ( $beg, $end ) = App::Dazz::Common::beg_end( $g_B, $g_E, );
                 $links_of->{$g_id}{$f_id} = AlignDB::IntSpan->new->add_pair( $beg, $end );
 
                 # $f_strand is always 0
                 $strands_of->{$g_id}{$f_id} = $g_strand;
             }
             elsif ( $anchor_range->contains($g_id) and !$anchor_range->contains($f_id) ) {
-                my ( $beg, $end ) = App::Anchr::Common::beg_end( $f_B, $f_E, );
+                my ( $beg, $end ) = App::Dazz::Common::beg_end( $f_B, $f_E, );
                 $links_of->{$f_id}{$g_id} = AlignDB::IntSpan->new->add_pair( $beg, $end );
 
                 $strands_of->{$f_id}{$g_id} = $g_strand;
@@ -278,7 +278,7 @@ sub execute {
             open my $in_fh, "<", $opt->{oa};
 
             while ( my $line = <$in_fh> ) {
-                my $info = App::Anchr::Common::parse_ovlp_line($line);
+                my $info = App::Dazz::Common::parse_ovlp_line($line);
 
                 # ignore self overlapping
                 next if $info->{f_id} eq $info->{g_id};
@@ -326,7 +326,7 @@ sub execute {
 
             # non-consistent distances
             my $distances_ref = $graph->get_edge_attribute( @{$edge}, "distances" );
-            if ( !App::Anchr::Common::judge_distance( $distances_ref, $opt->{max}, ) ) {
+            if ( !App::Dazz::Common::judge_distance( $distances_ref, $opt->{max}, ) ) {
                 $graph->delete_edge( @{$edge} );
                 next;
             }
@@ -359,7 +359,7 @@ sub execute {
         $cmd .= join " ", $non_grouped->as_array;
         $cmd .= " | faops filter -l 0 stdin stdout";
         $cmd .= " > " . $out_dir->child("non_grouped.fasta")->stringify;
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
     $out_dir->child("groups.txt")->remove;
@@ -423,7 +423,7 @@ sub execute {
 
             # serials to names
             my $name_of
-                = App::Anchr::Common::serial2name( $fn_dazz, [ @members, $long_id_set->as_array ] );
+                = App::Dazz::Common::serial2name( $fn_dazz, [ @members, $long_id_set->as_array ] );
 
             my $fn_relation = $out_dir->child("$basename.relation.tsv");
             $fn_relation->remove;
@@ -463,7 +463,7 @@ sub execute {
     printf STDERR "CC count %d\n", scalar(@ccs);
 
     if ( $opt->{png} ) {
-        App::Anchr::Common::g2gv0( $graph, $fn_dazz . ".png" );
+        App::Dazz::Common::g2gv0( $graph, $fn_dazz . ".png" );
     }
 }
 

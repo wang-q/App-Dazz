@@ -1,10 +1,10 @@
-package App::Anchr::Command::orient;
+package App::Dazz::Command::orient;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr -command;
-use App::Anchr::Common;
+use App::Dazz -command;
+use App::Dazz::Common;
 
 use constant abstract => "orient overlapped sequences to the same strand";
 
@@ -22,7 +22,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr orient [options] <infiles>";
+    return "dazz orient [options] <infiles>";
 }
 
 sub description {
@@ -81,12 +81,12 @@ sub execute {
     my $tempdir;
     if ( $opt->{tmp} ) {
         $tempdir = Path::Tiny->tempdir(
-            TEMPLATE => "anchr_orient_XXXXXXXX",
+            TEMPLATE => "dazz_orient_XXXXXXXX",
             DIR      => $opt->{tmp},
         );
     }
     else {
-        $tempdir = Path::Tiny->tempdir("anchr_orient_XXXXXXXX");
+        $tempdir = Path::Tiny->tempdir("dazz_orient_XXXXXXXX");
     }
     chdir $tempdir;
 
@@ -95,11 +95,11 @@ sub execute {
 
     {    # Sort by lengths
         for my $i ( 0 .. $#infiles ) {
-            App::Anchr::Common::exec_cmd(
+            App::Dazz::Common::exec_cmd(
                 "faops size $infiles[$i] | sort -n -r -k2,2 | cut -f 1 > infile.$i.order.txt",
                 { verbose => $opt->{verbose}, },
             );
-            App::Anchr::Common::exec_cmd(
+            App::Dazz::Common::exec_cmd(
                 "faops order $infiles[$i] infile.$i.order.txt infile.$i.fasta",
                 { verbose => $opt->{verbose}, },
             );
@@ -109,9 +109,9 @@ sub execute {
     {    # Preprocess reads to format them for dazzler
         my $cmd = "cat";
         $cmd .= sprintf " infile.%d.fasta", $_ for ( 0 .. $#infiles );
-        $cmd .= " | anchr dazzname stdin -o stdout";
+        $cmd .= " | dazz dazzname stdin -o stdout";
         $cmd .= " | faops filter -l 0 stdin renamed.fasta";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("renamed.fasta")->is_file ) {
             Carp::croak "Failed: create renamed.fasta\n";
@@ -124,10 +124,10 @@ sub execute {
 
     {    # overlaps
         my $cmd;
-        $cmd .= "anchr overlap renamed.fasta";
+        $cmd .= "dazz overlap renamed.fasta";
         $cmd .= " --len $opt->{len} --idt $opt->{idt} --parallel $opt->{parallel}";
         $cmd .= " -o renamed.ovlp.tsv";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("renamed.ovlp.tsv")->is_file ) {
             Carp::croak "Failed: create renamed.ovlp.tsv\n";
@@ -137,11 +137,11 @@ sub execute {
     # filter overlaps
     if ( $opt->{restrict} ) {
         my $cmd;
-        $cmd .= "anchr replace renamed.ovlp.tsv stdout.replace.tsv -o stdout";
-        $cmd .= " | anchr restrict stdin $opt->{restrict} -o stdout";
-        $cmd .= " | anchr replace stdin stdout.replace.tsv -r -o stdout";
+        $cmd .= "dazz replace renamed.ovlp.tsv stdout.replace.tsv -o stdout";
+        $cmd .= " | dazz restrict stdin $opt->{restrict} -o stdout";
+        $cmd .= " | dazz replace stdin stdout.replace.tsv -r -o stdout";
         $cmd .= " > restrict.ovlp.tsv";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("restrict.ovlp.tsv")->is_file ) {
             Carp::croak "Failed: create restrict.ovlp.tsv\n";
@@ -160,7 +160,7 @@ sub execute {
 
         # load strands
         for my $line (@lines) {
-            my $info = App::Anchr::Common::parse_ovlp_line($line);
+            my $info = App::Dazz::Common::parse_ovlp_line($line);
 
             # ignore self overlapping
             next if $info->{f_id} eq $info->{g_id};
@@ -240,7 +240,7 @@ sub execute {
         my $cmd;
         $cmd .= "faops rc -l 0 -n -f rc.list";
         $cmd .= " renamed.fasta renamed.rc.fasta";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("renamed.rc.fasta")->is_file ) {
             Carp::croak "Failed: create renamed.rc.fasta\n";
@@ -251,7 +251,7 @@ sub execute {
         my $cmd;
         $cmd .= "faops replace -l 0 renamed.rc.fasta stdout.replace.tsv";
         $cmd .= " $opt->{outfile}";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
     chdir $cwd;

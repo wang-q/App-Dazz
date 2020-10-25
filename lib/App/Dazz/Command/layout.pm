@@ -1,10 +1,10 @@
-package App::Anchr::Command::layout;
+package App::Dazz::Command::layout;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr -command;
-use App::Anchr::Common;
+use App::Dazz -command;
+use App::Dazz::Common;
 
 sub abstract {
     return 'layout anchor group';
@@ -23,7 +23,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr layout [options] <strand.fasta> <.ovlp.tsv> <.relation.tsv>";
+    return "dazz layout [options] <strand.fasta> <.ovlp.tsv> <.relation.tsv>";
 }
 
 sub description {
@@ -82,7 +82,7 @@ sub execute {
 
         my %seen_pair;
         while ( my $line = <$in_fh> ) {
-            my $info = App::Anchr::Common::parse_ovlp_line($line);
+            my $info = App::Dazz::Common::parse_ovlp_line($line);
 
             # ignore self overlapping
             next if $info->{f_id} eq $info->{g_id};
@@ -135,12 +135,12 @@ sub execute {
             }
 
             if ( $is_anchor{ $info->{f_id} } and !$is_anchor{ $info->{g_id} } ) {
-                my ( $beg, $end ) = App::Anchr::Common::beg_end( $info->{g_B}, $info->{g_E}, );
+                my ( $beg, $end ) = App::Dazz::Common::beg_end( $info->{g_B}, $info->{g_E}, );
                 $links_of->{ $info->{g_id} }{ $info->{f_id} }
                     = AlignDB::IntSpan->new->add_pair( $beg, $end );
             }
             elsif ( $is_anchor{ $info->{g_id} } and !$is_anchor{ $info->{f_id} } ) {
-                my ( $beg, $end ) = App::Anchr::Common::beg_end( $info->{f_B}, $info->{f_E}, );
+                my ( $beg, $end ) = App::Dazz::Common::beg_end( $info->{f_B}, $info->{f_E}, );
                 $links_of->{ $info->{f_id} }{ $info->{g_id} }
                     = AlignDB::IntSpan->new->add_pair( $beg, $end );
             }
@@ -148,7 +148,7 @@ sub execute {
         close $in_fh;
     }
     if ( $opt->{png} ) {
-        App::Anchr::Common::g2gv( $graph, $args->[1] . ".linker.png" );
+        App::Dazz::Common::g2gv( $graph, $args->[1] . ".linker.png" );
     }
 
     #----------------------------#
@@ -196,11 +196,11 @@ sub execute {
         }
 
         if ( $opt->{png} ) {
-            App::Anchr::Common::g2gv( $anchor_graph, $args->[1] . ".png" );
+            App::Dazz::Common::g2gv( $anchor_graph, $args->[1] . ".png" );
         }
-        App::Anchr::Common::transitive_reduction($anchor_graph);
+        App::Dazz::Common::transitive_reduction($anchor_graph);
         if ( $opt->{png} ) {
-            App::Anchr::Common::g2gv( $anchor_graph, $args->[1] . ".reduced.png" );
+            App::Dazz::Common::g2gv( $anchor_graph, $args->[1] . ".reduced.png" );
         }
     }
 
@@ -312,7 +312,7 @@ sub execute {
         open my $in_fh, "<", $opt->{oa};
 
         while ( my $line = <$in_fh> ) {
-            my $info = App::Anchr::Common::parse_ovlp_line($line);
+            my $info = App::Dazz::Common::parse_ovlp_line($line);
 
             # ignore self overlapping
             next if $info->{f_id} eq $info->{g_id};
@@ -392,7 +392,7 @@ sub execute {
                             # abs($avg_distance) should be less than 30.
                             # Larger overlaps have been detected by daligner (--oa)
                             my ( $lcss, $offset_contig, $offset_anchor_1 )
-                                = App::Anchr::Common::lcss( $ovlp_seq_contig, $ovlp_seq_anchor_1 );
+                                = App::Dazz::Common::lcss( $ovlp_seq_contig, $ovlp_seq_anchor_1 );
 
                             if ($lcss) {
 

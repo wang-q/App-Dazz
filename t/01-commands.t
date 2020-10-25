@@ -1,9 +1,9 @@
 use Test::More;
 use App::Cmd::Tester;
 
-use App::Anchr;
+use App::Dazz;
 
-my $result = test_app( 'App::Anchr' => [qw(commands )] );
+my $result = test_app( 'App::Dazz' => [qw(commands )] );
 
 like(
     $result->stdout,

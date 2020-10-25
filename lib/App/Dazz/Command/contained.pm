@@ -1,10 +1,10 @@
-package App::Anchr::Command::contained;
+package App::Dazz::Command::contained;
 use strict;
 use warnings;
 use autodie;
 
-use App::Anchr - command;
-use App::Anchr::Common;
+use App::Dazz - command;
+use App::Dazz::Common;
 
 use constant abstract => "discard contained super-reads, k-unitigs, or anchors";
 
@@ -23,7 +23,7 @@ sub opt_spec {
 }
 
 sub usage_desc {
-    return "anchr contained [options] <infile> [more infiles]";
+    return "dazz contained [options] <infile> [more infiles]";
 }
 
 sub description {
@@ -72,12 +72,12 @@ sub execute {
     my $tempdir;
     if ( $opt->{tmp} ) {
         $tempdir = Path::Tiny->tempdir(
-            TEMPLATE => "anchr_contained_XXXXXXXX",
+            TEMPLATE => "dazz_contained_XXXXXXXX",
             DIR      => $opt->{tmp},
         );
     }
     else {
-        $tempdir = Path::Tiny->tempdir("anchr_contained_XXXXXXXX");
+        $tempdir = Path::Tiny->tempdir("dazz_contained_XXXXXXXX");
     }
     chdir $tempdir;
 
@@ -90,17 +90,17 @@ sub execute {
             $cmd .= "faops filter -a $opt->{len} -l 0 $infiles[$i] stdout";
             $cmd .= " | faops dazz -p $opt->{prefix}_$i stdin infile.$i.fasta";
 
-            App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, }, );
+            App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, }, );
         }
     }
 
     {    # overlaps
         my $cmd;
-        $cmd .= "anchr overlap";
+        $cmd .= "dazz overlap";
         $cmd .= " --len $opt->{len} --idt $opt->{idt} --parallel $opt->{parallel}";
         $cmd .= sprintf " infile.%d.fasta", $_ for ( 0 .. $#infiles );
         $cmd .= " -o contained.ovlp.tsv";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
 
         if ( !$tempdir->child("contained.ovlp.tsv")->is_file ) {
             Carp::croak "Failed: create contained.ovlp.tsv\n";
@@ -111,7 +111,7 @@ sub execute {
         my @discards;
         my %seen_pair;
         for my $line ( $tempdir->child("contained.ovlp.tsv")->lines( { chomp => 1, } ) ) {
-            my $info = App::Anchr::Common::parse_ovlp_line($line);
+            my $info = App::Dazz::Common::parse_ovlp_line($line);
 
             # ignore self overlapping
             next if $info->{f_id} eq $info->{g_id};
@@ -168,7 +168,7 @@ sub execute {
         my $cmd = "cat";
         $cmd .= sprintf " infile.%d.fasta", $_ for ( 0 .. $#infiles );
         $cmd .= " | faops some -i -l 0 stdin discard.txt $opt->{outfile}";
-        App::Anchr::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
+        App::Dazz::Common::exec_cmd( $cmd, { verbose => $opt->{verbose}, } );
     }
 
     chdir $cwd;
