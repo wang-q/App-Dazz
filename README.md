@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wang-q/App-Anchr.svg?branch=master)](https://travis-ci.org/wang-q/App-Anchr) [![Coverage Status](http://codecov.io/github/wang-q/App-Anchr/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Anchr?branch=master)
+[![Build Status](https://travis-ci.org/wang-q/App-Dazz.svg?branch=master)](https://travis-ci.org/wang-q/App-Dazz) [![Coverage Status](http://codecov.io/github/wang-q/App-Dazz/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Dazz?branch=master)
 # NAME
 
 App::Dazz - **A**ssembler of **N**-free **CHR**omosomes
@@ -41,12 +41,12 @@ App::Dazz is tend to be an Assembler of N-free CHRomosomes.
 
 # INSTALLATION
 
-    cpanm --installdeps https://github.com/wang-q/App-Anchr/archive/0.5.4.tar.gz
-    # cpanm --installdeps --verbose --mirror-only --mirror http://mirrors.ustc.edu.cn/CPAN/ https://github.com/wang-q/App-Anchr.git
-    curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/install_dep.sh | bash
-    curl -fsSL https://raw.githubusercontent.com/wang-q/App-Anchr/master/share/check_dep.sh | bash
-    cpanm -nq https://github.com/wang-q/App-Anchr/archive/0.5.4.tar.gz
-    # cpanm -nq https://github.com/wang-q/App-Anchr.git
+    cpanm --installdeps https://github.com/wang-q/App-Dazz/archive/0.5.4.tar.gz
+    # cpanm --installdeps --verbose --mirror-only --mirror http://mirrors.ustc.edu.cn/CPAN/ https://github.com/wang-q/App-Dazz.git
+    curl -fsSL https://raw.githubusercontent.com/wang-q/App-Dazz/master/share/install_dep.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/wang-q/App-Dazz/master/share/check_dep.sh | bash
+    cpanm -nq https://github.com/wang-q/App-Dazz/archive/0.5.4.tar.gz
+    # cpanm -nq https://github.com/wang-q/App-Dazz.git
 
 # AUTHOR
 
