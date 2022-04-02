@@ -46,8 +46,8 @@ App::Dazz comprises some Daligner-based UniTig utils
 
     brew install brewsci/science/poa
     brew install wang-q/tap/faops
-    brew install wang-q/tap/dazz_db@20201008
-    brew install wang-q/tap/daligner@20201008
+    brew install --HEAD wang-q/tap/dazz_db
+    brew install --HEAD wang-q/tap/daligner
     brew install wang-q/tap/intspan
 
     cpanm --installdeps App::Dazz
