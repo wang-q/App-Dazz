@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wang-q/App-Dazz.svg?branch=master)](https://travis-ci.org/wang-q/App-Dazz) [![Coverage Status](http://codecov.io/github/wang-q/App-Dazz/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Dazz?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/App-Dazz.svg)](https://metacpan.org/release/App-Dazz)
+[![Actions Status](https://github.com/wang-q/App-Dazz/actions/workflows/build.yml/badge.svg)](https://github.com/wang-q/App-Dazz/actions) [![Build Status](https://travis-ci.org/wang-q/App-Dazz.svg?branch=master)](https://travis-ci.org/wang-q/App-Dazz) [![Coverage Status](http://codecov.io/github/wang-q/App-Dazz/coverage.svg?branch=master)](https://codecov.io/github/wang-q/App-Dazz?branch=master) [![MetaCPAN Release](https://badge.fury.io/pl/App-Dazz.svg)](https://metacpan.org/release/App-Dazz)
 # NAME
 
 App::Dazz - Daligner-based UniTig utils
