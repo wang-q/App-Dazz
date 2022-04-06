@@ -25,7 +25,7 @@ jobs:
 
       - name: Install external deps
         run: |
-#          brew install --build-from-source brewsci/science/poa
+          # brew install --build-from-source brewsci/science/poa
           brew install wang-q/tap/faops
           brew install wang-q/tap/intspan
           brew install --HEAD wang-q/tap/dazz_db
