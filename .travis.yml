@@ -1,9 +1,9 @@
-language: perl
-os: linux
+dist: focal
 sudo: required
-dist: bionic
+language: perl
 perl:
-  - "5.24"
+    - "5.34"
+    - "5.24"
 
 before_install:
   # Install Linuxbrew
@@ -13,7 +13,7 @@ before_install:
   - eval $(~/.linuxbrew/bin/brew shellenv)
   - brew --version
   - ulimit -n 1024
-  # Install gcc & jdk
+  # Install gcc
   - brew install gcc
 
 install:
