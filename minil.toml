@@ -1,5 +1,5 @@
 name = "App-Dazz"
-badges = ['github-actions/build.yml', 'travis', 'codecov', 'metacpan']
+badges = ['github-actions/build.yml', 'codecov', 'metacpan']
 authority="cpan:WANGQ"
 
 module_maker="ModuleBuildTiny"
