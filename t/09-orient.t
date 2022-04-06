@@ -24,16 +24,17 @@ like( $result->error, qr{doesn't exist}, 'restrict file not exists' );
 SKIP: {
     skip "dazz and its deps not installed", 3
         unless IPC::Cmd::can_run('dazz')
-            or IPC::Cmd::can_run('faops')
-            or IPC::Cmd::can_run('fasta2DB')
-            or IPC::Cmd::can_run('LAshow')
-            or IPC::Cmd::can_run('ovlpr');
+        and IPC::Cmd::can_run('faops')
+        and IPC::Cmd::can_run('fasta2DB')
+        and IPC::Cmd::can_run('LAshow')
+        and IPC::Cmd::can_run('ovlpr');
 
-    $result = test_app('App::Dazz' =>
-        [ qw(orient t/1_4.anchor.fasta t/1_4.pac.fasta -r t/1_4.2.restrict.tsv -v -o stdout) ]);
-    is((scalar grep {/^CMD/} grep {/\S/} split(/\n/, $result->stderr)), 9, 'stderr line count');
-    is((scalar grep {/\S/} split(/\n/, $result->stdout)), 24, 'line count');
-    like($result->stdout, qr{pac4745_7148}s, 'original names');
+    $result = test_app( 'App::Dazz' =>
+            [qw(orient t/1_4.anchor.fasta t/1_4.pac.fasta -r t/1_4.2.restrict.tsv -v -o stdout)] );
+    is( ( scalar grep {/^CMD/} grep {/\S/} split( /\n/, $result->stderr ) ),
+        9, 'stderr line count' );
+    is( ( scalar grep {/\S/} split( /\n/, $result->stdout ) ), 24, 'line count' );
+    like( $result->stdout, qr{pac4745_7148}s, 'original names' );
 }
 
 done_testing();

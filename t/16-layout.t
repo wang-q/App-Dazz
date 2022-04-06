@@ -22,7 +22,7 @@ like( $result->error, qr{doesn't exist}, 'infile not exists' );
 SKIP: {
     skip "dazz and its deps not installed", 3
         unless IPC::Cmd::can_run('dazz')
-            or IPC::Cmd::can_run('poa');
+        and IPC::Cmd::can_run('poa');
 
     my $tempdir = Path::Tiny->tempdir;
     $result = test_app(

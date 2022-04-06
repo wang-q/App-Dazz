@@ -4,7 +4,7 @@ use warnings;
 use Test::More;
 
 #use App::Cmd::Tester;
-use App::Cmd::Tester::CaptureExternal;   # `dazz overlap2` calls `dazz show2ovlp` to write outputs
+use App::Cmd::Tester::CaptureExternal;    # `dazz overlap2` calls `dazz show2ovlp` to write outputs
 
 use App::Dazz;
 
@@ -20,10 +20,10 @@ like( $result->error, qr{doesn't exist}, 'infile not exists' );
 SKIP: {
     skip "dazz and its deps not installed", 2
         unless IPC::Cmd::can_run('dazz')
-            or IPC::Cmd::can_run('faops')
-            or IPC::Cmd::can_run('fasta2DB')
-            or IPC::Cmd::can_run('LAshow')
-            or IPC::Cmd::can_run('ovlpr');
+        and IPC::Cmd::can_run('faops')
+        and IPC::Cmd::can_run('fasta2DB')
+        and IPC::Cmd::can_run('LAshow')
+        and IPC::Cmd::can_run('ovlpr');
 
     my $tempdir = Path::Tiny->tempdir;
     $result = test_app( 'App::Dazz' =>
