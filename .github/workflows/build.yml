@@ -33,7 +33,7 @@ jobs:
 
       - name: Install CPAN deps
         run: |
-          cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecov # codecov
+          cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecovbash # codecov
           cpanm --notest --installdeps .
           cpanm -nq . # Install App::Dazz first, as some commands need `dazz` in $PATH
 
@@ -42,8 +42,9 @@ jobs:
           perl Build.PL
           ./Build build
           cover -test
+          cover -report codecovbash
 
       - name: Codecov
         uses: codecov/codecov-action@v2
         with:
-          files: cover_db/coverage.html
+          files: cover_db/codecov.json
