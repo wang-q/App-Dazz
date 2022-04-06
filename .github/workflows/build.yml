@@ -9,16 +9,38 @@ jobs:
     strategy:
       matrix:
         os: [ 'ubuntu-latest', 'macos-latest' ]
-        perl: [ '5.34', '5.32', '5.30' ]
+        perl: [ '5.34', '5.24' ]
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Set up perl
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
-      - uses: actions/checkout@v3
-      - run: perl -V
-      - run: cpanm --installdeps .
-      - run: perl Build.PL
-      - run: ./Build build
-      - run: ./Build test
+
+      - name: Perl version
+        run: perl -V
+
+      - name: Install external deps
+        run: |
+          brew update
+          brew tap brewsci/science
+          brew tap brewsci/bio
+          brew install brewsci/science/poa
+          brew install wang-q/tap/faops
+          brew install wang-q/tap/intspan
+          brew install --HEAD wang-q/tap/dazz_db
+          brew install --HEAD wang-q/tap/daligner
+
+      - name: Install CPAN deps
+        run: |
+          cpanm --notest --installdeps .
+          cpanm -nq . # install App::Dazz prior as some commands need `dazz` in $PATH
+
+      - name: Build
+        run: |
+          perl Build.PL
+          ./Build build
+          ./Build test
