@@ -44,4 +44,6 @@ jobs:
           cover -test
 
       - name: Codecov
-        run: cover -report codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: cover_db/coverage.html
